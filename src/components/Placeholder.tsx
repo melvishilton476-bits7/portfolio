@@ -34,7 +34,7 @@ export default function Placeholder({
 
   return (
     <div
-      className={`flex items-center justify-center rounded-[var(--radius-md)] border border-dashed ${variants[variant]} ${className}`}
+      className={`flex items-center justify-center border border-dashed ${variants[variant]} ${className}`}
       style={{ aspectRatio: String(ratio), maxWidth, width: "100%", ...style }}
       role="img"
       aria-label={`${label} placeholder`}

@@ -45,7 +45,7 @@ export default function Work() {
       <div className="mt-14 flex justify-center">
         <a
           href="#work"
-          className="inline-flex items-center gap-2 rounded-[var(--radius-pill)] bg-accent px-5 py-3 text-accent-ink transition-transform hover:-translate-y-0.5"
+          className="inline-flex items-center gap-2 bg-accent px-5 py-3 text-accent-ink transition-transform hover:-translate-y-0.5"
         >
           <span className="type-caption font-medium">
             Go ahead click, Don&rsquo;t be shy

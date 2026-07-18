@@ -29,10 +29,7 @@
   --color-accent-ink: #171717; /* text on accent surfaces */
 
   /* ---- Radii ------------------------------------------------------------ */
-  --radius-sm: 6px;
-  --radius-md: 12px;
-  --radius-lg: 20px;
-  --radius-pill: 999px;
+  /* Intentionally none — the design uses sharp, square corners throughout. */
 
   /* ---- Fonts ------------------------------------------------------------ */
   --font-display: var(--font-space-grotesk), ui-sans-serif, system-ui, sans-serif;

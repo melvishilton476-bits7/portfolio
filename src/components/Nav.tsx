@@ -17,10 +17,10 @@ export default function Nav() {
   return (
     <header className="w-full pt-6 sm:pt-10">
       <nav className="page-container">
-        <div className="mx-auto flex w-full max-w-[435px] items-center gap-2 rounded-[var(--radius-pill)] bg-surface-dark p-1.5 pl-2 text-white">
+        <div className="mx-auto flex w-full max-w-[435px] items-center gap-2 bg-surface-dark p-1.5 pl-2 text-white">
           {/* Avatar / logo */}
           <div
-            className="size-8 shrink-0 rounded-[var(--radius-sm)] bg-surface"
+            className="size-8 shrink-0 bg-surface"
             aria-hidden
           />
 
@@ -41,7 +41,7 @@ export default function Nav() {
           {/* Email chip */}
           <a
             href={`mailto:${EMAIL}`}
-            className="type-nav hidden shrink-0 items-center rounded-[var(--radius-pill)] bg-surface px-3 py-2 font-normal text-chip-text sm:inline-flex"
+            className="type-nav hidden shrink-0 items-center bg-surface px-3 py-2 font-normal text-chip-text sm:inline-flex"
           >
             {EMAIL}
           </a>

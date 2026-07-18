@@ -17,7 +17,7 @@ export default function ProjectCard({
 }: ProjectCardProps) {
   return (
     <article className="group flex flex-col gap-3">
-      <div className="relative overflow-hidden rounded-[var(--radius-md)]">
+      <div className="relative overflow-hidden">
         <Placeholder label={title} ratio={237 / 207} variant="accent" />
       </div>
       <div className="flex items-baseline justify-between gap-2">
@@ -27,7 +27,7 @@ export default function ProjectCard({
         </div>
         <a
           href={href}
-          className="type-caption inline-flex shrink-0 items-center gap-1 rounded-[var(--radius-pill)] border border-ink/15 px-3 py-1.5 text-ink transition-colors group-hover:bg-ink group-hover:text-white"
+          className="type-caption inline-flex shrink-0 items-center gap-1 border border-ink/15 px-3 py-1.5 text-ink transition-colors group-hover:bg-ink group-hover:text-white"
         >
           View Project <span aria-hidden>→</span>
         </a>

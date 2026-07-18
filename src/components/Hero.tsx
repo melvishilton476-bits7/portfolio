@@ -41,7 +41,7 @@ export default function Hero() {
             {Array.from({ length: 5 }).map((_, i) => (
               <li
                 key={i}
-                className="size-6 rounded-full border-2 border-background bg-surface"
+                className="size-6 border-2 border-background bg-surface"
                 aria-hidden
               />
             ))}
@@ -51,7 +51,7 @@ export default function Hero() {
         {/* CTA */}
         <a
           href="#work"
-          className="mt-8 inline-flex items-center gap-2 rounded-[var(--radius-pill)] bg-btn-dark px-6 py-3 text-white transition-transform hover:-translate-y-0.5"
+          className="mt-8 inline-flex items-center gap-2 bg-btn-dark px-6 py-3 text-white transition-transform hover:-translate-y-0.5"
         >
           <span className="type-label font-medium">Take a tour</span>
           <span aria-hidden className="text-lg leading-none">

@@ -7,7 +7,7 @@ import Placeholder from "./Placeholder";
  */
 export default function Contact() {
   const fieldWell =
-    "w-full rounded-[var(--radius-sm)] bg-btn-dark px-4 text-white placeholder:text-white/40 outline-none ring-1 ring-white/10 focus:ring-accent";
+    "w-full bg-btn-dark px-4 text-white placeholder:text-white/40 outline-none ring-1 ring-white/10 focus:ring-accent";
 
   return (
     <section id="contact" className="page-container py-24 sm:py-32">
@@ -19,7 +19,7 @@ export default function Contact() {
       <div className="grid items-center gap-14 lg:grid-cols-[minmax(0,410px)_1fr]">
         {/* Form */}
         <form
-          className="rounded-[var(--radius-lg)] bg-btn-dark/95 p-6 sm:p-8"
+          className="bg-btn-dark/95 p-6 sm:p-8"
           /* TODO: wire onSubmit to backend / form service */
         >
           <div className="flex flex-col gap-5">
@@ -44,14 +44,14 @@ export default function Contact() {
           <div className="mt-6 flex flex-wrap gap-3">
             <button
               type="submit"
-              className="inline-flex items-center gap-2 rounded-[var(--radius-sm)] bg-accent px-5 py-3 text-accent-ink"
+              className="inline-flex items-center gap-2 bg-accent px-5 py-3 text-accent-ink"
             >
               <span aria-hidden>←</span>
               <span className="type-caption font-medium">Book a Slot</span>
             </button>
             <a
               href="#"
-              className="inline-flex items-center rounded-[var(--radius-sm)] bg-white/10 px-5 py-3 text-white"
+              className="inline-flex items-center bg-white/10 px-5 py-3 text-white"
             >
               <span className="type-caption font-medium">Go To LinkedIn</span>
             </a>
