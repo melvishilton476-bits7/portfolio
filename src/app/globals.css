@@ -1,26 +1,156 @@
 @import "tailwindcss";
 
+/* ============================================================================
+   DESIGN SYSTEM — Melvis Hilton portfolio
+   Tokens extracted from the Figma source (node 193:109). Values marked
+   "TUNE" are approximations (the source hardcoded them per-layer or baked
+   them into raster assets) and are safe to adjust to taste.
+   ========================================================================== */
+
+@theme {
+  /* ---- Color: surfaces -------------------------------------------------- */
+  --color-background: #ffffff;
+  --color-surface: #f5f5f5; /* chips, avatar, input wells */
+  --color-surface-dark: #212a33; /* nav bar */
+  --color-btn-dark: #2c2c2c; /* "Take a tour" / dark buttons */
+
+  /* ---- Color: ink / text ------------------------------------------------ */
+  --color-ink: #171717; /* gray/900 — primary text */
+  --color-ink-hero: #232630; /* hero headline */
+  --color-ink-alt: #322929; /* section headings */
+  --color-ink-muted: #8a8a8a; /* TUNE — supporting copy */
+  --color-ink-invert: #ffffff;
+  --color-chip-text: #0b1956; /* email chip text */
+
+  /* ---- Color: brand accent (lime) -------------------------------------- */
+  /* TUNE — the accent green baked into card art / chair / footer bar. */
+  --color-accent: #b6f23c;
+  --color-accent-strong: #3dbb5e;
+  --color-accent-ink: #171717; /* text on accent surfaces */
+
+  /* ---- Radii ------------------------------------------------------------ */
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --radius-pill: 999px;
+
+  /* ---- Fonts ------------------------------------------------------------ */
+  --font-display: var(--font-space-grotesk), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-space-grotesk), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains-mono), ui-monospace, monospace;
+  --font-ui: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+
+  /* ---- Type scale (fluid; desktop source sizes noted) ------------------- */
+  /* Display headline — source 54px, tracking -0.08em */
+  --text-display: clamp(2.25rem, 1.4rem + 4.2vw, 3.375rem);
+  --text-display--line-height: 1.02;
+  --text-display--letter-spacing: -0.08em;
+
+  /* Section heading — "SIGHTS to SEE", "Come have a seat!" */
+  --text-heading: clamp(2rem, 1.3rem + 3.5vw, 3.375rem);
+  --text-heading--line-height: 1.05;
+  --text-heading--letter-spacing: -0.06em;
+
+  /* Lead / intro paragraph */
+  --text-lead: clamp(1rem, 0.9rem + 0.5vw, 1.125rem);
+  --text-lead--line-height: 1.5;
+
+  /* Body */
+  --text-body: 1rem;
+  --text-body--line-height: 1.6;
+
+  /* Label — "My Stack", card titles */
+  --text-label: 1.1875rem; /* ~19px */
+  --text-label--letter-spacing: -0.05em;
+
+  /* Caption / meta — card meta, timestamps */
+  --text-caption: 0.775rem; /* ~12.4px */
+  --text-caption--letter-spacing: -0.06em;
+
+  /* Nav / micro UI (Inter) */
+  --text-nav: 0.6875rem; /* ~11px */
+  --text-nav--letter-spacing: -0.03em;
+
+  /* ---- Layout ----------------------------------------------------------- */
+  --container-page: 1280px; /* source frame width */
+}
+
+/* ============================================================================
+   BASE
+   ========================================================================== */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  color-scheme: light;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
+  background: var(--color-background);
+  color: var(--color-ink);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ============================================================================
+   TYPOGRAPHY UTILITIES
+   Semantic classes so components read intent, not raw sizes.
+   ========================================================================== */
+.font-display {
+  font-family: var(--font-display);
+}
+.font-mono {
+  font-family: var(--font-mono);
+}
+.font-ui {
+  font-family: var(--font-ui);
+}
+
+.type-display {
+  font-family: var(--font-display);
+  font-size: var(--text-display);
+  line-height: var(--text-display--line-height);
+  letter-spacing: var(--text-display--letter-spacing);
+  font-weight: 400;
+}
+
+.type-heading {
+  font-family: var(--font-display);
+  font-size: var(--text-heading);
+  line-height: var(--text-heading--line-height);
+  letter-spacing: var(--text-heading--letter-spacing);
+  font-weight: 400;
+}
+
+.type-lead {
+  font-size: var(--text-lead);
+  line-height: var(--text-lead--line-height);
+  color: var(--color-ink-muted);
+}
+
+.type-label {
+  font-family: var(--font-display);
+  font-size: var(--text-label);
+  letter-spacing: var(--text-label--letter-spacing);
+  font-weight: 500;
+}
+
+.type-caption {
+  font-family: var(--font-display);
+  font-size: var(--text-caption);
+  letter-spacing: var(--text-caption--letter-spacing);
+}
+
+.type-nav {
+  font-family: var(--font-ui);
+  font-size: var(--text-nav);
+  letter-spacing: var(--text-nav--letter-spacing);
+  font-weight: 300;
+}
+
+/* ============================================================================
+   LAYOUT HELPERS
+   ========================================================================== */
+.page-container {
+  width: 100%;
+  max-width: var(--container-page);
+  margin-inline: auto;
+  padding-inline: clamp(1.25rem, 5vw, 4rem);
 }
