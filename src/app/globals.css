@@ -28,6 +28,14 @@
   --color-accent-strong: #3dbb5e;
   --color-accent-ink: #171717; /* text on accent surfaces */
 
+  /* ---- shadcn-compat tokens --------------------------------------------- */
+  /* Consumed by /components/ui primitives (e.g. the tubelight navbar) that
+     expect the shadcn token names. Mapped onto this project's palette. */
+  --color-foreground: #171717; /* = ink */
+  --color-border: #e5e5e5;
+  --color-muted: #f0f0f0;
+  --color-primary: #171717; /* = ink black — drives the tubelight lamp */
+
   /* ---- Radii ------------------------------------------------------------ */
   /* Intentionally none — the design uses sharp, square corners throughout. */
 

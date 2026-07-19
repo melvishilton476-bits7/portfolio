@@ -18,7 +18,7 @@ export default function Hero() {
           height={576}
           unoptimized
           priority
-          className="mb-8 w-full max-w-[342px]"
+          className="mb-8 h-auto w-[clamp(220px,40vw,360px)]"
         />
 
         {/* Headline */}
