@@ -31,6 +31,11 @@
   /* ---- Radii ------------------------------------------------------------ */
   /* Intentionally none — the design uses sharp, square corners throughout. */
 
+  /* ---- Text-selection motif (iOS-style, over "Melvis") ------------------ */
+  /* Sampled from the Figma selection element (node 193:110). */
+  --color-select-blue: #0050fa; /* caret + handle lines/dots */
+  --color-select-fill: #c5e0fa; /* highlight tint behind the word */
+
   /* ---- Fonts ------------------------------------------------------------ */
   --font-display: var(--font-space-grotesk), ui-sans-serif, system-ui, sans-serif;
   --font-sans: var(--font-space-grotesk), ui-sans-serif, system-ui, sans-serif;
@@ -150,4 +155,143 @@ body {
   max-width: var(--container-page);
   margin-inline: auto;
   padding-inline: clamp(1.25rem, 5vw, 4rem);
+}
+
+/* ============================================================================
+   TEXT-SELECTION MOTIF
+   A faux iOS text selection that loops over one word ("Melvis"): a caret
+   blinks in, then a highlight sweeps across while the two square-nubbed
+   handles ride to each end, holds, deselects, and repeats. Purely
+   decorative (aria-hidden); the word itself stays crisp on top.
+   ========================================================================== */
+.sel-name {
+  position: relative;
+  display: inline-block;
+  --sel-cycle: 5s;
+  --sel-ease: cubic-bezier(0.33, 0, 0.15, 1);
+}
+
+/* The real word — kept above the highlight so it stays readable. */
+.sel-name__text {
+  position: relative;
+  z-index: 1;
+}
+
+/* Overlay sits behind the glyphs; handle dots poke above/below the line. */
+.sel-name__overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* Blinking insertion caret at the left edge, before the sweep. */
+.sel-name__caret {
+  position: absolute;
+  left: 0;
+  top: -0.04em;
+  bottom: -0.02em;
+  width: 2px;
+  margin-left: -1px;
+  background: var(--color-select-blue);
+  opacity: 0;
+  animation: sel-caret var(--sel-cycle) steps(1, end) infinite;
+}
+
+/* Highlight tint; grows in width to "select" the word. */
+.sel-name__highlight {
+  position: absolute;
+  left: 0;
+  top: -0.06em;
+  bottom: -0.02em;
+  width: 0;
+  background: var(--color-select-fill);
+  opacity: 0;
+  animation: sel-sweep var(--sel-cycle) var(--sel-ease) infinite;
+}
+
+/* Selection handles: a thin blue line with a square nub (no rounding, to
+   match the sharp-cornered design language). */
+.sel-name__handle {
+  position: absolute;
+  width: 2px;
+  margin-left: -1px;
+  background: var(--color-select-blue);
+  opacity: 0;
+  animation: sel-handles var(--sel-cycle) var(--sel-ease) infinite;
+}
+.sel-name__handle::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  width: 9px;
+  height: 9px;
+  margin-left: -4.5px;
+  background: var(--color-select-blue);
+}
+
+/* Start handle — fixed at the left edge, nub on top. */
+.sel-name__handle--start {
+  left: 0;
+  top: -0.34em;
+  bottom: -0.02em;
+}
+.sel-name__handle--start::before {
+  top: 0;
+}
+
+/* End handle — rides the growing right edge of the highlight, nub on bottom.
+   Lives inside the highlight so it tracks the sweep for free. */
+.sel-name__handle--end {
+  left: 100%;
+  top: -0.06em;
+  bottom: -0.30em;
+  opacity: 1; /* fades with its parent highlight */
+  animation: none;
+}
+.sel-name__handle--end::before {
+  bottom: 0;
+}
+
+@keyframes sel-caret {
+  0% { opacity: 1; }
+  6% { opacity: 0; }
+  11% { opacity: 1; }
+  16% { opacity: 0; } /* caret gone once the sweep begins */
+  83% { opacity: 0; }
+  88% { opacity: 1; } /* reappears after deselect, blinks into the next loop */
+  94% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+@keyframes sel-sweep {
+  0%, 16% { width: 0; opacity: 0; }
+  17% { width: 0; opacity: 1; }
+  30% { width: calc(100% + 6px); opacity: 1; }
+  74% { width: calc(100% + 6px); opacity: 1; }
+  82% { width: calc(100% + 6px); opacity: 0; }
+  83%, 100% { width: 0; opacity: 0; }
+}
+
+@keyframes sel-handles {
+  0%, 16% { opacity: 0; }
+  30%, 74% { opacity: 1; }
+  82%, 100% { opacity: 0; }
+}
+
+/* Respect reduced-motion: show a settled selection, no looping. */
+@media (prefers-reduced-motion: reduce) {
+  .sel-name__caret {
+    animation: none;
+    opacity: 0;
+  }
+  .sel-name__highlight {
+    animation: none;
+    width: 100%;
+    opacity: 1;
+  }
+  .sel-name__handle {
+    animation: none;
+    opacity: 1;
+  }
 }

@@ -1,4 +1,5 @@
-import Placeholder from "./Placeholder";
+import Image from "next/image";
+import SelectedName from "./SelectedName";
 
 /**
  * Hero — headline, lead, tech-stack row, and the "Take a tour" CTA.
@@ -9,17 +10,24 @@ export default function Hero() {
   return (
     <section className="page-container relative pt-14 sm:pt-20" id="top">
       <div className="mx-auto flex max-w-[720px] flex-col items-center text-center">
-        {/* Central hero animation (source: Main animation GIF, 342×192) */}
-        <Placeholder
-          label="Hero animation"
-          ratio={342 / 192}
-          maxWidth={342}
-          className="mb-8"
+        {/* Central hero animation */}
+        <Image
+          src="/hero-animation.gif"
+          alt=""
+          width={1024}
+          height={576}
+          unoptimized
+          priority
+          className="mb-8 w-full max-w-[342px]"
         />
 
         {/* Headline */}
         <h1 className="type-display text-ink-hero text-balance">
-          Hey I am <span className="text-ink">Melvis</span> a Designer,
+          Hey I am{" "}
+          <SelectedName>
+            <span className="text-ink">Melvis</span>
+          </SelectedName>{" "}
+          a Designer,
           <br />
           who can{" "}
           <span className="font-light" style={{ fontWeight: 300 }}>
