@@ -166,6 +166,19 @@ body {
 }
 
 /* ============================================================================
+   STACK CHIPS
+   White circular chips holding the tool icons, with a soft layered shadow
+   (values matched from the reference). Overlap + magnetic bounce live in
+   StackRow.tsx (framer-motion).
+   ========================================================================== */
+.stack-chip {
+  box-shadow:
+    0 0.6px 0.54px -1.25px rgba(0, 0, 0, 0.18),
+    0 2.29px 2.06px -2.5px rgba(0, 0, 0, 0.16),
+    0 10px 9px -3.75px rgba(0, 0, 0, 0.06);
+}
+
+/* ============================================================================
    TEXT-SELECTION MOTIF
    A faux iOS text selection that loops over one word ("Melvis"): a caret
    blinks in, then a highlight sweeps across while the two square-nubbed

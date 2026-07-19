@@ -1,5 +1,6 @@
 import Image from "next/image";
 import SelectedName from "./SelectedName";
+import StackRow from "./StackRow";
 
 /**
  * Hero — headline, lead, tech-stack row, and the "Take a tour" CTA.
@@ -8,7 +9,7 @@ import SelectedName from "./SelectedName";
  */
 export default function Hero() {
   return (
-    <section className="page-container relative pt-14 sm:pt-20" id="top">
+    <section className="page-container relative pt-24 sm:pt-32" id="top">
       <div className="mx-auto flex max-w-[720px] flex-col items-center text-center">
         {/* Central hero animation */}
         <Image
@@ -44,16 +45,8 @@ export default function Hero() {
 
         {/* My Stack */}
         <div className="mt-10 flex flex-col items-center gap-3">
-          <span className="type-label text-ink">My Stack</span>
-          <ul className="flex items-center -space-x-2" aria-label="Tech stack">
-            {Array.from({ length: 5 }).map((_, i) => (
-              <li
-                key={i}
-                className="size-6 border-2 border-background bg-surface"
-                aria-hidden
-              />
-            ))}
-          </ul>
+          <span className="type-label text-ink-muted">My Stack</span>
+          <StackRow />
         </div>
 
         {/* CTA */}
