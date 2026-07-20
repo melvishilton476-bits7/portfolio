@@ -38,14 +38,22 @@ export default function Hero() {
         </h1>
 
         {/* Lead */}
-        <p className="type-lead mt-6 max-w-[494px] text-balance">
+        <p
+          className="type-lead mt-6 max-w-[494px] text-balance"
+          style={{ letterSpacing: "-0.02em", fontWeight: 300 }}
+        >
           I help with building systems that help people and function with
           absolute brilliance.
         </p>
 
         {/* My Stack */}
         <div className="mt-10 flex flex-col items-center gap-3">
-          <span className="type-label text-ink-muted">My Stack</span>
+          <span
+            className="type-label text-ink-muted"
+            style={{ fontWeight: 400, letterSpacing: "-0.08em" }}
+          >
+            My Stack
+          </span>
           <StackRow />
         </div>
 

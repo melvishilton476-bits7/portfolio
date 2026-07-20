@@ -22,7 +22,7 @@ const STACK = [
   { name: "Codex", src: "/stack/codex.png" },
   { name: "Illustrator", src: "/stack/illustrator.png" },
   { name: "Photoshop", src: "/stack/photoshop.png" },
-  // { name: "After Effects", src: "/stack/after-effects.png" }, // drop the icon in to enable
+  { name: "After Effects", src: "/stack/after-effects.png" },
   { name: "Premiere Pro", src: "/stack/premiere-pro.png" },
 ];
 
