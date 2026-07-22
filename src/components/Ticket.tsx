@@ -10,7 +10,8 @@ type TicketProps = {
   /** Set when the tint is light enough that ink text reads better than white. */
   darkText?: boolean;
   href?: string;
-  /** Show the lime puzzle pieces growing out from behind the card. */
+  /** Show the lime puzzle pieces growing out from behind the card. On by
+      default — every ticket carries the same lime pieces. */
   pieces?: boolean;
   /** Forwarded to GrowOnView — see its docstring. */
   active?: boolean;
@@ -32,7 +33,7 @@ export default function Ticket({
   color,
   darkText = false,
   href = "#",
-  pieces = false,
+  pieces = true,
   active,
 }: TicketProps) {
   const ink = darkText ? "text-ink" : "text-white";

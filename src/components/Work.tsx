@@ -1,12 +1,78 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { useScroll, useMotionValueEvent, useReducedMotion } from "framer-motion";
+import { motion, useScroll, useMotionValueEvent, useReducedMotion } from "framer-motion";
 import FeaturedProject from "./FeaturedProject";
 import Ticket from "./Ticket";
 import ProjectPanel, { type Project } from "./ProjectPanel";
 import SlideHands from "./SlideHands";
+import Asterisk from "./Asterisk";
 import { STEP_DURATION } from "@/lib/step-motion";
+
+/**
+ * A floating asterisk pinned to the stage (it doesn't ride the filmstrip —
+ * cards slide past it). Two independent motions:
+ *
+ *  - a faint, endless vertical float so the mark breathes rather than sitting
+ *    dead between transitions;
+ *  - a rotation that is NOT a constant spin. It's a one-shot turn that fires
+ *    only when a new project moves to centre. The target angle swings between
+ *    `baseRotate` and `baseRotate + swing` on each step, so consecutive turns
+ *    go opposite ways (CW, CCW, CW…) with no accumulation. The first project
+ *    is the rest state — step 0 sits at `baseRotate`, no turn on entry — so
+ *    only actual swaps rotate.
+ *
+ * Position/size/blur come in via `className`; the depth layers blur and dim
+ * the same shape.
+ *
+ * Placement is anchored to the CARD, not the stage: the card is a fixed-width
+ * box centred in the stage, so a percentage of the (viewport-sized) stage would
+ * drift relative to the card at other resolutions — on some it lands the mark
+ * fully behind the card. Instead every instance positions its CENTRE at the
+ * stage centre (which is the card centre) plus a fixed pixel offset —
+ * `left-[calc(50%±Npx)] top-[calc(50%±Mpx)]` — and this base centres the mark on
+ * that point with a `translate` (which composes with framer's float/rotate
+ * `transform`). So the marks hold their spot against the card at any size.
+ */
+function FloatAsterisk({
+  color,
+  className,
+  baseRotate = 0,
+  swing = 40,
+  drift = 8,
+  duration = 7,
+  delay = 0,
+  step,
+}: {
+  color: string;
+  className: string;
+  baseRotate?: number;
+  swing?: number;
+  drift?: number;
+  duration?: number;
+  delay?: number;
+  step: number;
+}) {
+  const settled = Math.max(step, 0);
+  const rotate = baseRotate + (settled % 2 === 1 ? swing : 0);
+
+  return (
+    <motion.div
+      aria-hidden
+      className={`pointer-events-none absolute -translate-x-1/2 -translate-y-1/2 ${className}`}
+      animate={{ y: [0, -drift, 0], rotate }}
+      // Per-property timing: the float loops forever on a soft ease, while the
+      // rotation plays once per swap on a heavy ease-in-out (slow start, quick
+      // middle, slow settle) tuned to land with the project slide.
+      transition={{
+        y: { duration, repeat: Infinity, ease: "easeInOut", delay },
+        rotate: { duration: 0.8, ease: [0.83, 0, 0.17, 1] },
+      }}
+    >
+      <Asterisk color={color} className="h-auto w-full" />
+    </motion.div>
+  );
+}
 
 const PROJECTS: Project[] = [
   {
@@ -16,7 +82,6 @@ const PROJECTS: Project[] = [
     quote:
       "A conceptual rebrand of Titan, India’s iconic eyewear brand, reimagined for the athletic market.",
     tags: ["Branding", "UI/UX"],
-    pieces: true,
   },
   {
     title: "TITAN - REBRAND",
@@ -62,7 +127,6 @@ function StaticWork() {
             <FeaturedProject
               title={project.title}
               quote={project.quote}
-              tags={project.tags}
               href={project.href}
               flat
             />
@@ -142,6 +206,31 @@ function Carousel() {
         {/* The filmstrip stage fills the rest, full-bleed. Every slide is
             centred here and pushed sideways by its distance from `step`. */}
         <div className="relative flex-1">
+          {/* Depth layer: the same asterisk, blurred and dimmed, sitting
+              behind the strip so it reads as far back. */}
+          <FloatAsterisk
+            color="var(--color-splat-red)"
+            className="top-[calc(50%-278px)] left-[calc(50%+140px)] w-[44px] opacity-80 blur-[3px]"
+            baseRotate={-8}
+            swing={100}
+            drift={11}
+            duration={6.5}
+            step={step}
+          />
+
+          {/* Sharp red, but rendered before the slides so the centred card
+              paints over its inner edge — it reads as tucked slightly behind
+              the card, overhanging only into the right gutter. */}
+          <FloatAsterisk
+            color="var(--color-splat-red)"
+            className="top-[calc(50%-178px)] left-[calc(50%+246px)] w-[64px]"
+            baseRotate={6}
+            swing={-108}
+            drift={15}
+            duration={5.5}
+            step={step}
+          />
+
           {PROJECTS.map((project, i) => (
             <ProjectPanel key={i} project={project} index={i} step={step} />
           ))}
@@ -156,6 +245,19 @@ function Carousel() {
           <div
             aria-hidden
             className="pointer-events-none absolute inset-y-0 right-0 z-20 w-[14vw] bg-gradient-to-l from-background via-background/70 to-transparent backdrop-blur-sm [mask-image:linear-gradient(to_left,#000,transparent)]"
+          />
+
+          {/* Foreground asterisk: sharp, above the glass edges, tucked into
+              the card's bottom-left corner. Stationary — cards slide past it. */}
+          <FloatAsterisk
+            color="var(--color-splat-purple)"
+            className="top-[calc(50%+41px)] left-[calc(50%-222px)] z-30 w-[92px] opacity-80 blur-[3px]"
+            baseRotate={-16}
+            swing={96}
+            drift={13}
+            duration={6}
+            delay={1}
+            step={step}
           />
         </div>
       </div>

@@ -42,6 +42,8 @@
   --color-panel: #e8ff1a; /* the yellow card body (brighter than accent lime) */
   --color-tag: #a9c4f5; /* periwinkle tag tabs */
   --color-clip: #05a1d9; /* paperclip — from the supplied SVG */
+  --color-splat-purple: #a741ff; /* floating asterisk — purple (from SVG) */
+  --color-splat-red: #f5451e; /* floating asterisk — red */
 
   /* ---- Radii ------------------------------------------------------------ */
   /* Near-none by design: the site is square-cornered throughout. Two
@@ -310,43 +312,36 @@ body {
   }
 }
 
-/* Each cell scales out of the edge facing its parent (--o), on the schedule
-   the BFS assigned it (--d). fill-box is required or transform-origin
-   percentages resolve against the whole SVG, not the rect. */
+/* Each cell scales out of the edge facing its parent (--o); fill-box is
+   required or transform-origin percentages resolve against the whole SVG, not
+   the rect.
+
+   A transition, not a keyframe, so it plays BOTH ways: cells extrude out when
+   the ticket reaches centre and retract when it leaves. No opacity — scale(0)
+   already hides the square, and driving it on scale alone keeps the pixel edge
+   crisp (the growth reads as extruding, not dissolving in). The two directions
+   run on different clocks: grow uses the forward stagger (--d), retract uses
+   the rewind (--dr = last cell out, first back), so exiting unwinds the piece
+   back-to-front rather than collapsing at once. The transition that fires is
+   the one on the state being ENTERED, which is what lets the delays differ. */
 .pixel-cell {
   transform-box: fill-box;
   transform-origin: var(--o);
   transform: scale(0);
-  opacity: 0;
+  transition: transform 130ms cubic-bezier(0.16, 0.84, 0.44, 1) var(--dr, 0ms);
 }
 .is-grown .pixel-cell {
-  animation: pixel-grow 130ms cubic-bezier(0.16, 0.84, 0.44, 1) var(--d) both;
+  transform: scale(1);
+  transition-delay: var(--d);
 }
 
-@keyframes pixel-grow {
-  from {
-    transform: scale(0);
-    opacity: 0;
-  }
-  /* Opaque almost immediately — a fade would blur the pixel edge; the growth
-     should read as the square extruding, not dissolving in. */
-  20% {
-    opacity: 1;
-  }
-  to {
-    transform: scale(1);
-    opacity: 1;
-  }
-}
-
-/* Reduced motion: pieces are simply there, fully grown. */
+/* Reduced motion: pieces are simply there, fully grown, with no motion either
+   way. */
 @media (prefers-reduced-motion: reduce) {
-  .pixel-cell {
-    transform: none;
-    opacity: 1;
-  }
+  .pixel-cell,
   .is-grown .pixel-cell {
-    animation: none;
+    transform: none;
+    transition: none;
   }
 }
 

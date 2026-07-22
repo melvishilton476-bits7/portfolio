@@ -3,14 +3,17 @@
 import { useEffect, useRef, useState } from "react";
 
 /**
- * Adds `is-grown` the first time this wrapper scrolls into view, then stops
- * observing. Fire-once by design: the puzzle pieces grow as you arrive at a
- * ticket and stay grown, so scrolling back up doesn't replay them.
+ * Uncontrolled (no `active`): adds `is-grown` the first time this wrapper
+ * scrolls into view, then stops observing — fire-once, so the puzzle pieces
+ * grow on arrival and stay. This is the small-screen / reduced-motion path.
  *
- * `active` bypasses the observer entirely: pass a boolean when growth is
- * driven by something other than this element's own on-screen position (e.g.
- * scroll progress in a pinned carousel, where several instances share the
- * same viewport rect and IntersectionObserver can't tell them apart).
+ * Controlled (`active` is a boolean): `is-grown` simply mirrors `active`, so
+ * the caller can drive growth from something other than this element's own
+ * on-screen position — e.g. the pinned carousel, where several instances
+ * share the same viewport rect and IntersectionObserver can't tell them
+ * apart. Unlike the uncontrolled path this can flip back: the carousel passes
+ * `current`, so a ticket grows at centre and RETRACTS when it leaves the
+ * stage (the CSS transition runs both ways), re-growing if you scroll back.
  */
 export default function GrowOnView({
   className = "",
@@ -43,8 +46,8 @@ export default function GrowOnView({
     return () => io.disconnect();
   }, [grown, active]);
 
-  // `active` is already latched by the caller (flips false→true, never
-  // back), so the controlled case needs no state of its own here.
+  // Controlled: mirror `active` directly (it may flip either way). Uncontrolled:
+  // use the once-latched observer state.
   const isGrown = active !== undefined ? active : grown;
 
   return (

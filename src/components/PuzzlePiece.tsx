@@ -32,7 +32,13 @@ export default function PuzzlePiece({ side }: { side: PieceSide }) {
           width={cell}
           height={cell}
           fill={LIME}
-          style={{ "--d": `${c.delay}ms`, "--o": c.origin } as CSSProperties}
+          style={
+            {
+              "--d": `${c.delay}ms`,
+              "--dr": `${c.rewind}ms`,
+              "--o": c.origin,
+            } as CSSProperties
+          }
         />
       ))}
     </svg>

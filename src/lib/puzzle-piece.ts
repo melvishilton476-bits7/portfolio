@@ -21,6 +21,10 @@ export type PieceCell = {
   y: number;
   /** When this cell sprouts, in ms. */
   delay: number;
+  /** When this cell retracts, in ms — the growth schedule run backwards
+      (last cell out is the first back in), so a stage exit rewinds the piece
+      instead of collapsing it all at once. */
+  rewind: number;
   /** transform-origin — the edge facing this cell's parent, so it visibly
       extrudes OUT of the cell before it rather than popping in place. */
   origin: string;
@@ -59,6 +63,11 @@ const CURVE = 2.2;
 
 /** The far piece trails the near one, so the pair feels alive, not mirrored. */
 const SIDE_DELAY: Record<PieceSide, number> = { left: 0, right: 150 };
+
+/** Longest forward delay across BOTH pieces (the last cell of the trailing
+    piece). The rewind of any cell is measured against this so the retract
+    unwinds the whole pair back-to-front, not each side on its own clock. */
+const MAX_DELAY = SPREAD + Math.max(...Object.values(SIDE_DELAY));
 
 /** Source cell size; the right piece is drawn fractionally larger. */
 const SIDE_CELL: Record<PieceSide, number> = { left: 11, right: 11.5385 };
@@ -118,12 +127,14 @@ export function buildPiece(side: PieceSide): Piece {
   return {
     cells: coords.map(([x, y], i) => {
       const p = parent[i];
+      const delay =
+        Math.round(SPREAD * Math.pow(gen[i] / maxGen, CURVE)) +
+        SIDE_DELAY[side];
       return {
         x,
         y,
-        delay:
-          Math.round(SPREAD * Math.pow(gen[i] / maxGen, CURVE)) +
-          SIDE_DELAY[side],
+        delay,
+        rewind: MAX_DELAY - delay,
         origin:
           p < 0
             ? "50% 50%"

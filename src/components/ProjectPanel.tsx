@@ -21,8 +21,8 @@ export type Project = {
     adjacent slides. The gutter between them is wide on purpose: it keeps the
     neighbours to a peek at the frame edges, and it's the empty band the
     floating asterisks will later live in. */
-const SLIDE_W = 360;
-const GAP = 300;
+const SLIDE_W = 470;
+const GAP = 260;
 const SLOT = SLIDE_W + GAP;
 
 /**
@@ -45,9 +45,6 @@ export default function ProjectPanel({
   step: number;
 }) {
   const current = index === step;
-  // `step` only ever moves one index at a time, so reaching this index means
-  // the ticket was genuinely arrived at — safe to latch its grow-in.
-  const seen = step >= index;
 
   return (
     <motion.div
@@ -62,11 +59,10 @@ export default function ProjectPanel({
       <FeaturedProject
         title={project.title}
         quote={project.quote}
-        tags={project.tags}
         href={project.href}
         current={current}
       />
-      <Ticket {...project} active={seen} />
+      <Ticket {...project} active={current} />
     </motion.div>
   );
 }

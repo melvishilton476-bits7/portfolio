@@ -95,7 +95,7 @@ export default function CursorFollower({
       <motion.div
         animate={visible ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.9 }}
         transition={{ duration: 0.18, ease: "easeOut" }}
-        className="type-caption flex -translate-x-full -translate-y-1/2 items-center gap-1.5 rounded-card bg-white px-3 py-1.5 whitespace-nowrap text-ink shadow-[0_2px_12px_rgba(0,0,0,0.12)]"
+        className="type-caption flex -translate-x-full -translate-y-1/2 items-center gap-1.5 rounded-card border border-white/40 bg-white/20 px-3 py-1.5 whitespace-nowrap text-white shadow-[0_2px_12px_rgba(0,0,0,0.12)] backdrop-blur-2xl backdrop-saturate-150"
       >
         {label}
         <span aria-hidden>&rarr;</span>

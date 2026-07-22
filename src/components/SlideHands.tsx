@@ -26,7 +26,7 @@ export default function SlideHands() {
         width={480}
         height={640}
         unoptimized
-        className="absolute left-[5%] top-0 h-auto w-[clamp(140px,17vw,240px)] -translate-y-[52%]"
+        className="absolute left-[5%] top-0 h-auto w-[clamp(104px,13vw,180px)] -translate-y-[calc(52%-7px)]"
       />
       <Image
         src="/hands/animated.webp"
@@ -34,7 +34,7 @@ export default function SlideHands() {
         width={480}
         height={640}
         unoptimized
-        className="absolute right-[5%] top-0 h-auto w-[clamp(140px,17vw,240px)] -translate-y-[52%] -scale-x-100"
+        className="absolute right-[5%] top-0 h-auto w-[clamp(104px,13vw,180px)] -translate-y-[calc(52%-7px)] -scale-x-100"
       />
     </div>
   );
