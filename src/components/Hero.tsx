@@ -6,10 +6,18 @@ import StackRow from "./StackRow";
  * Hero — headline, lead, tech-stack row, and the "Take a tour" CTA.
  * The central graphic and stack icons are placeholders pending real assets.
  * Structure kept animation-friendly (stable wrappers) for GSAP later.
+ *
+ * Sticky and behind the Work slab (z-0): it pins to the top and holds still
+ * while "Sights to See" scrolls up and over it like a card being pulled
+ * across. Bounded by the group wrapper in page.tsx, so it unsticks once Work
+ * ends rather than lingering behind later sections.
  */
 export default function Hero() {
   return (
-    <section className="page-container relative pt-24 sm:pt-32" id="top">
+    <section
+      className="page-container sticky top-0 z-0 flex min-h-screen flex-col justify-center pt-24 sm:pt-32"
+      id="top"
+    >
       <div className="mx-auto flex max-w-[720px] flex-col items-center text-center">
         {/* Central hero animation */}
         <Image

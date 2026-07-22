@@ -36,8 +36,24 @@
   --color-muted: #f0f0f0;
   --color-primary: #171717; /* = ink black — drives the tubelight lamp */
 
+  /* ---- Color: featured-project card ------------------------------------ */
+  /* TUNE — sampled by eye from the design reference. Constant across all
+     three projects; only the ticket colour cycles. */
+  --color-panel: #e8ff1a; /* the yellow card body (brighter than accent lime) */
+  --color-tag: #a9c4f5; /* periwinkle tag tabs */
+  --color-clip: #05a1d9; /* paperclip — from the supplied SVG */
+
   /* ---- Radii ------------------------------------------------------------ */
-  /* Intentionally none — the design uses sharp, square corners throughout. */
+  /* Near-none by design: the site is square-cornered throughout. Two
+     deliberate exceptions:
+       --radius-card: the featured-project card's layers take a 4px softening
+         — small enough to read as sharp, enough to keep the stacked panels
+         from looking die-cut.
+       --radius-slab: the "Sights to See" surface that slides up over the
+         hero reads as a physical card being pulled over, so its top corners
+         take a large, unmistakable curve. */
+  --radius-card: 4px;
+  --radius-slab: 40px;
 
   /* ---- Text-selection motif (iOS-style, over "Melvis") ------------------ */
   /* Sampled from the Figma selection element (node 193:110). */

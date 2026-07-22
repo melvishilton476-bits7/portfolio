@@ -1,8 +1,9 @@
 "use client";
 
-import { motion, type Variants } from "framer-motion";
-import Placeholder from "./Placeholder";
+import { motion } from "framer-motion";
+import FeaturedProject from "./FeaturedProject";
 import Ticket from "./Ticket";
+import { traverse } from "@/lib/step-motion";
 
 export type Project = {
   title: string;
@@ -10,36 +11,29 @@ export type Project = {
   color: string;
   darkText?: boolean;
   quote: string;
+  /** Exactly two — they render as the tabs behind the card's top edge. */
+  tags: readonly [string, string];
+  href?: string;
   pieces?: boolean;
 };
 
-/** The transition's own pace — real time and an authored easing curve,
-    decoupled from how fast or slow the scroll gesture that triggered it was. */
-export const STEP_TRANSITION = { duration: 0.85, ease: [0.65, 0, 0.35, 1] } as const;
-
-/** Each panel-half rests in one of three states as `step` moves past its
-    index: not yet arrived (below the fold), the current front card, or
-    already shown and sent off to its side. Reversing `step` re-targets the
-    same variants, so scrolling back up naturally undoes the motion — framer
-    interpolates from wherever the value currently sits, forward or back. */
-const leftVariants: Variants = {
-  below: { x: 0, y: "70vh", scale: 1, filter: "blur(0px)" },
-  current: { x: 0, y: "0vh", scale: 1, filter: "blur(0px)" },
-  past: { x: "-55vw", y: "0vh", scale: 0.85, filter: "blur(3px)" },
-};
-const rightVariants: Variants = {
-  below: { x: 0, y: "70vh", scale: 1, filter: "blur(0px)" },
-  current: { x: 0, y: "0vh", scale: 1, filter: "blur(0px)" },
-  past: { x: "55vw", y: "0vh", scale: 0.85, filter: "blur(3px)" },
-};
+/** Slide width (the featured card) and the centre-to-centre distance between
+    adjacent slides. The gutter between them is wide on purpose: it keeps the
+    neighbours to a peek at the frame edges, and it's the empty band the
+    floating asterisks will later live in. */
+const SLIDE_W = 360;
+const GAP = 300;
+const SLOT = SLIDE_W + GAP;
 
 /**
- * One project's placeholder + ticket + quote, as a layer in the pinned
- * carousel. `step` is which project currently owns the front — this panel
- * is "below" until `step` reaches its `index`, "current" while it holds it,
- * and "past" (exited left/right, placeholder and ticket splitting apart)
- * once `step` moves on. No opacity fades anywhere: motion is purely
- * positional, on and off the way it arrived.
+ * One project as a slide in the horizontal filmstrip: its featured card
+ * stacked directly over its ticket, the pair moving together as a unit.
+ *
+ * Every slide sits centred in the frame and is pushed sideways by its distance
+ * from `step` — `(index - step)` slots — so the current project holds the
+ * centre, the previous one peeks off the left edge and the next off the right.
+ * When `step` changes, all slides translate by one slot on the same easing,
+ * conveying the strip right-to-left. No depth or fade: slides only move.
  */
 export default function ProjectPanel({
   project,
@@ -50,37 +44,29 @@ export default function ProjectPanel({
   index: number;
   step: number;
 }) {
-  const rest = index < step ? "past" : index === step ? "current" : "below";
-  // `step` only ever moves one index at a time, so reaching or passing this
-  // panel's index means it was genuinely shown — safe to latch permanently.
-  const active = step >= index;
   const current = index === step;
+  // `step` only ever moves one index at a time, so reaching this index means
+  // the ticket was genuinely arrived at — safe to latch its grow-in.
+  const seen = step >= index;
 
   return (
-    <div
-      className="absolute inset-0 grid grid-cols-2 items-center gap-16"
+    <motion.div
+      className="absolute top-[calc(50%-2px)] left-1/2 flex -translate-x-1/2 -translate-y-1/2 flex-col items-center gap-7"
+      style={{ width: SLIDE_W }}
+      animate={{ x: (index - step) * SLOT }}
+      transition={traverse}
+      // Only the centred slide is interactive; the peeking neighbours are
+      // decorative until they arrive.
       inert={!current}
     >
-      <motion.div
-        variants={leftVariants}
-        animate={rest}
-        transition={STEP_TRANSITION}
-        className="mx-auto flex w-full max-w-[494px] items-center justify-center"
-      >
-        <Placeholder label="Featured project" ratio={493 / 256} variant="dark" />
-      </motion.div>
-
-      <motion.div
-        variants={rightVariants}
-        animate={rest}
-        transition={STEP_TRANSITION}
-        className="flex flex-col items-center gap-4"
-      >
-        <Ticket {...project} active={active} />
-        <blockquote className="type-label max-w-[326px] text-center font-normal leading-snug text-ink">
-          &ldquo;{project.quote}&rdquo;
-        </blockquote>
-      </motion.div>
-    </div>
+      <FeaturedProject
+        title={project.title}
+        quote={project.quote}
+        tags={project.tags}
+        href={project.href}
+        current={current}
+      />
+      <Ticket {...project} active={seen} />
+    </motion.div>
   );
 }

@@ -38,7 +38,7 @@ export default function Ticket({
   const ink = darkText ? "text-ink" : "text-white";
 
   return (
-    <GrowOnView className="relative w-full max-w-[232px]" active={active}>
+    <GrowOnView className="relative w-full max-w-[204px]" active={active}>
       {pieces && (
         <>
           <PuzzlePiece side="left" />

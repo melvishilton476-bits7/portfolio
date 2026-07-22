@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useEffect, useState } from "react"
-import { motion } from "framer-motion"
+import { motion, useScroll, useMotionValueEvent } from "framer-motion"
 import Link from "next/link"
 import { LucideIcon } from "lucide-react"
 import { cn } from "@/lib/utils"
@@ -20,6 +20,7 @@ interface NavBarProps {
 export function NavBar({ items, className }: NavBarProps) {
   const [activeTab, setActiveTab] = useState(items[0].name)
   const [isMobile, setIsMobile] = useState(false)
+  const [visible, setVisible] = useState(true)
 
   useEffect(() => {
     const handleResize = () => {
@@ -31,10 +32,27 @@ export function NavBar({ items, className }: NavBarProps) {
     return () => window.removeEventListener("resize", handleResize)
   }, [])
 
+  // Reveal on scroll-up, hide on scroll-down — always shown at the very top.
+  // (The Aceternity FloatingNav behaviour, adapted to our nav.)
+  const { scrollYProgress } = useScroll()
+  useMotionValueEvent(scrollYProgress, "change", (current) => {
+    const direction = current - (scrollYProgress.getPrevious() ?? 0)
+    setVisible(current < 0.05 || direction < 0)
+  })
+
+  // The bar hides by sliding off its own edge: up on desktop (pinned top),
+  // down on mobile (pinned bottom). Horizontal centring stays on the CSS
+  // `translate` utility, so framer's `y` composes without fighting it.
+  const hiddenY = isMobile ? 96 : -96
+
   return (
-    <div
+    <motion.div
+      initial={false}
+      animate={{ y: visible ? 0 : hiddenY, opacity: visible ? 1 : 0 }}
+      transition={{ duration: 0.25, ease: "easeInOut" }}
       className={cn(
         "fixed bottom-0 sm:bottom-auto sm:top-0 left-1/2 -translate-x-1/2 z-50 mb-6 sm:mb-0 sm:pt-6",
+        !visible && "pointer-events-none",
         className,
       )}
     >
@@ -80,6 +98,6 @@ export function NavBar({ items, className }: NavBarProps) {
           )
         })}
       </div>
-    </div>
+    </motion.div>
   )
 }
