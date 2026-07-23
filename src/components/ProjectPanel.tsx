@@ -1,9 +1,15 @@
 "use client";
 
+import { useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import FeaturedProject from "./FeaturedProject";
 import Ticket from "./Ticket";
-import { traverse } from "@/lib/step-motion";
+import {
+  traverse,
+  arrive,
+  ANTICIPATION_PX,
+  OVERSHOOT_PX,
+} from "@/lib/step-motion";
 
 export type Project = {
   title: string;
@@ -46,12 +52,52 @@ export default function ProjectPanel({
 }) {
   const current = index === step;
 
+  // The step this slide last rendered at, so we know which way the strip is
+  // travelling and can wind back the *opposite* way before the sweep. Updated
+  // after commit, so during the render where `step` changes it still holds the
+  // previous value. The scroll lock keeps a step from firing mid-slide, so the
+  // strip is always settled at `prevX` by the time the next step arrives.
+  const prevStepRef = useRef(step);
+  useEffect(() => {
+    prevStepRef.current = step;
+  }, [step]);
+  const prevStep = prevStepRef.current;
+
+  const target = (index - step) * SLOT;
+  const prevX = (index - prevStep) * SLOT;
+  const travelSign = Math.sign(target - prevX); // -1 left, +1 right, 0 still
+  const moving = travelSign !== 0;
+
+  // With a travel direction, play the full gesture as a keyframed `x`: hold at
+  // the current spot, recoil `ANTICIPATION_PX` against the travel, sweep all
+  // the way across and `OVERSHOOT_PX` past the landing, then settle back to
+  // `target`. On the first paint (no direction) it's just the plain target.
+  const x = moving
+    ? [
+        prevX,
+        prevX - travelSign * ANTICIPATION_PX,
+        target + travelSign * OVERSHOOT_PX,
+        target,
+      ]
+    : target;
+
   return (
     <motion.div
       className="absolute top-[calc(50%-2px)] left-1/2 flex -translate-x-1/2 -translate-y-1/2 flex-col items-center gap-7"
       style={{ width: SLIDE_W }}
-      animate={{ x: (index - step) * SLOT }}
-      transition={traverse}
+      // Off-stage neighbours sit smaller and softly blurred so they read as
+      // pushed back; the centred slide is full size and sharp. `scale` writes
+      // `transform`, which composes with the `-translate-x-1/2` centring
+      // utility (a `translate`), so the two don't fight. `scale`/`filter` keep
+      // the plain `traverse` easing while `x` plays the wind-back → sweep →
+      // overshoot → settle timeline, so a neighbour still sharpens and grows
+      // into place as it slides to centre, and softens as it leaves.
+      animate={{
+        x,
+        scale: current ? 1 : 0.88,
+        filter: current ? "blur(0px)" : "blur(3px)",
+      }}
+      transition={{ x: moving ? arrive : traverse, scale: traverse, filter: traverse }}
       // Only the centred slide is interactive; the peeking neighbours are
       // decorative until they arrive.
       inert={!current}

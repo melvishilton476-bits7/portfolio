@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useRef, useState } from "react"
 import { motion, useScroll, useMotionValueEvent } from "framer-motion"
 import Link from "next/link"
 import { LucideIcon } from "lucide-react"
@@ -32,12 +32,34 @@ export function NavBar({ items, className }: NavBarProps) {
     return () => window.removeEventListener("resize", handleResize)
   }, [])
 
-  // Reveal on scroll-up, hide on scroll-down — always shown at the very top.
-  // (The Aceternity FloatingNav behaviour, adapted to our nav.)
-  const { scrollYProgress } = useScroll()
-  useMotionValueEvent(scrollYProgress, "change", (current) => {
-    const direction = current - (scrollYProgress.getPrevious() ?? 0)
-    setVisible(current < 0.05 || direction < 0)
+  // Reveal on scroll-up, hide on scroll-down — always shown near the very top.
+  // Unlike the raw FloatingNav behaviour, a single pixel of upward motion is
+  // NOT enough: we accumulate upward distance (in px) and only reveal once it
+  // crosses REVEAL_PX, so a stray jitter or momentum bounce is ignored and it
+  // takes a deliberate flick up to bring the bar in. Any downward scroll hides
+  // it immediately and resets the accumulator.
+  const REVEAL_PX = 80
+  const TOP_PX = 40
+  const upAccum = useRef(0)
+  const { scrollY } = useScroll()
+  useMotionValueEvent(scrollY, "change", (current) => {
+    const delta = current - (scrollY.getPrevious() ?? 0)
+
+    if (current < TOP_PX) {
+      upAccum.current = 0
+      setVisible(true)
+      return
+    }
+
+    if (delta > 0) {
+      // Scrolling down: hide and forget any banked upward distance.
+      upAccum.current = 0
+      setVisible(false)
+    } else if (delta < 0) {
+      // Scrolling up: bank the distance; reveal only past the threshold.
+      upAccum.current += -delta
+      if (upAccum.current > REVEAL_PX) setVisible(true)
+    }
   })
 
   // The bar hides by sliding off its own edge: up on desktop (pinned top),
