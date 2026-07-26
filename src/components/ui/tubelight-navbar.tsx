@@ -38,15 +38,42 @@ export function NavBar({ items, className }: NavBarProps) {
   // crosses REVEAL_PX, so a stray jitter or momentum bounce is ignored and it
   // takes a deliberate flick up to bring the bar in. Any downward scroll hides
   // it immediately and resets the accumulator.
+  //
+  // Once revealed away from the top, the bar auto-hides after IDLE_MS of no
+  // scrolling — otherwise it lingers forever the moment you stop. Every scroll
+  // reschedules the timer, hovering the bar pauses it (so it can't vanish out
+  // from under a click), and near the top it stays pinned with no timer.
   const REVEAL_PX = 80
   const TOP_PX = 40
+  const IDLE_MS = 5000
   const upAccum = useRef(0)
+  const idleTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const hovering = useRef(false)
   const { scrollY } = useScroll()
+
+  const clearIdle = () => {
+    if (idleTimer.current) {
+      clearTimeout(idleTimer.current)
+      idleTimer.current = null
+    }
+  }
+  const scheduleIdle = () => {
+    clearIdle()
+    idleTimer.current = setTimeout(() => {
+      // Don't disappear while the pointer is on the bar; onMouseLeave will
+      // restart the countdown once the cursor moves off.
+      if (hovering.current) return
+      setVisible(false)
+    }, IDLE_MS)
+  }
+
   useMotionValueEvent(scrollY, "change", (current) => {
     const delta = current - (scrollY.getPrevious() ?? 0)
 
     if (current < TOP_PX) {
+      // Pinned open near the top — no idle countdown here.
       upAccum.current = 0
+      clearIdle()
       setVisible(true)
       return
     }
@@ -54,13 +81,20 @@ export function NavBar({ items, className }: NavBarProps) {
     if (delta > 0) {
       // Scrolling down: hide and forget any banked upward distance.
       upAccum.current = 0
+      clearIdle()
       setVisible(false)
     } else if (delta < 0) {
-      // Scrolling up: bank the distance; reveal only past the threshold.
+      // Scrolling up: bank the distance; reveal only past the threshold, then
+      // (re)arm the idle timer so a pause after revealing hides it again.
       upAccum.current += -delta
-      if (upAccum.current > REVEAL_PX) setVisible(true)
+      if (upAccum.current > REVEAL_PX) {
+        setVisible(true)
+        scheduleIdle()
+      }
     }
   })
+
+  useEffect(() => clearIdle, [])
 
   // The bar hides by sliding off its own edge: up on desktop (pinned top),
   // down on mobile (pinned bottom). Horizontal centring stays on the CSS
@@ -72,6 +106,14 @@ export function NavBar({ items, className }: NavBarProps) {
       initial={false}
       animate={{ y: visible ? 0 : hiddenY, opacity: visible ? 1 : 0 }}
       transition={{ duration: 0.25, ease: "easeInOut" }}
+      onMouseEnter={() => {
+        hovering.current = true
+        clearIdle()
+      }}
+      onMouseLeave={() => {
+        hovering.current = false
+        if (scrollY.get() >= TOP_PX) scheduleIdle()
+      }}
       className={cn(
         "fixed bottom-0 sm:bottom-auto sm:top-0 left-1/2 -translate-x-1/2 z-50 mb-6 sm:mb-0 sm:pt-6",
         !visible && "pointer-events-none",

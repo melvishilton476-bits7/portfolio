@@ -1,5 +1,9 @@
-import Placeholder from "./Placeholder";
+// import Vase from "./Vase"; // commented out for now
 import Chair from "./Chair";
+import Fire from "./Fire";
+import Fireplace from "./Fireplace";
+import Fumes from "./Fumes";
+import CodeMotes from "./CodeMotes";
 
 /**
  * "Come have a seat!" — contact section. Dark form on the left, playful
@@ -59,28 +63,49 @@ export default function Contact() {
           </div>
         </form>
 
-        {/* Illustrations — campfire + chair resting on a horizon line, the
-            way the section reads: "come have a seat" by the fire. The column
-            aligns to the bottom of the grid row (items-end on the parent) so
-            the horizon line sits level with the base of the form box, the
-            pieces standing on the same ground line. Campfire art is still a
-            placeholder pending the real asset. */}
+        {/* Illustrations — a flower vase + chair resting on a horizon line,
+            the way the section reads: "come have a seat." The column aligns to
+            the bottom of the grid row (items-end on the parent) so the horizon
+            line sits level with the base of the form box, the pieces standing
+            on the same ground line. The vase's bouquet breathes and its blooms
+            pulse gently (Vase.tsx + globals.css → VASE). */}
         <div className="relative w-full">
           <div className="flex items-end justify-center gap-6 sm:gap-10">
-            <Placeholder
-              label="Campfire"
-              ratio={1}
-              maxWidth={180}
-              variant="neutral"
-              className="shrink-0"
-            />
+            {/* Commented out for now.
+            <Vase className="h-auto w-[clamp(140px,18vw,210px)] shrink-0" />
+            */}
+            {/* Campfire: the looping Lottie flames (made in AE) burning behind
+                a smaller wood-log pile on a grey stone hearth (the user's own
+                illustration, texture stripped to clean flat shapes). The logs
+                sit in front of the flames so the fire reads as coming from
+                within the pile rather than floating over it. */}
+            <div className="relative h-[clamp(95px,12vw,145px)] w-[clamp(130px,17vw,200px)] shrink-0">
+              <Fire className="absolute bottom-[6%] left-1/2 z-0 h-auto w-[72%] -translate-x-1/2" />
+              <Fireplace className="absolute bottom-0 left-1/2 z-10 h-auto w-[58%] -translate-x-1/2" />
+              {/* Smoke, on top of everything and free to drift out past the
+                  container's top edge (nothing here clips). */}
+              <Fumes className="pointer-events-none absolute inset-0 z-20" />
+              {/* Code glyphs rising with the smoke — the "engineer" wink. */}
+              <CodeMotes className="pointer-events-none absolute inset-0 z-30" />
+            </div>
             <Chair
               color="#3FA35C"
               className="h-auto w-[clamp(240px,30vw,380px)] shrink-0"
             />
           </div>
-          {/* The ground the pieces stand on — snug with the form's bottom. */}
-          <div aria-hidden className="h-px w-full bg-ink/15" />
+          {/* The ground the pieces stand on — snug with the form's bottom. The
+              left end stays at the illustration column; the right end runs full
+              bleed to the viewport edge. That extension = the container's right
+              padding + its centring margin (0 until the viewport passes the
+              1280px frame), so the right edge lands exactly on the viewport. */}
+          <div
+            aria-hidden
+            className="h-px bg-ink/15"
+            style={{
+              width:
+                "calc(100% + clamp(1.25rem, 5vw, 4rem) + max(0px, (100vw - var(--container-page)) / 2))",
+            }}
+          />
         </div>
       </div>
     </section>

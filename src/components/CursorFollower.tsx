@@ -95,7 +95,14 @@ export default function CursorFollower({
       <motion.div
         animate={visible ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.9 }}
         transition={{ duration: 0.18, ease: "easeOut" }}
-        className="type-caption flex -translate-x-full -translate-y-1/2 items-center gap-1.5 rounded-card border border-white/40 bg-white/20 px-3 py-1.5 whitespace-nowrap text-white shadow-[0_2px_12px_rgba(0,0,0,0.12)] backdrop-blur-2xl backdrop-saturate-150"
+        // A DARK pill, not white glass. The label rides the pointer inside a
+        // transformed / z-indexed wrapper, and each of those creates a stacking
+        // context that isolates `mix-blend-mode` from the page — so a blend-based
+        // "adapt to the backdrop" trick can't see the page and fails. A dark pill
+        // keeps the white text legible everywhere the label overhangs: on the
+        // dark card (btn-dark reads a touch lighter than the ink slab) and out on
+        // the white page (an obvious dark pill).
+        className="type-caption flex -translate-x-full -translate-y-1/2 items-center gap-1.5 rounded-card border border-white/20 bg-btn-dark/80 px-3 py-1.5 whitespace-nowrap text-white shadow-[0_4px_16px_rgba(0,0,0,0.28)] backdrop-blur-md backdrop-saturate-150"
       >
         {label}
         <span aria-hidden>&rarr;</span>

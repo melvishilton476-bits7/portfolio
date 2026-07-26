@@ -108,6 +108,11 @@
    ========================================================================== */
 :root {
   color-scheme: light;
+  /* Guard the one-sided full-bleed elements (e.g. the Contact horizon line)
+     against a scrollbar-width sliver of horizontal scroll. `clip` (not
+     `hidden`) suppresses the overflow without creating a scroll container, so
+     the sticky filmstrip and scroll-driven nav keep working. */
+  overflow-x: clip;
 }
 
 body {
@@ -115,6 +120,7 @@ body {
   background: var(--color-background);
   color: var(--color-ink);
   -webkit-font-smoothing: antialiased;
+  overflow-x: clip;
 }
 
 /* ============================================================================
@@ -181,6 +187,218 @@ body {
   max-width: var(--container-page);
   margin-inline: auto;
   padding-inline: clamp(1.25rem, 5vw, 4rem);
+}
+
+/* ============================================================================
+   SLIDE HANDS
+   The draped hands over the "Sights to See" slab carry an animated
+   roughen-edges "boil" (feTurbulence + feDisplacementMap in Hand.tsx). Drop
+   the whole filter for anyone who prefers reduced motion, leaving the clean
+   static hand. `filter: none` (CSS) overrides the SVG `filter` attribute.
+   ========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  .hand-boil,
+  .tl-boil,
+  .fireplace-boil {
+    filter: none;
+  }
+}
+
+/* ============================================================================
+   VASE
+   Two composed ambient loops on the flower-vase illustration (Vase.tsx).
+
+   1. Breath — the whole plant (stems + blooms) scales gently from its base
+      (the vase mouth) so the bouquet rises and settles as one unit. scaleY up
+      + a hair of scaleX in reads as a breath rather than a camera zoom, and
+      keeping stems + blooms in one group means nothing detaches at the seams.
+
+   2. Bloom pulse — each flower block squeezes on its own height, around its own
+      centre (transform-box: fill-box resolves the origin against each path's
+      own bbox, not the SVG canvas). Per-bloom negative animationDelay (set
+      inline in Vase.tsx) staggers them so the cluster shimmers organically.
+
+   Both run a slow ~4s cycle on a heavy ease-in-out so the motion decelerates
+   hard and pauses at each end. prefers-reduced-motion freezes everything flat.
+   ========================================================================== */
+.vase-plant {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  animation: vase-breathe 4s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+}
+.vase-bloom {
+  transform-box: fill-box;
+  transform-origin: 50% 50%;
+  animation: vase-bloom-pulse 4s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+}
+@keyframes vase-breathe {
+  0%,
+  100% {
+    transform: scaleY(1) scaleX(1);
+  }
+  50% {
+    transform: scaleY(1.03) scaleX(0.992);
+  }
+}
+@keyframes vase-bloom-pulse {
+  0%,
+  100% {
+    transform: scaleY(1);
+  }
+  50% {
+    transform: scaleY(0.9);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .vase-plant,
+  .vase-bloom {
+    animation: none;
+  }
+}
+
+/* ============================================================================
+   FUMES
+   Squares of smoke coming off the Contact campfire (Fumes.tsx). Two loops per
+   puff, split across nested elements so neither has to share a `transform`:
+
+   1. Rise — the puff climbs `--fume-rise`, scaling down to a quarter size and
+      fading out on the way. Linear, so it reads as a steady drift rather than
+      something thrown. The fade comes up fast off the flame and trails away
+      slowly, so the square is faintest exactly where it's smallest.
+
+   2. Sway — the square itself slides `--fume-sway` either side of centre on
+      `alternate` + ease-in-out, which traces a sine: the wave in the path. Its
+      duration is set per-fume in Fumes.tsx and doesn't divide into the rise, so
+      each trip up crests at a different height.
+
+   Geometry is in em off the font-size below, so the whole plume scales with the
+   viewport the same way the campfire's clamp() sizing does. A frozen square
+   hanging in mid-air means nothing, so reduced motion hides the plume outright.
+   ========================================================================== */
+.fumes {
+  font-size: clamp(0.625rem, 1.2vw, 0.9375rem); /* 10px → 15px: the em base */
+}
+.fume {
+  position: absolute;
+  bottom: var(--fume-y);
+  display: block;
+  /* left is the square's own left edge — pull back by half to centre it on x. */
+  margin-left: calc(var(--fume-size) / -2);
+  animation: fume-rise linear infinite; /* duration + delay: Fumes.tsx */
+  will-change: transform, opacity;
+}
+.fume-square {
+  display: block;
+  width: var(--fume-size);
+  height: var(--fume-size);
+  background: #f5a524; /* warm yellow-orange — embers, not soot */
+  opacity: 0.32; /* the puff's own tint; .fume's fade multiplies into it */
+  animation: fume-sway ease-in-out infinite alternate;
+  will-change: transform;
+}
+@keyframes fume-rise {
+  0% {
+    transform: translateY(0) scale(1);
+    opacity: 0;
+  }
+  14% {
+    opacity: 1;
+  }
+  65% {
+    opacity: 0.5;
+  }
+  100% {
+    transform: translateY(calc(var(--fume-rise) * -1)) scale(0.25);
+    opacity: 0;
+  }
+}
+@keyframes fume-sway {
+  from {
+    transform: translateX(calc(var(--fume-sway) * -1));
+  }
+  to {
+    transform: translateX(var(--fume-sway));
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .fumes {
+    display: none;
+  }
+}
+
+/* ============================================================================
+   CODEMOTES
+   Code glyphs rising off the Contact campfire beside the smoke (CodeMotes.tsx),
+   the "designer who can engineer" line taken literally. They reuse the smoke's
+   motion outright — `fume-rise` + `fume-sway` and the same `--fume-*` vars — so
+   a code mote climbs, sways, shrinks and fades exactly like a puff; only what
+   rides that motion differs.
+
+   The scramble is a slot machine with the drum hidden. `.codemote-window` is a
+   one-cell-tall viewport clipping `.codemote-strip`, a column of every glyph.
+   `code-flip` steps the strip up exactly one cell per step (steps(G)), so the
+   drum never appears to spin — the visible character just swaps. Each mote
+   rotates its glyph order (CodeMotes.tsx) and runs its own flip rate + offset,
+   so the plume never reads as one synced ticker.
+
+   Positioning/size note: `.codemote` keeps the wrapper's font-size so the
+   `--fume-*` em geometry lands identically to the smoke; the small glyph size
+   is pushed down onto `.codemote-window` alone, so shrinking the type never
+   drags the flight path in with it.
+   ========================================================================== */
+.codemotes {
+  font-size: clamp(0.625rem, 1.2vw, 0.9375rem); /* same em base as .fumes */
+}
+.codemote {
+  position: absolute;
+  bottom: var(--fume-y);
+  width: 1em;
+  margin-left: -0.5em; /* centre the glyph column on x */
+  text-align: center;
+  font-family: var(--font-mono);
+  font-weight: 600; /* holds up at tiny sizes */
+  color: var(--color-accent);
+  animation: fume-rise linear infinite; /* duration + delay: CodeMotes.tsx */
+  will-change: transform, opacity;
+}
+.codemote-sway {
+  display: block;
+  animation: fume-sway ease-in-out infinite alternate;
+  will-change: transform;
+}
+.codemote-window {
+  display: block;
+  height: 1em; /* one cell tall — em is now the glyph size set inline */
+  overflow: hidden;
+  opacity: 0.85; /* base tint; .codemote's fade multiplies into it */
+}
+.codemote-strip {
+  display: flex;
+  flex-direction: column;
+  --cell: 1em; /* one glyph's height, in the window's (glyph) em */
+  animation: code-flip infinite; /* duration + steps() + delay: CodeMotes.tsx */
+  will-change: transform;
+}
+.codemote-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: var(--cell);
+  line-height: var(--cell);
+}
+/* Scroll the strip up exactly G cells, in G steps — one glyph per jump. */
+@keyframes code-flip {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(calc(var(--cell) * var(--code-count) * -1));
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .codemotes {
+    display: none;
+  }
 }
 
 /* ============================================================================
