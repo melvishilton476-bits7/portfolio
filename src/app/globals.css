@@ -69,13 +69,19 @@
   --font-ui: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
 
   /* ---- Type scale (fluid; desktop source sizes noted) ------------------- */
-  /* Display headline — source 54px, tracking -0.08em */
+  /* Display headline — the single largest title on the site, reserved for the
+     hero <h1>. Nothing else uses this size; every other header tops out at
+     --text-heading below, so the hero always reads as the tallest. Source 54px,
+     tracking -0.08em. */
   --text-display: clamp(2.25rem, 1.4rem + 4.2vw, 3.375rem);
   --text-display--line-height: 1.02;
   --text-display--letter-spacing: -0.08em;
 
-  /* Section heading — "SIGHTS to SEE", "Come have a seat!" */
-  --text-heading: clamp(2rem, 1.3rem + 3.5vw, 3.375rem);
+  /* Section heading — "SIGHTS to SEE", "Come have a seat!", the footer sign-off.
+     Shares the display face and fluid curve but caps ~15% below --text-display
+     (2.875rem vs 3.375rem at desktop), so section titles sit proportionately
+     under the hero instead of matching it at the top of the range. */
+  --text-heading: clamp(2rem, 1.3rem + 3.5vw, 2.875rem);
   --text-heading--line-height: 1.05;
   --text-heading--letter-spacing: -0.06em;
 
@@ -190,6 +196,277 @@ body {
 }
 
 /* ============================================================================
+   HERO ACCENTS
+   "Blueprint" decoration behind the hero — a faint grid (four full-height
+   verticals + two full-bleed rules bracketing the headline), a periwinkle/amber
+   scatter across both upper corners, a small leader group right of the headline,
+   and grey crop-mark brackets around the CTA. Ported from the Figma hero frame
+   (node 364:4992); each piece is placed by HeroAccents.tsx on a fixed reference
+   frame the exact size of that design.
+
+   Geometry: .hero-accents is a full-bleed, overflow-clipped layer (centred in
+   the viewport via translateX(-50%), 100vw wide; the page clips horizontal
+   overflow so 100vw adds no scrollbar — same trick the grid used). Inside it,
+   .hero-accents-frame is the 1280×824 design canvas, centred so every piece's
+   px position matches Figma; --accent-shift nudges the whole canvas vertically
+   to line the bracketing rules up with the live headline. Purely decorative
+   (aria-hidden, pointer-events:none, z-index:-1) so copy paints on top. */
+.hero-accents {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 100vw;
+  transform: translateX(-50%);
+  overflow: hidden;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.hero-accents-frame {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 1280px;
+  height: 824px;
+  /* Drop the canvas so the two rules straddle the live headline (its centre
+     sits below the section centre once the chair, greeting and lead are stacked
+     above/below it). Calibrated against the rendered headline box. */
+  --accent-shift: 70px;
+  transform: translate(-50%, calc(-50% + var(--accent-shift)));
+}
+
+/* Below lg the side gutters collapse: the gutter pieces would crowd the copy.
+   Drop the whole decorative layer — the hero stands on its own on narrow
+   screens (the design is desktop-first). */
+@media (max-width: 63.99rem) {
+  .hero-accents {
+    display: none;
+  }
+}
+
+/* --- Line draw-in on load -------------------------------------------------
+   The blueprint lines draw themselves on first paint. The verticals go first
+   (left pair down from the top, right pair up from the bottom), then the two
+   horizontal rules converge from both side edges. Each line scales along its
+   own axis from a chosen edge (transform-origin, set inline). fill-mode:both
+   holds the collapsed start through the delay, so nothing flashes before its
+   turn. */
+@keyframes accent-grow-x {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
+}
+@keyframes accent-grow-y {
+  from { transform: scaleY(0); }
+  to   { transform: scaleY(1); }
+}
+/* After a line finishes drawing it keeps its dashes flowing — a seamless
+   "marching ants" loop. One --march step = one dash period (18px), so the loop
+   is invisible on repeat. --march sign sets the flow direction per line (down/up
+   for verticals via the y offset, right/left for horizontals via the x). */
+@keyframes accent-march-y {
+  from { background-position: 0 0; }
+  to   { background-position: 0 var(--march); }
+}
+@keyframes accent-march-x {
+  from { background-position: 0 0; }
+  to   { background-position: var(--march) 0; }
+}
+/* Each line runs two animations: the one-shot draw, then (delayed until the draw
+   ends) the endless march in the same direction. */
+.accent-vline {
+  animation:
+    accent-grow-y 1.3s cubic-bezier(0.16, 1, 0.3, 1) 0.3s both,
+    accent-march-y 1.1s linear 1.6s infinite;
+}
+.accent-hline {
+  animation:
+    accent-grow-x 1.4s cubic-bezier(0.16, 1, 0.3, 1) 1.5s both,
+    accent-march-x 1.1s linear 2.9s infinite;
+}
+/* --- Bar edge-resize (the elongated blocks) --------------------------------
+   Ported from the Kepler reference bar: the shape resizes in ONE dimension by
+   moving its two ends in sequence — anchor one edge and ease the other OUT,
+   hold, then anchor that edge and ease the first one IN — then settle back.
+   It's driven by clip-path insets so layout never reflows: the element is sized
+   BAR_EXT px larger than its resting look and clipped back to rest at 0%/100%
+   (base clip set inline). Per-keyframe easing gives the ease-out extend and
+   eased reflow; the long holds + per-element delays/durations keep it sparse.
+   `-r` extends the RIGHT edge (extra room on the right), `-l` the LEFT. */
+@keyframes accent-bar-r {
+  0%, 34%   { clip-path: inset(0 8px 0 0); animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1); }
+  50%       { clip-path: inset(0 0 0 0);   animation-timing-function: linear; }               /* right edge extended */
+  64%       { clip-path: inset(0 0 0 0);   animation-timing-function: cubic-bezier(0.33, 1, 0.68, 1); } /* hold */
+  78%       { clip-path: inset(0 0 0 5px); animation-timing-function: cubic-bezier(0.33, 1, 0.68, 1); } /* left edge reflows in */
+  92%, 100% { clip-path: inset(0 8px 0 0); }                                                   /* settle back */
+}
+@keyframes accent-bar-l {
+  0%, 34%   { clip-path: inset(0 0 0 8px); animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1); }
+  50%       { clip-path: inset(0 0 0 0);   animation-timing-function: linear; }               /* left edge extended */
+  64%       { clip-path: inset(0 0 0 0);   animation-timing-function: cubic-bezier(0.33, 1, 0.68, 1); } /* hold */
+  78%       { clip-path: inset(0 5px 0 0); animation-timing-function: cubic-bezier(0.33, 1, 0.68, 1); } /* right edge reflows in */
+  92%, 100% { clip-path: inset(0 0 0 8px); }                                                   /* settle back */
+}
+.accent-bar-r {
+  animation:
+    accent-enter 0.5s cubic-bezier(0.16, 1, 0.3, 1) var(--enter, 0.6s) both,
+    accent-bar-r var(--loop-dur, 7s) linear calc(var(--enter, 0.6s) + 0.5s) infinite;
+}
+.accent-bar-l {
+  animation:
+    accent-enter 0.5s cubic-bezier(0.16, 1, 0.3, 1) var(--enter, 0.6s) both,
+    accent-bar-l var(--loop-dur, 7s) linear calc(var(--enter, 0.6s) + 0.5s) infinite;
+}
+
+/* --- Flicker + settle (small squares & amber ticks) ------------------------
+   The piece is normally at rest; sparsely it blinks (opacity stutters off/on a
+   couple of times, steps() = hard cuts) and reappears nudged a few px out of
+   place, then EASES back into position. Two variants (different nudge + phase)
+   plus inline delays keep them from syncing. */
+/* Glitch jitters are constrained to a single axis: flicker-a nudges only
+   horizontally, flicker-b only vertically — no diagonal drift. */
+@keyframes accent-flicker-a {
+  0%, 44%   { opacity: 1; transform: translate(0, 0); }
+  45%       { opacity: 0.12; transform: translate(3px, 0); animation-timing-function: steps(1); }
+  47%       { opacity: 1;                                  animation-timing-function: steps(1); }
+  48%       { opacity: 0.4;                                animation-timing-function: steps(1); }
+  49%       { opacity: 1; transform: translate(3px, 0);    animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1); }
+  66%       { transform: translate(0, 0); }
+  100%      { opacity: 1; transform: translate(0, 0); }
+}
+@keyframes accent-flicker-b {
+  0%, 27%   { opacity: 1; transform: translate(0, 0); }
+  28%       { opacity: 0.1; transform: translate(0, 2px); animation-timing-function: steps(1); }
+  30%       { opacity: 1;                                  animation-timing-function: steps(1); }
+  31%       { opacity: 0.5;                                animation-timing-function: steps(1); }
+  32%       { opacity: 1; transform: translate(0, 2px);    animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1); }
+  50%       { transform: translate(0, 0); }
+  100%      { opacity: 1; transform: translate(0, 0); }
+}
+.accent-flicker-a {
+  animation:
+    accent-enter 0.5s cubic-bezier(0.16, 1, 0.3, 1) var(--enter, 0.6s) both,
+    accent-flicker-a 7.5s linear calc(var(--enter, 0.6s) + 0.5s) infinite;
+}
+.accent-flicker-b {
+  animation:
+    accent-enter 0.5s cubic-bezier(0.16, 1, 0.3, 1) var(--enter, 0.6s) both,
+    accent-flicker-b 6.5s linear calc(var(--enter, 0.6s) + 0.5s) infinite;
+}
+
+/* --- First-load entrance ---------------------------------------------------
+   On first paint every decorative block scales+fades up into place, staggered
+   by --enter (set inline per element) so the scatter assembles as a cascade
+   while the grid lines draw. The looping animations above chain on right after
+   (their delay = --enter + the 0.5s entrance). Steady (non-looping) blocks and
+   the registration mark just get the entrance; the thin dashed leader fades
+   only (scaling a hairline looks wrong). */
+@keyframes accent-enter {
+  0%   { opacity: 0; transform: scale(0.3); }
+  70%  { opacity: 1; transform: scale(1.08); }
+  100% { opacity: 1; transform: scale(1); }
+}
+@keyframes accent-enter-fade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+.accent-enter { animation: accent-enter 0.5s cubic-bezier(0.16, 1, 0.3, 1) var(--enter, 0.6s) both; }
+.accent-enter-fade { animation: accent-enter-fade 0.5s ease var(--enter, 0.6s) both; }
+
+/* Horizontal slide-and-land entrance: the element travels in from the left,
+   moves ahead a touch past its resting x (the overshoot), then settles back to
+   translateX(0) — landing exactly on its placed corner position. Horizontal
+   only, so the movement stays on one axis. */
+@keyframes accent-land-x {
+  0%   { opacity: 0; transform: translateX(-26px); }
+  70%  { opacity: 1; transform: translateX(3px); }
+  100% { opacity: 1; transform: translateX(0); }
+}
+.accent-land-x { animation: accent-land-x 0.7s cubic-bezier(0.16, 1, 0.3, 1) var(--enter, 0.6s) both; }
+
+/* Honour reduced-motion: skip draw, march, resize, flicker and entrance. */
+@media (prefers-reduced-motion: reduce) {
+  .accent-vline,
+  .accent-hline,
+  .accent-bar-r,
+  .accent-bar-l,
+  .accent-flicker-a,
+  .accent-flicker-b,
+  .accent-enter,
+  .accent-enter-fade,
+  .accent-land-x {
+    animation: none;
+  }
+}
+
+/* Periwinkle outline hugging "ENGINEER." Anchored to the word (its wrapper is
+   relative), inset in em so it scales with the font. Its height is tuned to
+   match the DESIGNER selection highlight (and the two bracketing rules): the
+   top/bottom insets are slightly negative so the box grows a hair past the
+   line box to the same ~59px band, and it extends past the glyphs left/right
+   so the letters breathe inside it. */
+.hero-engineer-box {
+  position: absolute;
+  top: -0.055em;
+  bottom: -0.018em;
+  /* Insets shifted ~5px right (left less negative, right more negative) so the
+     box sits a hair right of centre over ENGINEER; the right-side vertical
+     dashed lines stay at 991/1038 so the box-to-line gap is now ~1px. */
+  left: -0.0475em;
+  right: -0.1525em;
+  border: 1px solid #8581ff;
+  pointer-events: none;
+}
+
+/* Decorative external-link leader dropping onto the ENGINEER box top edge:
+   a periwinkle badge, a solid drop line, and a hollow ring sitting on the
+   box's top border. Anchored inside the word wrapper so it tracks ENGINEER at
+   any width. The 0.055em offset matches the box's negative top inset so the
+   ring lands exactly on the border. */
+.hero-engineer-leader {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 0.055em);
+  margin-bottom: -3px;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  pointer-events: none;
+}
+.hero-engineer-leader__badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 5px;
+  background: #8581ff;
+  color: #fff;
+  font-size: 12px;
+  line-height: 1;
+}
+.hero-engineer-leader__line {
+  width: 1px;
+  height: 44px;
+  background: #8581ff;
+}
+.hero-engineer-leader__ring {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  border: 1.5px solid #8581ff;
+  background: #fff;
+}
+
+@media (max-width: 63.99rem) {
+  .hero-engineer-box,
+  .hero-engineer-leader {
+    display: none;
+  }
+}
+
+/* ============================================================================
    SLIDE HANDS
    The draped hands over the "Sights to See" slab carry an animated
    roughen-edges "boil" (feTurbulence + feDisplacementMap in Hand.tsx). Drop
@@ -199,7 +476,8 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .hand-boil,
   .tl-boil,
-  .fireplace-boil {
+  .fireplace-boil,
+  .asterisk-boil {
     filter: none;
   }
 }
@@ -357,7 +635,7 @@ body {
   text-align: center;
   font-family: var(--font-mono);
   font-weight: 600; /* holds up at tiny sizes */
-  color: var(--color-accent);
+  color: #c2530c; /* burnt orange — darker than the smoke, reads as embers */
   animation: fume-rise linear infinite; /* duration + delay: CodeMotes.tsx */
   will-change: transform, opacity;
 }
@@ -399,6 +677,41 @@ body {
   .codemotes {
     display: none;
   }
+}
+
+/* ============================================================================
+   CARD GRAIN
+   A photographed paper-grain texture (design-source/papergrain.webp) laid
+   over the dark "feature" project cards (FeaturedProject.tsx), so the flat
+   ink slab reads as a textured surface rather than a solid fill.
+
+   It sits above everything — the placeholder media block, the quote text,
+   all of it — the way grain in a photograph of a printed card would cover
+   the whole print, letters included, not just the unprinted margin. That
+   means it has to stay light-touch: `mix-blend-mode: overlay` keeps each
+   patch of card as dark as its own content already was (it multiplies over
+   dark pixels) while letting the grain's highlights punch through as faint
+   flecks, and the opacity is tuned low enough that the quote stays readable
+   underneath it.
+
+   The source photo is pale off-white paper — without the blend mode it would
+   just paint a near-white rectangle over the card instead of adding texture
+   to it. Tiled (not stretched) at a fixed pixel size so the grain stays fine
+   and even no matter how large a given card renders. `pointer-events: none`
+   since it's purely decorative — the card's `<a>` remains the click target
+   underneath it. The card wrapper clips it to the shared `rounded-card`
+   radius via `overflow-hidden`.
+   ========================================================================== */
+.card-grain {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+  background-image: url("/textures/paper-grain.webp");
+  background-repeat: repeat;
+  background-size: 260px auto;
+  mix-blend-mode: overlay;
+  opacity: 0.28;
 }
 
 /* ============================================================================
@@ -633,8 +946,8 @@ body {
   animation: sel-sweep var(--sel-cycle) var(--sel-ease) infinite;
 }
 
-/* Selection handles: a thin blue line with a square nub (no rounding, to
-   match the sharp-cornered design language). */
+/* Selection handles: a thin blue line with a round nub (macOS/iOS grab dot),
+   one riding above the top-left edge, the other below the bottom-right. */
 .sel-name__handle {
   position: absolute;
   width: 2px;
@@ -647,9 +960,10 @@ body {
   content: "";
   position: absolute;
   left: 50%;
-  width: 9px;
-  height: 9px;
-  margin-left: -4.5px;
+  width: 13px;
+  height: 13px;
+  margin-left: -6.5px;
+  border-radius: 50%;
   background: var(--color-select-blue);
 }
 

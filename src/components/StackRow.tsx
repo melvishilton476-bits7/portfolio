@@ -57,17 +57,17 @@ function StackIcon({ name, src }: { name: string; src: string }) {
       onPointerLeave={reset}
       style={{ x, y }}
       whileHover={{ zIndex: 10 }}
-      className="stack-chip relative grid size-11 place-items-center rounded-full bg-white"
+      className="stack-chip relative grid size-8 place-items-center rounded-full bg-white"
     >
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={src}
         alt={name}
         title={name}
-        width={28}
-        height={28}
+        width={18}
+        height={18}
         loading="lazy"
-        className="pointer-events-none size-6 object-contain"
+        className="pointer-events-none size-[18px] object-contain"
       />
     </motion.li>
   );
@@ -76,7 +76,7 @@ function StackIcon({ name, src }: { name: string; src: string }) {
 export default function StackRow() {
   return (
     <ul
-      className="flex items-center justify-center -space-x-2.5"
+      className="flex items-center justify-center -space-x-2"
       aria-label="Tech stack"
     >
       {STACK.map((tool) => (

@@ -60,7 +60,10 @@ export default function Footer() {
           {/* Sign-off */}
           <div className="max-w-[62%] lg:max-w-[58%]">
             <p className="type-caption text-ink-muted">Come Again Soon</p>
-            <h2 className="type-display mt-2 text-ink">
+            {/* type-heading, not type-display — the display size is reserved
+                for the hero <h1>, so this sign-off sits with the other section
+                titles a step below it. */}
+            <h2 className="type-heading mt-2 text-ink">
               Thank You for your Curiosity&nbsp;!
             </h2>
           </div>

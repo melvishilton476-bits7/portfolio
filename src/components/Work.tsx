@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useId, useRef, useState } from "react";
 import { motion, useScroll, useMotionValueEvent, useReducedMotion } from "framer-motion";
 import FeaturedProject from "./FeaturedProject";
 import Ticket from "./Ticket";
@@ -55,6 +55,8 @@ function FloatAsterisk({
 }) {
   const settled = Math.max(step, 0);
   const rotate = baseRotate + (settled % 2 === 1 ? swing : 0);
+  // Unique, document-scoped id for this instance's boil filter.
+  const boilId = `ast-boil-${useId().replace(/:/g, "")}`;
 
   return (
     <motion.div
@@ -69,7 +71,7 @@ function FloatAsterisk({
         rotate: { duration: 0.8, ease: [0.83, 0, 0.17, 1] },
       }}
     >
-      <Asterisk color={color} className="h-auto w-full" />
+      <Asterisk color={color} outline boilId={boilId} className="h-auto w-full" />
     </motion.div>
   );
 }
@@ -78,7 +80,7 @@ const PROJECTS: Project[] = [
   {
     title: "TITAN - REBRAND",
     meta: "SOLO,2025",
-    color: "#14A44D",
+    color: "#171717",
     quote:
       "A conceptual rebrand of Titan, India’s iconic eyewear brand, reimagined for the athletic market.",
     tags: ["Branding", "UI/UX"],
@@ -86,8 +88,7 @@ const PROJECTS: Project[] = [
   {
     title: "TITAN - REBRAND",
     meta: "SOLO,2025",
-    color: "#A9C4F5",
-    darkText: true,
+    color: "#171717",
     quote:
       "A conceptual rebrand of Titan, India’s iconic eyewear brand, reimagined for the athletic market.",
     tags: ["Branding", "UI/UX"],
@@ -95,22 +96,98 @@ const PROJECTS: Project[] = [
   {
     title: "TITAN - REBRAND",
     meta: "SOLO,2025",
-    color: "#F81B0E",
+    color: "#171717",
     quote:
       "A conceptual rebrand of Titan, India’s iconic eyewear brand, reimagined for the athletic market.",
     tags: ["Branding", "UI/UX"],
   },
 ];
 
+// Blueprint band that brackets the title — the same treatment as the hero
+// headline (two dashed rules, a hatched intersection cell at each end, black
+// corner dots). It lives inside the centred h2, so the full-bleed rules resolve
+// off the title's centre (= viewport centre) and the cells land on the hero's
+// vertical grid lines (±406 / ±366px from centre). Desktop only.
+const SIGHTS_HATCH = `repeating-linear-gradient(45deg, #a1a1a1 0, #a1a1a1 0.75px, transparent 0.75px, transparent 6px)`;
+const SIGHTS_DASH = `repeating-linear-gradient(to right, rgba(23,23,23,0.16) 0px, rgba(23,23,23,0.16) 10px, transparent 10px, transparent 18px)`;
+
+function SightsBand() {
+  // A fixed 60px band (matching the hero's rule gap), centred on the title so
+  // the text sits between the rules with equal space above and below.
+  const TOP = "calc(50% - 30px)";
+  const BOT = "calc(50% + 30px)";
+  const L = "calc(50% - 406px)"; // left cell (aligns with the hero's left pair)
+  const R = "calc(50% + 366px)"; // right cell (aligns with the hero's right pair)
+  const dot = (lx: string, ty: string, i: number) => (
+    <span
+      key={i}
+      className="absolute size-[5px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#171717]"
+      style={{ left: lx, top: ty }}
+    />
+  );
+  const cell = (left: string, key: string) => (
+    <span
+      key={key}
+      className="absolute"
+      style={{ left, top: TOP, height: 60, width: 47, border: "1px solid #fff", backgroundColor: "rgba(133,129,255,0.09)", backgroundImage: SIGHTS_HATCH }}
+    />
+  );
+  return (
+    <span aria-hidden className="pointer-events-none absolute inset-0 -z-10 hidden lg:block">
+      {/* two full-bleed dashed rules bracketing the caps */}
+      <span className="absolute h-px w-screen" style={{ left: "calc(50% - 50vw)", top: TOP, backgroundImage: SIGHTS_DASH }} />
+      <span className="absolute h-px w-screen" style={{ left: "calc(50% - 50vw)", top: BOT, backgroundImage: SIGHTS_DASH }} />
+      {/* periwinkle scatter bar, upper-left, resting just above the top rule */}
+      <span className="absolute" style={{ left: "calc(50% - 535px)", top: "calc(50% - 45px)", width: 81, height: 13, background: "#8581ff" }} />
+      {/* amber box with an overlapping periwinkle outline, lower-right */}
+      <span className="absolute" style={{ left: "calc(50% + 500px)", top: "calc(50% + 33px)", width: 37, height: 24, background: "#ffae00" }} />
+      <span className="absolute" style={{ left: "calc(50% + 527px)", top: "calc(50% + 49px)", width: 22, height: 22, border: "1px solid #8581ff" }} />
+      {/* hatched cells at each end of the band */}
+      {cell(L, "l")}
+      {cell(R, "r")}
+      {/* black dots on each cell's four corners */}
+      {dot(L, TOP, 0)}
+      {dot(`calc(${L} + 47px)`, TOP, 1)}
+      {dot(L, BOT, 2)}
+      {dot(`calc(${L} + 47px)`, BOT, 3)}
+      {dot(R, TOP, 4)}
+      {dot(`calc(${R} + 47px)`, TOP, 5)}
+      {dot(R, BOT, 6)}
+      {dot(`calc(${R} + 47px)`, BOT, 7)}
+    </span>
+  );
+}
+
 function Heading() {
   return (
     <header className="text-center">
-      <h2 className="type-heading text-ink-alt">
-        SIGHTS to <span className="font-mono">SEE</span>
+      <h2 className="type-heading text-ink-alt relative inline-block">
+        <SightsBand />
+        <span className="relative">
+          SIGHTS to <span className="font-mono">SEE</span>
+        </span>
       </h2>
-      <p className="type-lead mt-3">
-        Problems walked into. Solutions built out of.
-      </p>
+      <div className="mt-4">
+        <div className="relative inline-block">
+          {/* Crop-mark frame hugging the subtitle: a small thin light-grey
+              L-bracket at each corner with a darker registration dot nestled
+              in the crook of each bracket (a few px inside the vertex, not out
+              at the tip). The dots are the accent — a shade darker than the
+              brackets so they read as the marks the frame is pinned by. */}
+          <span aria-hidden className="pointer-events-none absolute -left-[12px] -top-[10px] h-1.5 w-1.5 border-l border-t border-[#cfcfcf]" />
+          <span aria-hidden className="pointer-events-none absolute -right-[12px] -top-[10px] h-1.5 w-1.5 border-r border-t border-[#cfcfcf]" />
+          <span aria-hidden className="pointer-events-none absolute -bottom-[10px] -left-[12px] h-1.5 w-1.5 border-b border-l border-[#cfcfcf]" />
+          <span aria-hidden className="pointer-events-none absolute -bottom-[10px] -right-[12px] h-1.5 w-1.5 border-b border-r border-[#cfcfcf]" />
+          <span aria-hidden className="pointer-events-none absolute -left-[12px] -top-[10px] size-[3px] translate-x-[3px] translate-y-[3px] rounded-full bg-[#171717]" />
+          <span aria-hidden className="pointer-events-none absolute -right-[12px] -top-[10px] size-[3px] -translate-x-[3px] translate-y-[3px] rounded-full bg-[#171717]" />
+          <span aria-hidden className="pointer-events-none absolute -bottom-[10px] -left-[12px] size-[3px] translate-x-[3px] -translate-y-[3px] rounded-full bg-[#171717]" />
+          <span aria-hidden className="pointer-events-none absolute -bottom-[10px] -right-[12px] size-[3px] -translate-x-[3px] -translate-y-[3px] rounded-full bg-[#171717]" />
+          <p className="type-caption text-ink-muted leading-none" style={{ fontSize: "0.9375rem" }}>
+            <span className="text-ink-alt">Problems</span> walked into.{" "}
+            <span className="text-ink-alt">Solutions</span> built out of.
+          </p>
+        </div>
+      </div>
     </header>
   );
 }
@@ -142,6 +219,15 @@ function StaticWork() {
     longer drives the animation directly (see below), so this only needs to
     be enough to feel like a deliberate "hold" before the next trigger. */
 const VH_PER_PROJECT = 160;
+
+/** Pagination timing (seconds). The switch reads as ONE continuous easing
+    arc split across the two boxes: the outgoing marker starts slow and
+    accelerates as it shrinks (ease-in), hits peak speed at the seam where the
+    handoff happens, then the incoming marker decelerates as it extends
+    (ease-out). SHRINK + RISE stays inside the card glide's ~1.3s so the
+    indicator keeps the strip's pace. */
+const SHRINK = 0.5;
+const RISE = 0.65;
 
 /** Turns continuous scroll progress into a discrete step index: -1 while the
     pin hasn't been reached yet, then 0..total-1 as thresholds are crossed. */
@@ -201,16 +287,75 @@ function Carousel() {
         {/* Heading holds the top, inside the normal gutter. */}
         <div className="page-container pt-16">
           <Heading />
+
+          {/* Pagination: one marker per project, discrete — no fill. Inactive
+              cards read as small light-grey squares; the centred card's marker
+              morphs in place into a tall dark bar. As the strip steps, the old
+              active shrinks back to a square while the new one grows, so only
+              one bar is ever raised: the current card's.
+
+              Each marker animates its own height / width / colour (the grey is
+              ink at low alpha, so becoming active is just that same ink going
+              opaque as it grows). Row is items-center, so the tall bar extends
+              evenly above and below the squares. `step` is -1 before the pin
+              engages; clamp to 0 so a marker is always raised. Decorative — the
+              scroll is the navigation (aria-hidden). */}
+          {/* Fixed 17px height (the raised marker's height) so the row never
+              resizes as markers grow/shrink — otherwise its items-center
+              content shifts up mid-swap, jumping the whole pagination. */}
+          <div aria-hidden className="mt-8 flex h-[11px] items-center justify-center gap-[6px]">
+            {PROJECTS.map((_, i) => {
+              const active = Math.max(step, 0) === i;
+              return (
+                <motion.span
+                  key={i}
+                  // Fixed 5px thickness for every marker, active or not — only
+                  // the height (and colour) tells them apart.
+                  className="block h-[5px] w-[5px] shrink-0"
+                  initial={false}
+                  animate={{
+                    height: active ? 11 : 5,
+                    backgroundColor: active
+                      ? "rgb(23, 23, 23)"
+                      : "rgba(23, 23, 23, 0.22)",
+                  }}
+                  // One continuous arc across both boxes: the outgoing marker
+                  // shrinks on an ease-IN (easeInCubic — slow start building to
+                  // top speed at the seam), then the incoming one, after
+                  // waiting out SHRINK, rises on the mirrored ease-OUT
+                  // (easeOutCubic — leaves the seam at top speed and slows as
+                  // it extends). Mirror curves + equal 10px travel make the two
+                  // halves meet at matching velocity, so it reads as a single
+                  // fastest-in-the-middle motion, not two separate ones.
+                  transition={
+                    active
+                      ? {
+                          height: { delay: SHRINK, duration: RISE, ease: [0.33, 1, 0.68, 1] },
+                          backgroundColor: { delay: SHRINK, duration: RISE, ease: [0.33, 1, 0.68, 1] },
+                        }
+                      : {
+                          height: { duration: SHRINK, ease: [0.32, 0, 0.67, 0] },
+                          backgroundColor: { duration: SHRINK, ease: [0.32, 0, 0.67, 0] },
+                        }
+                  }
+                />
+              );
+            })}
+          </div>
         </div>
 
         {/* The filmstrip stage fills the rest, full-bleed. Every slide is
             centred here and pushed sideways by its distance from `step`. */}
         <div className="relative flex-1">
           {/* Depth layer: the same asterisk, blurred and dimmed, sitting
-              behind the strip so it reads as far back. */}
+              behind the strip so it reads as far back. Parked at the card's
+              top-left corner, same height as before, just mirrored to the
+              other side — hanging mostly below the edge (rendered before the
+              slide, so the card paints over the sliver that dips behind it)
+              with just a peek poking out past the corner. */}
           <FloatAsterisk
             color="var(--color-splat-red)"
-            className="top-[calc(50%-278px)] left-[calc(50%+140px)] w-[44px] opacity-80 blur-[3px]"
+            className="top-[calc(50%-245px)] left-[calc(50%-240px)] w-[44px] opacity-80 blur-[3px]"
             baseRotate={-8}
             swing={100}
             drift={11}

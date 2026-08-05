@@ -3,6 +3,7 @@
 import React, { useEffect, useRef, useState } from "react"
 import { motion, useScroll, useMotionValueEvent } from "framer-motion"
 import Link from "next/link"
+import Image from "next/image"
 import { LucideIcon } from "lucide-react"
 import { cn } from "@/lib/utils"
 
@@ -120,7 +121,19 @@ export function NavBar({ items, className }: NavBarProps) {
         className,
       )}
     >
-      <div className="flex items-center gap-3 bg-background/5 border border-border backdrop-blur-lg py-1 px-1 rounded-[3px] shadow-lg">
+      <div className="relative flex items-center gap-5 sm:gap-[52px] border border-[#d9d9d9] bg-white px-3 sm:px-6 h-[43px]">
+        {/* Registration dots centred on the four corners — blueprint marks that
+            echo the hero's crop-dots (node 464:856-859). */}
+        <span aria-hidden className="pointer-events-none absolute left-0 top-0 size-[5px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-btn-dark" />
+        <span aria-hidden className="pointer-events-none absolute right-0 top-0 size-[5px] translate-x-1/2 -translate-y-1/2 rounded-full bg-btn-dark" />
+        <span aria-hidden className="pointer-events-none absolute bottom-0 left-0 size-[5px] -translate-x-1/2 translate-y-1/2 rounded-full bg-btn-dark" />
+        <span aria-hidden className="pointer-events-none absolute bottom-0 right-0 size-[5px] translate-x-1/2 translate-y-1/2 rounded-full bg-btn-dark" />
+
+        {/* Logo emblem — desktop only; mobile keeps the icon bar clean. */}
+        <Link href="#top" aria-label="Home" className="hidden shrink-0 sm:block">
+          <Image src="/nav-logo.svg" alt="" width={19} height={17} unoptimized className="h-[17px] w-[19px]" />
+        </Link>
+
         {items.map((item) => {
           const Icon = item.icon
           const isActive = activeTab === item.name
@@ -131,32 +144,21 @@ export function NavBar({ items, className }: NavBarProps) {
               href={item.url}
               onClick={() => setActiveTab(item.name)}
               className={cn(
-                "relative cursor-pointer text-sm font-semibold px-6 py-2 transition-colors",
-                "text-foreground/80 hover:text-primary",
-                isActive && "text-primary",
+                "relative cursor-pointer px-1 py-2 font-light uppercase transition-colors",
+                "text-[12px] tracking-[-0.08em] text-neutral-900 hover:text-[#8581ff]",
               )}
             >
               <span className="hidden md:inline">{item.name}</span>
               <span className="md:hidden">
-                <Icon size={18} strokeWidth={2.5} />
+                <Icon size={18} strokeWidth={2} />
               </span>
               {isActive && (
-                <motion.div
-                  layoutId="lamp"
-                  className="absolute inset-0 w-full bg-muted -z-10 rounded-[3px]"
+                <motion.span
+                  layoutId="nav-underline"
+                  className="absolute inset-x-1 -bottom-0.5 h-[1.5px] bg-[#8581ff]"
                   initial={false}
-                  transition={{
-                    type: "spring",
-                    stiffness: 300,
-                    damping: 30,
-                  }}
-                >
-                  <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-8 h-1 bg-primary rounded-t-[3px]">
-                    <div className="absolute w-12 h-6 bg-primary/20 rounded-full blur-md -top-2 -left-2" />
-                    <div className="absolute w-8 h-6 bg-primary/20 rounded-full blur-md -top-1" />
-                    <div className="absolute w-4 h-4 bg-primary/20 rounded-full blur-sm top-0 left-2" />
-                  </div>
-                </motion.div>
+                  transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                />
               )}
             </Link>
           )

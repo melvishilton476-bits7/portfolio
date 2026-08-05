@@ -1,6 +1,8 @@
+import type { CSSProperties } from "react";
 import Image from "next/image";
 import SelectedName from "./SelectedName";
 import StackRow from "./StackRow";
+import HeroAccents from "./HeroAccents";
 
 /**
  * Hero — headline, lead, tech-stack row, and the "Take a tour" CTA.
@@ -18,7 +20,12 @@ export default function Hero() {
       className="page-container sticky top-0 z-0 flex min-h-screen flex-col justify-center pt-24 sm:pt-32"
       id="top"
     >
-      <div className="mx-auto flex max-w-[720px] flex-col items-center text-center">
+      {/* Scattered blueprint accents behind everything — periwinkle squares,
+          a lime block, a corner bracket, plus-marks and two rules bracketing
+          the headline. See globals.css → HERO ACCENTS. */}
+      <HeroAccents />
+
+      <div className="mx-auto flex max-w-[720px] -translate-y-[30px] flex-col items-center text-center">
         {/* Central hero animation */}
         <Image
           src="/hero-animation.gif"
@@ -27,7 +34,7 @@ export default function Hero() {
           height={576}
           unoptimized
           priority
-          className="mb-8 h-auto w-[clamp(220px,40vw,360px)]"
+          className="mb-8 h-auto w-[clamp(220px,40vw,360px)] scale-75"
         />
 
         {/* Greeting — a small supporting line above the headline. Shares the
@@ -43,18 +50,34 @@ export default function Hero() {
         {/* Headline — the selection motif rides DESIGNER. DESIGNER and
             ENGINEER share the base display weight; the connecting words
             ("A", "who can") are a lighter weight so the two roles stand out. */}
-        <h1 className="type-display text-ink-hero text-balance">
-          <span className="font-light" style={{ fontWeight: 300 }}>
-            A
-          </span>{" "}
-          <SelectedName>
-            <span className="text-ink">DESIGNER</span>
-          </SelectedName>{" "}
-          <span className="font-light" style={{ fontWeight: 300 }}>
-            who can
-          </span>{" "}
-          <span className="text-ink">ENGINEER.</span>
-        </h1>
+        <div className="relative w-full">
+          <h1 className="type-display text-ink-hero text-balance">
+            <span className="font-light" style={{ fontWeight: 300 }}>
+              A
+            </span>{" "}
+            <SelectedName>
+              <span className="text-ink">DESIGNER</span>
+            </SelectedName>{" "}
+            <span className="font-light" style={{ fontWeight: 300 }}>
+              who can
+            </span>{" "}
+            {/* The periwinkle outline box hugs ENGINEER itself (relative
+                wrapper + em-inset border) so it tracks the word at any width,
+                rather than sitting at a fixed canvas coordinate. */}
+            <span className="relative inline-block">
+              <span aria-hidden className="hero-engineer-box" />
+              {/* Decorative external-link leader: a periwinkle badge on a drop
+                  line landing on a hollow ring at the box's top edge. Lives in
+                  the wrapper so it tracks ENGINEER at any width. */}
+              <span aria-hidden className="hero-engineer-leader accent-enter-fade" style={{ ["--enter" as string]: "2s" } as CSSProperties}>
+                <span className="hero-engineer-leader__badge">↗</span>
+                <span className="hero-engineer-leader__line" />
+                <span className="hero-engineer-leader__ring" />
+              </span>
+              <span className="text-ink">ENGINEER</span>
+            </span>
+          </h1>
+        </div>
 
         {/* Lead */}
         <p
@@ -67,20 +90,32 @@ export default function Hero() {
 
         {/* Stack row — icons/circles unchanged; the "My Stack" label is
             dropped per the reference. */}
-        <div className="mt-10 flex flex-col items-center">
+        <div className="mt-8 flex flex-col items-center">
           <StackRow />
         </div>
 
-        {/* CTA */}
-        <a
-          href="#work"
-          className="mt-8 inline-flex items-center gap-2 bg-btn-dark px-6 py-3 text-white transition-transform hover:-translate-y-0.5"
-        >
-          <span className="type-label font-medium">Take a tour</span>
-          <span aria-hidden className="text-lg leading-none">
-            →
-          </span>
-        </a>
+        {/* CTA — crop-mark brackets sit just outside and slide in on hover */}
+        <div className="group relative mt-11 inline-block transition-transform duration-300 ease-out hover:-translate-y-0.5">
+          {/* TL — 7px outside at rest; hover draws in to ~3px */}
+          <span aria-hidden className="pointer-events-none absolute -left-[7px] -top-[7px] h-4 w-4 border-l border-t border-[#b6b6b6] transition-transform duration-300 ease-out group-hover:translate-x-[4px] group-hover:translate-y-[4px]" />
+          {/* TR */}
+          <span aria-hidden className="pointer-events-none absolute -right-[7px] -top-[7px] h-4 w-4 border-r border-t border-[#b6b6b6] transition-transform duration-300 ease-out group-hover:-translate-x-[4px] group-hover:translate-y-[4px]" />
+          {/* BL */}
+          <span aria-hidden className="pointer-events-none absolute -bottom-[7px] -left-[7px] h-4 w-4 border-b border-l border-[#b6b6b6] transition-transform duration-300 ease-out group-hover:translate-x-[4px] group-hover:-translate-y-[4px]" />
+          {/* BR */}
+          <span aria-hidden className="pointer-events-none absolute -bottom-[7px] -right-[7px] h-4 w-4 border-b border-r border-[#b6b6b6] transition-transform duration-300 ease-out group-hover:-translate-x-[4px] group-hover:-translate-y-[4px]" />
+          <a
+            href="#work"
+            className="inline-flex items-center gap-2 bg-btn-dark px-5 py-2.5 text-white"
+          >
+            <span className="type-label font-medium" style={{ fontSize: "0.9375rem" }}>
+              Take a tour
+            </span>
+            <span aria-hidden className="leading-none" style={{ fontSize: "1rem" }}>
+              →
+            </span>
+          </a>
+        </div>
       </div>
     </section>
   );

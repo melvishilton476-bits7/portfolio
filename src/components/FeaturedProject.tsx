@@ -44,9 +44,12 @@ export default function FeaturedProject({
     <div ref={cardRef} className="relative mx-auto w-full max-w-[560px]">
       <a
         href={href}
-        className="relative z-10 block rounded-card bg-ink p-5 shadow-[0_18px_40px_-18px_rgba(0,0,0,0.4)]"
+        className="relative z-10 block overflow-hidden rounded-card bg-ink p-5 shadow-[0_18px_40px_-18px_rgba(0,0,0,0.4)]"
       >
         <span className="sr-only">View {title}</span>
+
+        {/* Paper-grain texture on the ink fill — see globals.css → CARD GRAIN. */}
+        <div aria-hidden className="card-grain" />
 
         <Placeholder
           label="Featured project"
