@@ -167,21 +167,21 @@ function Heading() {
           SIGHTS to <span className="font-mono">SEE</span>
         </span>
       </h2>
-      <div className="mt-4">
+      <div className="mt-8">
         <div className="relative inline-block">
           {/* Crop-mark frame hugging the subtitle: a small thin light-grey
               L-bracket at each corner with a darker registration dot nestled
               in the crook of each bracket (a few px inside the vertex, not out
               at the tip). The dots are the accent — a shade darker than the
               brackets so they read as the marks the frame is pinned by. */}
-          <span aria-hidden className="pointer-events-none absolute -left-[12px] -top-[10px] h-1.5 w-1.5 border-l border-t border-[#cfcfcf]" />
-          <span aria-hidden className="pointer-events-none absolute -right-[12px] -top-[10px] h-1.5 w-1.5 border-r border-t border-[#cfcfcf]" />
-          <span aria-hidden className="pointer-events-none absolute -bottom-[10px] -left-[12px] h-1.5 w-1.5 border-b border-l border-[#cfcfcf]" />
-          <span aria-hidden className="pointer-events-none absolute -bottom-[10px] -right-[12px] h-1.5 w-1.5 border-b border-r border-[#cfcfcf]" />
-          <span aria-hidden className="pointer-events-none absolute -left-[12px] -top-[10px] size-[3px] translate-x-[3px] translate-y-[3px] rounded-full bg-[#171717]" />
-          <span aria-hidden className="pointer-events-none absolute -right-[12px] -top-[10px] size-[3px] -translate-x-[3px] translate-y-[3px] rounded-full bg-[#171717]" />
-          <span aria-hidden className="pointer-events-none absolute -bottom-[10px] -left-[12px] size-[3px] translate-x-[3px] -translate-y-[3px] rounded-full bg-[#171717]" />
-          <span aria-hidden className="pointer-events-none absolute -bottom-[10px] -right-[12px] size-[3px] -translate-x-[3px] -translate-y-[3px] rounded-full bg-[#171717]" />
+          <span aria-hidden className="pointer-events-none absolute -left-[26px] -top-[18px] h-2 w-2 border-l border-t border-[#cfcfcf]" />
+          <span aria-hidden className="pointer-events-none absolute -right-[26px] -top-[18px] h-2 w-2 border-r border-t border-[#cfcfcf]" />
+          <span aria-hidden className="pointer-events-none absolute -bottom-[18px] -left-[26px] h-2 w-2 border-b border-l border-[#cfcfcf]" />
+          <span aria-hidden className="pointer-events-none absolute -bottom-[18px] -right-[26px] h-2 w-2 border-b border-r border-[#cfcfcf]" />
+          <span aria-hidden className="pointer-events-none absolute -left-[26px] -top-[18px] size-[3px] translate-x-[4px] translate-y-[4px] rounded-full bg-[#171717]" />
+          <span aria-hidden className="pointer-events-none absolute -right-[26px] -top-[18px] size-[3px] -translate-x-[4px] translate-y-[4px] rounded-full bg-[#171717]" />
+          <span aria-hidden className="pointer-events-none absolute -bottom-[18px] -left-[26px] size-[3px] translate-x-[4px] -translate-y-[4px] rounded-full bg-[#171717]" />
+          <span aria-hidden className="pointer-events-none absolute -bottom-[18px] -right-[26px] size-[3px] -translate-x-[4px] -translate-y-[4px] rounded-full bg-[#171717]" />
           <p className="type-caption text-ink-muted leading-none" style={{ fontSize: "0.9375rem" }}>
             <span className="text-ink-alt">Problems</span> walked into.{" "}
             <span className="text-ink-alt">Solutions</span> built out of.

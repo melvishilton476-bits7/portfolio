@@ -1,6 +1,6 @@
 import Placeholder from "./Placeholder";
 import GrowOnView from "./GrowOnView";
-import PuzzlePiece from "./PuzzlePiece";
+// import PuzzlePiece from "./PuzzlePiece"; // puzzle pieces commented out for now
 
 type TicketProps = {
   title: string;
@@ -33,19 +33,20 @@ export default function Ticket({
   color,
   darkText = false,
   href = "#",
-  pieces = true,
+  // pieces prop kept in the type but unused while puzzle pieces are commented out
   active,
 }: TicketProps) {
   const ink = darkText ? "text-ink" : "text-white";
 
   return (
     <GrowOnView className="relative w-full max-w-[204px]" active={active}>
-      {pieces && (
+      {/* Puzzle pieces commented out for now. */}
+      {/* {pieces && (
         <>
           <PuzzlePiece side="left" />
           <PuzzlePiece side="right" />
         </>
-      )}
+      )} */}
 
       <article
         className={`ticket-shape relative z-10 w-full ${ink}`}
@@ -65,12 +66,18 @@ export default function Ticket({
           className="mt-3 mb-4 border-0"
         />
 
-        {/* Stub — height matches --tear-y (4rem). */}
+        {/* Stub — height matches --tear-y (4rem). The CTA is just the label in
+            the card's ink colour, framed by four crop-mark brackets (same ink)
+            — no filled box. */}
         <div className="flex h-16 items-center px-4">
           <a
             href={href}
-            className="type-caption block w-full bg-ink py-2 text-center text-white transition-opacity hover:opacity-85"
+            className="type-caption relative block w-full py-2 text-center transition-opacity hover:opacity-85"
           >
+            <span aria-hidden className="pointer-events-none absolute left-0 top-0 h-2 w-2 border-l border-t border-current" />
+            <span aria-hidden className="pointer-events-none absolute right-0 top-0 h-2 w-2 border-r border-t border-current" />
+            <span aria-hidden className="pointer-events-none absolute bottom-0 left-0 h-2 w-2 border-b border-l border-current" />
+            <span aria-hidden className="pointer-events-none absolute bottom-0 right-0 h-2 w-2 border-b border-r border-current" />
             View Project
           </a>
         </div>

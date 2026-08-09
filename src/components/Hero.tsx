@@ -1,8 +1,8 @@
-import type { CSSProperties } from "react";
 import Image from "next/image";
 import SelectedName from "./SelectedName";
 import StackRow from "./StackRow";
 import HeroAccents from "./HeroAccents";
+import EngineerDecode from "./EngineerDecode";
 
 /**
  * Hero — headline, lead, tech-stack row, and the "Take a tour" CTA.
@@ -61,21 +61,11 @@ export default function Hero() {
             <span className="font-light" style={{ fontWeight: 300 }}>
               who can
             </span>{" "}
-            {/* The periwinkle outline box hugs ENGINEER itself (relative
-                wrapper + em-inset border) so it tracks the word at any width,
-                rather than sitting at a fixed canvas coordinate. */}
-            <span className="relative inline-block">
-              <span aria-hidden className="hero-engineer-box" />
-              {/* Decorative external-link leader: a periwinkle badge on a drop
-                  line landing on a hollow ring at the box's top edge. Lives in
-                  the wrapper so it tracks ENGINEER at any width. */}
-              <span aria-hidden className="hero-engineer-leader accent-enter-fade" style={{ ["--enter" as string]: "2s" } as CSSProperties}>
-                <span className="hero-engineer-leader__badge">↗</span>
-                <span className="hero-engineer-leader__line" />
-                <span className="hero-engineer-leader__ring" />
-              </span>
-              <span className="text-ink">ENGINEER</span>
-            </span>
+            {/* ENGINEER decodes in on load — grey glyphs scramble and lock to
+                black one slot at a time, then the periwinkle box + arrow leader
+                draw in. The box still hugs the word (relative wrapper + em-inset
+                border) so it tracks it at any width. See EngineerDecode.tsx. */}
+            <EngineerDecode />
           </h1>
         </div>
 
@@ -96,14 +86,31 @@ export default function Hero() {
 
         {/* CTA — crop-mark brackets sit just outside and slide in on hover */}
         <div className="group relative mt-11 inline-block transition-transform duration-300 ease-out hover:-translate-y-0.5">
-          {/* TL — 7px outside at rest; hover draws in to ~3px */}
-          <span aria-hidden className="pointer-events-none absolute -left-[7px] -top-[7px] h-4 w-4 border-l border-t border-[#b6b6b6] transition-transform duration-300 ease-out group-hover:translate-x-[4px] group-hover:translate-y-[4px]" />
+          {/* Crop-mark corners: a light-grey L-bracket with a black registration
+              dot nestled in the crook — the same blueprint mark used around the
+              "Sights to See" subtitle. Each corner is one group so the bracket
+              and its dot slide inward together on hover, from 14px outside at
+              rest toward the button. */}
+          {/* TL */}
+          <span aria-hidden className="pointer-events-none absolute -left-[14px] -top-[14px] transition-transform duration-300 ease-out group-hover:translate-x-[4px] group-hover:translate-y-[4px]">
+            <span className="block h-4 w-4 border-l border-t border-[#cfcfcf]" />
+            <span className="absolute left-0 top-0 size-[3.5px] translate-x-[4px] translate-y-[4px] rounded-full bg-[#171717]" />
+          </span>
           {/* TR */}
-          <span aria-hidden className="pointer-events-none absolute -right-[7px] -top-[7px] h-4 w-4 border-r border-t border-[#b6b6b6] transition-transform duration-300 ease-out group-hover:-translate-x-[4px] group-hover:translate-y-[4px]" />
+          <span aria-hidden className="pointer-events-none absolute -right-[14px] -top-[14px] transition-transform duration-300 ease-out group-hover:-translate-x-[4px] group-hover:translate-y-[4px]">
+            <span className="block h-4 w-4 border-r border-t border-[#cfcfcf]" />
+            <span className="absolute right-0 top-0 size-[3.5px] -translate-x-[4px] translate-y-[4px] rounded-full bg-[#171717]" />
+          </span>
           {/* BL */}
-          <span aria-hidden className="pointer-events-none absolute -bottom-[7px] -left-[7px] h-4 w-4 border-b border-l border-[#b6b6b6] transition-transform duration-300 ease-out group-hover:translate-x-[4px] group-hover:-translate-y-[4px]" />
+          <span aria-hidden className="pointer-events-none absolute -bottom-[14px] -left-[14px] transition-transform duration-300 ease-out group-hover:translate-x-[4px] group-hover:-translate-y-[4px]">
+            <span className="block h-4 w-4 border-b border-l border-[#cfcfcf]" />
+            <span className="absolute bottom-0 left-0 size-[3.5px] translate-x-[4px] -translate-y-[4px] rounded-full bg-[#171717]" />
+          </span>
           {/* BR */}
-          <span aria-hidden className="pointer-events-none absolute -bottom-[7px] -right-[7px] h-4 w-4 border-b border-r border-[#b6b6b6] transition-transform duration-300 ease-out group-hover:-translate-x-[4px] group-hover:-translate-y-[4px]" />
+          <span aria-hidden className="pointer-events-none absolute -bottom-[14px] -right-[14px] transition-transform duration-300 ease-out group-hover:-translate-x-[4px] group-hover:-translate-y-[4px]">
+            <span className="block h-4 w-4 border-b border-r border-[#cfcfcf]" />
+            <span className="absolute bottom-0 right-0 size-[3.5px] -translate-x-[4px] -translate-y-[4px] rounded-full bg-[#171717]" />
+          </span>
           <a
             href="#work"
             className="inline-flex items-center gap-2 bg-btn-dark px-5 py-2.5 text-white"

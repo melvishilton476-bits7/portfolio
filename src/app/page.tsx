@@ -1,6 +1,7 @@
 import Nav from "@/components/Nav";
 import Hero from "@/components/Hero";
 import Work from "@/components/Work";
+import SideStreets from "@/components/SideStreets";
 import Contact from "@/components/Contact";
 import Footer from "@/components/Footer";
 
@@ -16,6 +17,7 @@ export default function Home() {
           <Hero />
           <Work />
         </div>
+        <SideStreets />
         <Contact />
       </main>
       <Footer />

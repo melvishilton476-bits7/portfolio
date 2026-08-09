@@ -23,6 +23,7 @@
  * globals.css → HERO ACCENTS.
  */
 import type { CSSProperties } from "react";
+import HatchCell from "./HatchCell";
 
 const PURPLE = "#8581ff";
 const AMBER = "#ffae00";
@@ -34,13 +35,6 @@ const DASH = "rgba(23, 23, 23, 0.16)";
 // `to right` for horizontals.
 const DASH_V = `repeating-linear-gradient(to bottom, ${DASH} 0px, ${DASH} 10px, transparent 10px, transparent 18px)`;
 const DASH_H = `repeating-linear-gradient(to right, ${DASH} 0px, ${DASH} 10px, transparent 10px, transparent 18px)`;
-
-// Blueprint intersection cell (Figma nodes 425:6593 / 6621): a pale periwinkle
-// square, a white hairline border, fine grey (#a1a1a1) diagonal hatching, and a
-// black dot centred on each of its four corners (the grid-line intersections).
-const HATCH = `repeating-linear-gradient(45deg, #a1a1a1 0, #a1a1a1 0.75px, transparent 0.75px, transparent 6px)`;
-const CELL_FILL = "rgba(133, 129, 255, 0.09)";
-const CELL_DOT = "#171717";
 
 // Gradient images used as fixed-scale "window" fills: a shape shows the image
 // through it, but because GRADIENT_SIZE is in absolute px (not tied to the
@@ -116,31 +110,6 @@ function Bar({ x, y, w, h, dir, enter, loopDur }: { x: number; y: number; w: num
   );
 }
 
-/** Blueprint intersection cell: a pale hatched square with a black dot centred
- *  on each of its four corners (the grid-line intersections). x/y is the cell's
- *  top-left; the corners land on the two vline + two rule crossings. */
-function HatchCell({ x, y, w, h, enter }: { x: number; y: number; w: number; h: number; enter: string }) {
-  const dot = (cx: number, cy: number, i: number) => (
-    <span
-      key={i}
-      className="absolute rounded-full accent-enter-fade"
-      style={{ left: cx - 2.5, top: cy - 2.5, width: 5, height: 5, background: CELL_DOT, ["--enter" as string]: enter } as CSSProperties}
-    />
-  );
-  return (
-    <>
-      <span
-        className="absolute accent-enter-fade"
-        style={{ left: x, top: y, width: w, height: h, border: "1px solid #ffffff", backgroundColor: CELL_FILL, backgroundImage: HATCH, ["--enter" as string]: enter } as CSSProperties}
-      />
-      {dot(x, y, 0)}
-      {dot(x + w, y, 1)}
-      {dot(x, y + h, 2)}
-      {dot(x + w, y + h, 3)}
-    </>
-  );
-}
-
 /** Grey L-shaped crop mark. Base draws the bottom + right edges (a
  *  bottom-right corner); rotate to make the other three corners:
  *  0 = BR, 90 = BL, 180 = TL, 270 = TR. `x`/`y` is the mark's top-left. */
@@ -187,19 +156,21 @@ export default function HeroAccents() {
 
         {/* Intersection cells at each end of the band — left cell spans the left
             grid pair (234→281), right cell the right pair (1006→1053); both fill
-            the rule band (365→425), with black dots on their four corners. */}
-        <HatchCell x={234} y={365} w={47} h={60} enter="1.5s" />
-        <HatchCell x={1006} y={365} w={47} h={60} enter="1.55s" />
+            the rule band (365→425), with black dots on their four corners. They
+            draw in with the shared dots-pop / L→R swipe (see HatchCell). */}
+        <HatchCell className="absolute" style={{ left: 234, top: 365, width: 47, height: 60 }} delay={0} />
+        <HatchCell className="absolute" style={{ left: 1006, top: 365, width: 47, height: 60 }} delay={120} />
 
         {/* ---- Periwinkle + amber scatter, upper-left ----------------------- */}
         {/* resting right edge (its fixed edge) sits on the outer-left vline
             (234); it resizes leftward, away from the line into the margin */}
         <Bar x={153} y={276} w={81} h={13} dir="l" enter="0.6s" loopDur="7s" />
-        {/* both bar and square sit to the LEFT of the outer-left vline (234):
-            the bar's right edge and the square's right edge both rest on the
-            line, and they meet corner-to-corner at the bar's bottom-right point
-            (234, 289) — the square tucked just under the bar's right end. */}
-        <span className="absolute accent-flicker-a" style={{ left: 218, top: 289, width: 16, height: 14, background: PURPLE, ["--enter" as string]: "0.8s" } as CSSProperties} />
+        {/* The square hangs off the bar's bottom-right corner (234, 289): its
+            top-LEFT corner touches that point and it steps down-right, so the
+            two meet at a single diagonal point (mirroring the right-side pair)
+            rather than sharing an edge. Its left rests on the outer-left vline
+            (234). */}
+        <span className="absolute accent-flicker-a" style={{ left: 234, top: 289, width: 16, height: 14, background: PURPLE, ["--enter" as string]: "0.8s" } as CSSProperties} />
         {/* bottom edge (+ its amber tick) snapped to top rule (365) */}
         <span className="absolute accent-enter" style={{ left: 132, top: 337, width: 37, height: 28, border: `1px solid ${PURPLE}`, ["--enter" as string]: "0.7s" } as CSSProperties} />
         <span className="absolute accent-flicker-b" style={{ left: 138, top: 344, width: 26, height: 14, background: AMBER, ["--enter" as string]: "1s" } as CSSProperties} />
