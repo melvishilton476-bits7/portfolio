@@ -82,24 +82,59 @@ function FooterLink({ name }: { name: string }) {
   );
 }
 
-/** A periwinkle registration square-pair — outline + filled, meeting corner-to-
- *  corner. `dir` sets which diagonal the filled square runs off toward. */
-function Cluster({ className, dir }: { className: string; dir: "down" | "up" }) {
-  const filledPos = dir === "down" ? "left-[9px] top-[9px]" : "left-[9px] -top-[9px]";
+/** The periwinkle registration squares that float up off the cat's head and
+ *  flicker out — the footer's "periwinkles" made kinetic. A sparse handful of
+ *  squares (mix of filled + hollow, matching the site's cluster motif) drift
+ *  up on staggered `--peri-*` timings so the stream never pulses in sync; the
+ *  flicker-out and reduced-motion drop live in globals.css (`.peri-ember`).
+ *  Anchored to the cat: same `bottom-0 left-[72%]` + width, so `left-1/2`
+ *  inside lands each square on the cat's centre. */
+const EMBERS = [
+  { size: 9, dur: 5.2, delay: 0.0, dx: -16, rise: -150, rot: -12, max: 0.85, filled: true },
+  { size: 6, dur: 6.2, delay: 0.9, dx: 12, rise: -178, rot: 16, max: 0.7, filled: false },
+  { size: 8, dur: 4.8, delay: 1.9, dx: 22, rise: -138, rot: 9, max: 0.8, filled: false },
+  { size: 5, dur: 6.6, delay: 2.7, dx: -22, rise: -186, rot: -16, max: 0.6, filled: true },
+  { size: 7, dur: 5.6, delay: 3.4, dx: 3, rise: -162, rot: 7, max: 0.78, filled: true },
+  { size: 6, dur: 5.9, delay: 4.3, dx: -9, rise: -172, rot: -7, max: 0.65, filled: false },
+];
+
+function CatEmbers({ className = "" }: { className?: string }) {
   return (
-    <span aria-hidden className={`pointer-events-none absolute hidden lg:block ${className}`}>
-      <span className="absolute left-0 top-0 size-[9px]" style={{ border: `1px solid ${PURPLE}` }} />
-      <span className={`absolute size-[9px] ${filledPos}`} style={{ background: PURPLE }} />
-    </span>
+    <div aria-hidden className={`pointer-events-none absolute ${className}`}>
+      {EMBERS.map((e, i) => (
+        <span
+          key={i}
+          className="peri-ember absolute bottom-[22px] left-1/2"
+          style={
+            {
+              width: e.size,
+              height: e.size,
+              marginLeft: -e.size / 2,
+              background: e.filled ? PURPLE : "transparent",
+              border: e.filled ? "none" : `1px solid ${PURPLE}`,
+              "--peri-dur": `${e.dur}s`,
+              "--peri-delay": `${e.delay}s`,
+              "--peri-dx": `${e.dx}px`,
+              "--peri-rise": `${e.rise}px`,
+              "--peri-rot": `${e.rot}deg`,
+              "--peri-max": e.max,
+            } as CSSProperties
+          }
+        />
+      ))}
+    </div>
   );
 }
 
 export default function Footer() {
   return (
     <footer className="relative bg-background">
-      {/* Ruled-paper periwinkle band — full-bleed, dashed rules top & bottom. */}
+      {/* Ruled-paper periwinkle band — full-bleed, dashed rules top & bottom.
+          `data-footer-band` marks the threshold the <Cat> watches: once the
+          cursor drops below this band, the cat's eyes start tracking it. */}
       <div
         aria-hidden
+        data-footer-band
         className="relative h-[clamp(44px,5vw,62px)] w-screen bg-[#8581ff]/[0.07]"
         style={{ left: "calc(50% - 50vw)", backgroundImage: HATCH }}
       >
@@ -111,9 +146,11 @@ export default function Footer() {
         {/* Right-edge street scene — one supplied asset. Desktop only. */}
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-y-0 right-0 z-0 hidden w-[46%] lg:block"
+          className="pointer-events-none absolute inset-y-0 right-0 z-0 hidden w-[46%] overflow-hidden lg:block"
         >
-          <TrafficLight className="absolute -right-[2%] bottom-0 h-full w-auto" />
+          {/* Pushed down so the signal head sits lower in the scene; the arm
+              still bleeds off the top and the pole runs off the clipped bottom. */}
+          <TrafficLight className="absolute -right-[2%] bottom-0 h-full w-auto translate-y-[14%]" />
         </div>
 
         {/* Left column — the real content. */}
@@ -135,21 +172,25 @@ export default function Footer() {
             </ul>
           </nav>
 
-          {/* Sign-off, with the periwinkle clusters floating off to its right. */}
+          {/* Sign-off. The periwinkle clusters that used to float here now
+              rise off the cat instead (see <CatEmbers> below). */}
           <div className="relative max-w-[62%] lg:max-w-[58%]">
-            <Cluster className="left-[calc(100%+clamp(2rem,10vw,7rem))] -top-2" dir="down" />
-            <Cluster className="left-[calc(100%+clamp(6rem,16vw,11rem))] -top-6" dir="up" />
             <p className="type-caption text-ink-muted">Come Again Soon</p>
-            {/* type-heading, not type-display — the display size is reserved for
-                the hero <h1>, so this sign-off sits a step below it. */}
-            <h2 className="type-heading mt-2 text-ink">
+            {/* A <p>, NOT a heading: this is a decorative sign-off, so keeping it
+                out of the document outline stops it ranking as a peer of the real
+                sections (Sights to See / Side Streets / Contact). It still wears
+                type-heading — the display size stays reserved for the hero h1. */}
+            <p className="type-heading mt-2 text-ink">
               Thank You for your Curiosity&nbsp;!
-            </h2>
+            </p>
           </div>
         </div>
 
-        {/* The cat peeking up from the bottom edge. Desktop only. */}
+        {/* The cat peeking up from the bottom edge, with periwinkle squares
+            drifting up off its head. Both desktop-only, both anchored to the
+            same bottom-0 left-[72%] box so the embers rise from the cat. */}
         <Cat className="pointer-events-none absolute bottom-0 left-[72%] z-10 hidden h-auto w-[clamp(44px,4vw,56px)] lg:block" />
+        <CatEmbers className="bottom-0 left-[72%] z-20 hidden h-[230px] w-[clamp(44px,4vw,56px)] lg:block" />
       </div>
     </footer>
   );

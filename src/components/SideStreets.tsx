@@ -30,10 +30,10 @@ const QUOTE =
 type SideProject = { title: string; quote: string; href: string };
 
 const PROJECTS: SideProject[] = [
-  { title: "TITAN REBRAND", quote: QUOTE, href: "#" },
+  { title: "TITAN REBRAND", quote: QUOTE, href: "/work/titan-rebrand" },
   { title: "ZENXO | UI & UX", quote: QUOTE, href: "#" },
   { title: "NAGARHOLE | WAYFINDING", quote: QUOTE, href: "#" },
-  { title: "TITAN REBRAND", quote: QUOTE, href: "#" },
+  { title: "TITAN REBRAND", quote: QUOTE, href: "/work/titan-rebrand" },
 ];
 
 const ROWS: SideProject[][] = [
@@ -119,10 +119,9 @@ function CardHead({ p }: { p: SideProject }) {
           above the project still. */}
       <div className="relative mb-5 py-1.5">
         <TitleCorners />
-        <h3
-          className="type-heading text-ink-alt text-center uppercase"
-          style={{ fontSize: "clamp(1.25rem, 1.9vw, 1.558rem)", lineHeight: 1, letterSpacing: "-0.04em" }}
-        >
+        {/* type-subheading is the h3 tier — it already carries this size, so no
+            inline font-size override is needed to hold it under the h2. */}
+        <h3 className="type-subheading text-ink-alt text-center uppercase">
           {p.title}
         </h3>
       </div>
@@ -205,23 +204,23 @@ function Row({ pair }: { pair: SideProject[] }) {
       style={{ ["--gut" as string]: "clamp(2rem, 12vw, 15rem)" } as CSSProperties}
     >
       <BandDecor />
-      {/* Left card — `group` so hovering anywhere on it tightens the title's
-          crop-mark brackets (see TitleCorners). */}
-      <div className="group relative z-10 flex flex-col">
+      {/* Each card is an <article> — a self-contained project unit, matching how
+          the Work section wraps its tickets. `group` so hovering anywhere on it
+          tightens the title's crop-mark brackets (see TitleCorners). */}
+      <article className="group relative z-10 flex flex-col">
         <CardHead p={pair[0]} />
         <div className="mt-auto pt-[clamp(28px,3vw,52px)]">
           <CardFoot p={pair[0]} />
         </div>
-      </div>
+      </article>
       {/* Gutter spacer — desktop only */}
       <div aria-hidden className="hidden lg:block" />
-      {/* Right card */}
-      <div className="group relative z-10 flex flex-col">
+      <article className="group relative z-10 flex flex-col">
         <CardHead p={pair[1]} />
         <div className="mt-auto pt-[clamp(28px,3vw,52px)]">
           <CardFoot p={pair[1]} />
         </div>
-      </div>
+      </article>
     </div>
   );
 }
@@ -230,6 +229,7 @@ export default function SideStreets() {
   return (
     <section
       id="side-streets"
+      aria-label="Side Streets"
       className="relative overflow-x-clip bg-background py-24 sm:py-32"
     >
       {/* Section-opening full-bleed dashed rule. */}
@@ -241,12 +241,20 @@ export default function SideStreets() {
             and a lower pair on each side, mirrored across both axes. */}
         <header className="mb-16 sm:mb-20">
           <div className="relative inline-block">
-            <Cluster variant="tl" enter="0.2s" className="absolute -left-[46px] -top-[22px] hidden lg:block" />
-            <Cluster variant="bl" enter="0.5s" className="absolute -left-[46px] -bottom-[14px] hidden lg:block" />
-            <Cluster variant="tr" enter="0.35s" className="absolute -right-[46px] -top-[22px] hidden lg:block" />
-            <Cluster variant="br" enter="0.65s" className="absolute -right-[46px] -bottom-[14px] hidden lg:block" />
-            <h2 className="type-heading text-ink-alt">SIDE STREETS</h2>
-            <p className="type-caption mt-3 leading-none" style={{ fontSize: "0.9375rem" }}>
+            <Cluster variant="tl" enter="0.2s" className="absolute left-0 -top-[22px] hidden lg:block" />
+            <Cluster variant="bl" enter="0.5s" className="absolute left-0 -bottom-[14px] hidden lg:block" />
+            <Cluster variant="tr" enter="0.35s" className="absolute -right-[23px] -top-[22px] hidden lg:block" />
+            <Cluster variant="br" enter="0.65s" className="absolute -right-[23px] -bottom-[14px] hidden lg:block" />
+            {/* The left mark sits flush on the text's left edge (0) while the
+                right mark sits 46px past its right edge — the pair aren't
+                symmetric around the text. Shifting the text right by half
+                that gap (23px, lg+ only — the marks are decorative and hidden
+                below lg) centers it between the two, without moving either
+                mark: the right mark's own offset is trimmed to match (46→23)
+                so it lands back at its original spot once the text's shift
+                grows this box by the same 23px. */}
+            <h2 className="type-heading text-ink-alt lg:ml-[23px]">SIDE STREETS</h2>
+            <p className="type-caption mt-3 leading-none lg:ml-[23px]" style={{ fontSize: "0.9375rem" }}>
               <span className="text-ink-muted">Keep</span>{" "}
               <span className="text-ink-alt">wandering.</span>
             </p>

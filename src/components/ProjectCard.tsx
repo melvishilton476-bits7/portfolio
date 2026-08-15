@@ -22,7 +22,7 @@ export default function ProjectCard({
       </div>
       <div className="flex items-baseline justify-between gap-2">
         <div>
-          <h3 className="type-label text-ink">{title}</h3>
+          <h3 className="type-subheading-sm text-ink">{title}</h3>
           <p className="type-caption text-ink-muted">{meta}</p>
         </div>
         <a

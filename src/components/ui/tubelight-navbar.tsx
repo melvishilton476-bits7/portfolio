@@ -121,7 +121,10 @@ export function NavBar({ items, className }: NavBarProps) {
         className,
       )}
     >
-      <div className="relative flex items-center gap-5 sm:gap-[52px] border border-[#d9d9d9] bg-white px-3 sm:px-6 h-[43px]">
+      {/* <nav>, not <div>: this is the site's primary navigation, so it needs to
+          be a landmark screen-reader users can jump to. aria-label distinguishes
+          it from the footer's nav, which is also a landmark. */}
+      <nav aria-label="Main" className="relative flex items-center gap-5 sm:gap-[52px] border border-[#d9d9d9] bg-white px-3 sm:px-6 h-[43px]">
         {/* Registration dots centred on the four corners — blueprint marks that
             echo the hero's crop-dots (node 464:856-859). */}
         <span aria-hidden className="pointer-events-none absolute left-0 top-0 size-[5px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-btn-dark" />
@@ -130,7 +133,8 @@ export function NavBar({ items, className }: NavBarProps) {
         <span aria-hidden className="pointer-events-none absolute bottom-0 right-0 size-[5px] translate-x-1/2 translate-y-1/2 rounded-full bg-btn-dark" />
 
         {/* Logo emblem — desktop only; mobile keeps the icon bar clean. */}
-        <Link href="#top" aria-label="Home" className="hidden shrink-0 sm:block">
+        {/* Root-relative so the logo returns home from a case-study route too. */}
+        <Link href="/#top" aria-label="Home" className="hidden shrink-0 sm:block">
           <Image src="/nav-logo.svg" alt="" width={19} height={17} unoptimized className="h-[17px] w-[19px]" />
         </Link>
 
@@ -163,7 +167,7 @@ export function NavBar({ items, className }: NavBarProps) {
             </Link>
           )
         })}
-      </div>
+      </nav>
     </motion.div>
   )
 }

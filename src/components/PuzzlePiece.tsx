@@ -10,7 +10,7 @@ const LIME = "#BFFF00";
  * lib/puzzle-piece; the motion itself lives in globals.css so 19 cells cost
  * a keyframe and a custom property each rather than 19 JS-driven animations.
  */
-export default function PuzzlePiece({ side }: { side: PieceSide }) {
+export default function PuzzlePiece({ side, float = true }: { side: PieceSide; float?: boolean }) {
   const { cells, cols, rows, cell } = buildPiece(side);
   const w = cols * cell;
   const h = rows * cell;
@@ -21,7 +21,10 @@ export default function PuzzlePiece({ side }: { side: PieceSide }) {
       width={w}
       height={h}
       viewBox={`0 0 ${w} ${h}`}
-      className={`pixel-piece pixel-piece--${side}`}
+      // `float` (default) tucks the piece against a ticket edge via
+      // pixel-piece--{side}; `float={false}` is the free-standing variant
+      // (pixel-piece--free) whose placement the caller's wrapper owns.
+      className={`pixel-piece ${float ? `pixel-piece--${side}` : "pixel-piece--free"}`}
     >
       {cells.map((c, i) => (
         <rect

@@ -24,8 +24,14 @@
  */
 import type { CSSProperties } from "react";
 import HatchCell from "./HatchCell";
+import LoopPuzzle from "./LoopPuzzle";
 
 const PURPLE = "#8581ff";
+// The trailing tint for sweep bars — lighter than PURPLE so the animated
+// clip edge (always rendered at the PURPLE end) reads as the "moving,
+// current-colour" side and the fixed opposite end reads as fading behind it.
+const PURPLE_LIGHT = "#c8c6ff";
+const SWEEP_GRADIENT = `linear-gradient(to right, ${PURPLE_LIGHT}, ${PURPLE})`;
 const AMBER = "#ffae00";
 const BRACKET = "#b6b6b6";
 const DIVIDER = "rgba(23, 23, 23, 0.08)";
@@ -91,25 +97,6 @@ function HRule({ y }: { y: number }) {
   );
 }
 
-/** A filled bar that resizes in one dimension on a sparse loop (see
- *  accent-bar-* in globals.css). The element is sized BAR_EXT px wider than its
- *  resting look and clipped back to rest; `dir` picks which end extends ("r" =
- *  right, extra room added on the right; "l" = left). x/y/w/h are the RESTING
- *  box in canvas px. */
-const BAR_EXT = 8;
-function Bar({ x, y, w, h, dir, enter, loopDur }: { x: number; y: number; w: number; h: number; dir: "r" | "l"; enter: string; loopDur: string }) {
-  const box =
-    dir === "r"
-      ? { left: x, width: w + BAR_EXT, clipPath: `inset(0 ${BAR_EXT}px 0 0)` }
-      : { left: x - BAR_EXT, width: w + BAR_EXT, clipPath: `inset(0 0 0 ${BAR_EXT}px)` };
-  return (
-    <span
-      className={`absolute accent-bar-${dir}`}
-      style={{ top: y, height: h, background: PURPLE, ["--enter" as string]: enter, ["--loop-dur" as string]: loopDur, ...box } as CSSProperties}
-    />
-  );
-}
-
 /** Grey L-shaped crop mark. Base draws the bottom + right edges (a
  *  bottom-right corner); rotate to make the other three corners:
  *  0 = BR, 90 = BL, 180 = TL, 270 = TR. `x`/`y` is the mark's top-left. */
@@ -162,15 +149,17 @@ export default function HeroAccents() {
         <HatchCell className="absolute" style={{ left: 1006, top: 365, width: 47, height: 60 }} delay={120} />
 
         {/* ---- Periwinkle + amber scatter, upper-left ----------------------- */}
-        {/* resting right edge (its fixed edge) sits on the outer-left vline
-            (234); it resizes leftward, away from the line into the margin */}
-        <Bar x={153} y={276} w={81} h={13} dir="l" enter="0.6s" loopDur="7s" />
-        {/* The square hangs off the bar's bottom-right corner (234, 289): its
+        {/* The bar + square combo, nudged 8px further left into the margin (bar
+            145→226, square trailing it). The bar now SWEEPS like the far-right
+            one: right edge eases in to the left edge and back, then the left
+            edge eases in to the right edge and back (heavy ease-in-out, pure
+            clip-path). */}
+        <span className="absolute accent-bar-sweep" style={{ left: 137, top: 266, width: 81, height: 13, background: SWEEP_GRADIENT, ["--enter" as string]: "0.6s", ["--loop-dur" as string]: "4.5s" } as CSSProperties} />
+        {/* The square hangs off the bar's bottom-right corner (218, 279): its
             top-LEFT corner touches that point and it steps down-right, so the
             two meet at a single diagonal point (mirroring the right-side pair)
-            rather than sharing an edge. Its left rests on the outer-left vline
-            (234). */}
-        <span className="absolute accent-flicker-a" style={{ left: 234, top: 289, width: 16, height: 14, background: PURPLE, ["--enter" as string]: "0.8s" } as CSSProperties} />
+            rather than sharing an edge. */}
+        <span className="absolute accent-flicker-a" style={{ left: 218, top: 279, width: 16, height: 14, background: PURPLE, ["--enter" as string]: "0.8s" } as CSSProperties} />
         {/* bottom edge (+ its amber tick) snapped to top rule (365) */}
         <span className="absolute accent-enter" style={{ left: 132, top: 337, width: 37, height: 28, border: `1px solid ${PURPLE}`, ["--enter" as string]: "0.7s" } as CSSProperties} />
         <span className="absolute accent-flicker-b" style={{ left: 138, top: 344, width: 26, height: 14, background: AMBER, ["--enter" as string]: "1s" } as CSSProperties} />
@@ -187,22 +176,24 @@ export default function HeroAccents() {
         <span className="absolute accent-land-x" style={{ left: 174, top: 455, width: 30, height: 30, backgroundImage: GRADIENT_BLUE, backgroundSize: GRADIENT_SIZE, backgroundPosition: "center", backgroundRepeat: "no-repeat", ["--enter" as string]: "0.9s" } as CSSProperties} />
 
         {/* ---- Periwinkle + amber scatter, upper-right --------------------- */}
-        {/* the square is the anchor: its right edge on the outer-right vline
-            (1053) and bottom edge on the top rule (365), so its bottom-right
-            point lands on the intersection dot (1053, 365). The bar rides on its
-            top-right corner (1053, 345) and extends into the margin. */}
-        <span className="absolute accent-flicker-a" style={{ left: 1030, top: 345, width: 23, height: 20, border: `1px solid ${PURPLE}`, ["--enter" as string]: "1.2s" } as CSSProperties} />
-        {/* resting left edge (its fixed edge) sits on the outer-right vline
-            (1053); it resizes rightward, away from the line into the margin */}
-        <Bar x={1053} y={334} w={49} h={11} dir="r" enter="1.3s" loopDur="8s" />
+        {/* The lime puzzle piece sits in the first block right of the outer-right
+            vline (1053), aligned to the selector-box band (365→425). It loops:
+            grows cell-by-cell out of the line, holds, retracts, repeats. This
+            replaced the hollow square + bar that used to hang off the hatch
+            cell's top-right corner. */}
+        <LoopPuzzle side="right" className="absolute" style={{ left: 1053, top: 161 }} />
         {/* bottom edge snapped to top rule (365) — this square is the gradient
             "window": it masks a fixed-scale slice of the orange gradient, so
             resizing it reveals more/less of the image rather than scaling it. */}
         <span className="absolute accent-enter" style={{ left: 1136, top: 333, width: 37, height: 32, backgroundImage: GRADIENT_ORANGE, backgroundSize: GRADIENT_SIZE, backgroundPosition: "center", backgroundRepeat: "no-repeat", ["--enter" as string]: "1.4s" } as CSSProperties} />
         <span className="absolute accent-enter" style={{ left: 1173, top: 307, width: 37, height: 28, border: `1px solid ${PURPLE}`, ["--enter" as string]: "1.5s" } as CSSProperties} />
         <span className="absolute accent-flicker-b" style={{ left: 1182, top: 311, width: 20, height: 20, background: AMBER, ["--enter" as string]: "1.6s" } as CSSProperties} />
-        {/* bar resizes rightward (isolated, far right) */}
-        <Bar x={1201} y={505} w={47} h={9} dir="r" enter="1.7s" loopDur="9s" />
+        {/* Isolated bar, far right. It "sweeps": the right edge eases all the way
+            in to the left edge and back out, then the left edge eases in to the
+            right edge and back out — a heavy ease-in-out close/open on each side.
+            Sized to its exact resting box; the motion is pure clip-path so layout
+            never reflows (see accent-bar-sweep). */}
+        <span className="absolute accent-bar-sweep" style={{ left: 1201, top: 505, width: 47, height: 9, background: SWEEP_GRADIENT, ["--enter" as string]: "1.7s", ["--loop-dur" as string]: "4.5s" } as CSSProperties} />
 
         {/* The external-link leader that drops onto the ENGINEER box now lives
             inside Hero.tsx (hero-engineer-leader) so it tracks the live word. */}

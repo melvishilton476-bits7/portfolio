@@ -1,12 +1,14 @@
 "use client";
 
 import { useId, useRef, useState } from "react";
+import type { CSSProperties } from "react";
 import { motion, useScroll, useMotionValueEvent, useReducedMotion } from "framer-motion";
 import FeaturedProject from "./FeaturedProject";
 import Ticket from "./Ticket";
 import ProjectPanel, { type Project } from "./ProjectPanel";
 import SlideHands from "./SlideHands";
 import Asterisk from "./Asterisk";
+import HatchCell from "./HatchCell";
 import { STEP_DURATION } from "@/lib/step-motion";
 
 /**
@@ -84,6 +86,7 @@ const PROJECTS: Project[] = [
     quote:
       "A conceptual rebrand of Titan, India’s iconic eyewear brand, reimagined for the athletic market.",
     tags: ["Branding", "UI/UX"],
+    href: "/work/titan-rebrand",
   },
   {
     title: "TITAN - REBRAND",
@@ -92,6 +95,7 @@ const PROJECTS: Project[] = [
     quote:
       "A conceptual rebrand of Titan, India’s iconic eyewear brand, reimagined for the athletic market.",
     tags: ["Branding", "UI/UX"],
+    href: "/work/titan-rebrand",
   },
   {
     title: "TITAN - REBRAND",
@@ -100,6 +104,7 @@ const PROJECTS: Project[] = [
     quote:
       "A conceptual rebrand of Titan, India’s iconic eyewear brand, reimagined for the athletic market.",
     tags: ["Branding", "UI/UX"],
+    href: "/work/titan-rebrand",
   },
 ];
 
@@ -107,53 +112,35 @@ const PROJECTS: Project[] = [
 // headline (two dashed rules, a hatched intersection cell at each end, black
 // corner dots). It lives inside the centred h2, so the full-bleed rules resolve
 // off the title's centre (= viewport centre) and the cells land on the hero's
-// vertical grid lines (±406 / ±366px from centre). Desktop only.
-const SIGHTS_HATCH = `repeating-linear-gradient(45deg, #a1a1a1 0, #a1a1a1 0.75px, transparent 0.75px, transparent 6px)`;
+// vertical grid lines (±406 / ±366px from centre). Desktop only. The hatched
+// cells are drawn by the shared <HatchCell> (which owns its own hatch fill).
 const SIGHTS_DASH = `repeating-linear-gradient(to right, rgba(23,23,23,0.16) 0px, rgba(23,23,23,0.16) 10px, transparent 10px, transparent 18px)`;
 
 function SightsBand() {
   // A fixed 60px band (matching the hero's rule gap), centred on the title so
   // the text sits between the rules with equal space above and below.
   const TOP = "calc(50% - 30px)";
-  const BOT = "calc(50% + 30px)";
   const L = "calc(50% - 406px)"; // left cell (aligns with the hero's left pair)
   const R = "calc(50% + 366px)"; // right cell (aligns with the hero's right pair)
-  const dot = (lx: string, ty: string, i: number) => (
-    <span
-      key={i}
-      className="absolute size-[5px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#171717]"
-      style={{ left: lx, top: ty }}
-    />
-  );
-  const cell = (left: string, key: string) => (
-    <span
-      key={key}
-      className="absolute"
-      style={{ left, top: TOP, height: 60, width: 47, border: "1px solid #fff", backgroundColor: "rgba(133,129,255,0.09)", backgroundImage: SIGHTS_HATCH }}
-    />
-  );
   return (
     <span aria-hidden className="pointer-events-none absolute inset-0 -z-10 hidden lg:block">
-      {/* two full-bleed dashed rules bracketing the caps */}
-      <span className="absolute h-px w-screen" style={{ left: "calc(50% - 50vw)", top: TOP, backgroundImage: SIGHTS_DASH }} />
-      <span className="absolute h-px w-screen" style={{ left: "calc(50% - 50vw)", top: BOT, backgroundImage: SIGHTS_DASH }} />
-      {/* periwinkle scatter bar, upper-left, resting just above the top rule */}
-      <span className="absolute" style={{ left: "calc(50% - 535px)", top: "calc(50% - 45px)", width: 81, height: 13, background: "#8581ff" }} />
-      {/* amber box with an overlapping periwinkle outline, lower-right */}
-      <span className="absolute" style={{ left: "calc(50% + 500px)", top: "calc(50% + 33px)", width: 37, height: 24, background: "#ffae00" }} />
-      <span className="absolute" style={{ left: "calc(50% + 527px)", top: "calc(50% + 49px)", width: 22, height: 22, border: "1px solid #8581ff" }} />
-      {/* hatched cells at each end of the band */}
-      {cell(L, "l")}
-      {cell(R, "r")}
-      {/* black dots on each cell's four corners */}
-      {dot(L, TOP, 0)}
-      {dot(`calc(${L} + 47px)`, TOP, 1)}
-      {dot(L, BOT, 2)}
-      {dot(`calc(${L} + 47px)`, BOT, 3)}
-      {dot(R, TOP, 4)}
-      {dot(`calc(${R} + 47px)`, TOP, 5)}
-      {dot(R, BOT, 6)}
-      {dot(`calc(${R} + 47px)`, BOT, 7)}
+      {/* two full-bleed dashed rules bracketing the caps — their dashes march
+          rightward forever (sights-rule), same seamless loop as the hero rules */}
+      <span className="sights-rule absolute h-px w-screen" style={{ left: "calc(50% - 50vw)", top: TOP, backgroundImage: SIGHTS_DASH }} />
+      <span className="sights-rule absolute h-px w-screen" style={{ left: "calc(50% - 50vw)", top: "calc(50% + 30px)", backgroundImage: SIGHTS_DASH }} />
+      {/* periwinkle "blue band", upper-left — it sweeps (right edge eases in to
+          the left and back, then the left edge in to the right and back), same
+          heavy ease-in-out clip-path loop as the hero bars. */}
+      <span className="accent-bar-sweep absolute" style={{ left: "calc(50% - 543px)", top: "calc(50% - 45px)", width: 81, height: 13, background: "linear-gradient(to right, #c8c6ff, #8581ff)", ["--enter" as string]: "0.6s", ["--loop-dur" as string]: "4.5s" } as CSSProperties} />
+      {/* amber box with an overlapping periwinkle outline, lower-right — each
+          flickers-and-settles on its own sparse loop (like the hero scatter). */}
+      <span className="accent-flicker-b absolute" style={{ left: "calc(50% + 500px)", top: "calc(50% + 33px)", width: 37, height: 24, background: "#ffae00", ["--enter" as string]: "0.8s" } as CSSProperties} />
+      <span className="accent-flicker-a absolute" style={{ left: "calc(50% + 527px)", top: "calc(50% + 49px)", width: 22, height: 22, border: "1px solid #8581ff", ["--enter" as string]: "1s" } as CSSProperties} />
+      {/* hatched "boxes" at each end of the band — the animated HatchCell (dots
+          pop, box wipes open L→R, hatch lines wipe in) when scrolled into view,
+          staggered left→right. Each brings its own corner dots. */}
+      <HatchCell className="absolute" style={{ left: L, top: TOP, height: 60, width: 47 }} delay={0} />
+      <HatchCell className="absolute" style={{ left: R, top: TOP, height: 60, width: 47 }} delay={120} />
     </span>
   );
 }
@@ -421,6 +408,10 @@ export default function Work() {
   return (
     <section
       id="work"
+      // aria-label (not aria-labelledby): this section renders its heading twice
+      // — once for the static small-screen layout, once for the pinned carousel
+      // — so pointing at a heading id would mean a duplicate id in the document.
+      aria-label="Sights to See"
       className="relative z-10 rounded-t-slab bg-background py-24 shadow-[0_-22px_55px_-14px_rgba(0,0,0,0.28)] sm:py-32"
     >
       <SlideHands />

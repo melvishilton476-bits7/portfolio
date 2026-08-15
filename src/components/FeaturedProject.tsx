@@ -59,11 +59,13 @@ export default function FeaturedProject({
         />
 
         <blockquote
-          className="type-label mt-5 text-center leading-snug text-white"
-          // Smaller than the type-label default: .type-label is unlayered CSS
-          // and beats Tailwind's layered text utilities, so the size has to be
-          // set inline to win the cascade.
-          style={{ fontSize: "0.9375rem" }}
+          // Was .type-label — a LABEL token (weight 500) carrying descriptive
+          // prose, which made this the heaviest text on the card: heavier than
+          // the h3 title it describes. Now weight 400, matching the card's meta
+          // and leaving the title to lead on size alone. Dropping the class also
+          // retires the inline font-size that only existed to out-specify it
+          // (.type-label is unlayered and beat Tailwind's text utilities).
+          className="font-display mt-5 text-center text-[0.9375rem] font-normal leading-snug tracking-[-0.05em] text-white"
           // The card is the link; the quote is a description, not a target.
           aria-hidden
         >

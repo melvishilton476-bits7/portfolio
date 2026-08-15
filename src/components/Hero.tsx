@@ -19,6 +19,10 @@ export default function Hero() {
     <section
       className="page-container sticky top-0 z-0 flex min-h-screen flex-col justify-center pt-24 sm:pt-32"
       id="top"
+      // Names the region. A <section> without an accessible name is announced
+      // as an anonymous "region", which tells a screen-reader user nothing —
+      // naming it makes the page's four areas navigable.
+      aria-label="Introduction"
     >
       {/* Scattered blueprint accents behind everything — periwinkle squares,
           a lime block, a corner bracket, plus-marks and two rules bracketing
@@ -37,9 +41,9 @@ export default function Hero() {
           className="mb-8 h-auto w-[clamp(220px,40vw,360px)] scale-75"
         />
 
-        {/* Greeting — a small supporting line above the headline. Shares the
-            tagline's weight (type-lead's own is overridden here) but takes
-            the headline's ink colour instead of type-lead's muted default. */}
+        {/* Greeting — matches the lead's size (same type-lead token) rather
+            than a smaller eyebrow; keeps its own darker ink colour and weight
+            since it still reads first, just no longer at a different scale. */}
         <p
           className="type-lead mb-2"
           style={{ fontWeight: 300, color: "var(--color-ink-hero)" }}
@@ -51,7 +55,15 @@ export default function Hero() {
             ENGINEER share the base display weight; the connecting words
             ("A", "who can") are a lighter weight so the two roles stand out. */}
         <div className="relative w-full">
-          <h1 className="type-display text-ink-hero text-balance">
+          {/* aria-label pins the accessible name to the clean sentence. Without
+              it the name is computed from the subtree, which pulls in the decode
+              effect's duplicate word and the leader glyph — it announced as
+              "A DESIGNER who can ↗ENGINEERENGINEER". An explicit label on the
+              heading wins over name-from-content outright. */}
+          <h1
+            className="type-display text-ink-hero text-balance"
+            aria-label="A DESIGNER who can ENGINEER"
+          >
             <span className="font-light" style={{ fontWeight: 300 }}>
               A
             </span>{" "}

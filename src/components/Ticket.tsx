@@ -54,7 +54,7 @@ export default function Ticket({
       >
         {/* Body — clears the top dip so the title doesn't sit under the cut. */}
         <div className="px-4 pt-5">
-          <h3 className="type-label leading-none">{title}</h3>
+          <h3 className="type-subheading-sm leading-none">{title}</h3>
           <p className="type-caption mt-1 opacity-80">{meta}</p>
         </div>
 
@@ -68,17 +68,40 @@ export default function Ticket({
 
         {/* Stub — height matches --tear-y (4rem). The CTA is just the label in
             the card's ink colour, framed by four crop-mark brackets (same ink)
-            — no filled box. */}
+            — no filled box.
+
+            Hover repeats the hero CTA's crop-mark move (Hero.tsx): each corner
+            is its own group so the bracket and the registration dot nested in
+            its crook slide inward together, and the label picks up a soft glow.
+            Bracket + dot both use `current` rather than the site's #171717 so
+            the mark stays legible on the darkly tinted tickets — the ink here
+            IS the card's foreground colour. */}
         <div className="flex h-16 items-center px-4">
           <a
             href={href}
-            className="type-caption relative block w-full py-2 text-center transition-opacity hover:opacity-85"
+            className="type-caption group relative block w-full py-2 text-center transition-opacity hover:opacity-85"
           >
-            <span aria-hidden className="pointer-events-none absolute left-0 top-0 h-2 w-2 border-l border-t border-current" />
-            <span aria-hidden className="pointer-events-none absolute right-0 top-0 h-2 w-2 border-r border-t border-current" />
-            <span aria-hidden className="pointer-events-none absolute bottom-0 left-0 h-2 w-2 border-b border-l border-current" />
-            <span aria-hidden className="pointer-events-none absolute bottom-0 right-0 h-2 w-2 border-b border-r border-current" />
-            View Project
+            {/* TL */}
+            <span aria-hidden className="pointer-events-none absolute left-0 top-0 transition-transform duration-300 ease-out group-hover:translate-x-[3px] group-hover:translate-y-[3px]">
+              <span className="block h-2 w-2 border-l border-t border-current" />
+              <span className="absolute left-0 top-0 size-[2.5px] translate-x-[3px] translate-y-[3px] rounded-full bg-current" />
+            </span>
+            {/* TR */}
+            <span aria-hidden className="pointer-events-none absolute right-0 top-0 transition-transform duration-300 ease-out group-hover:-translate-x-[3px] group-hover:translate-y-[3px]">
+              <span className="block h-2 w-2 border-r border-t border-current" />
+              <span className="absolute right-0 top-0 size-[2.5px] -translate-x-[3px] translate-y-[3px] rounded-full bg-current" />
+            </span>
+            {/* BL */}
+            <span aria-hidden className="pointer-events-none absolute bottom-0 left-0 transition-transform duration-300 ease-out group-hover:translate-x-[3px] group-hover:-translate-y-[3px]">
+              <span className="block h-2 w-2 border-b border-l border-current" />
+              <span className="absolute bottom-0 left-0 size-[2.5px] translate-x-[3px] -translate-y-[3px] rounded-full bg-current" />
+            </span>
+            {/* BR */}
+            <span aria-hidden className="pointer-events-none absolute bottom-0 right-0 transition-transform duration-300 ease-out group-hover:-translate-x-[3px] group-hover:-translate-y-[3px]">
+              <span className="block h-2 w-2 border-b border-r border-current" />
+              <span className="absolute bottom-0 right-0 size-[2.5px] -translate-x-[3px] -translate-y-[3px] rounded-full bg-current" />
+            </span>
+            <span className="ticket-cta-label">View Project</span>
           </a>
         </div>
 

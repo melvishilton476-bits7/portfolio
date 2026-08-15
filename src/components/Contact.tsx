@@ -60,7 +60,7 @@ export default function Contact() {
     "w-full bg-btn-dark px-4 text-white placeholder:text-white/40 outline-none ring-1 ring-white/10 focus:ring-accent";
 
   return (
-    <section id="contact" className="relative overflow-x-clip py-24 sm:py-32">
+    <section id="contact" aria-label="Contact" className="relative overflow-x-clip py-24 sm:py-32">
       <div className="page-container">
       <header className="mb-14">
         {/* Heading band — full-bleed dashed rules top & bottom, periwinkle
@@ -90,7 +90,12 @@ export default function Contact() {
         </div>
       </header>
 
-      <div className="grid items-end gap-14 lg:grid-cols-[minmax(0,370px)_1fr]">
+      {/* Shifted right so the form's own left edge (and the periwinkle
+          corner-marks hanging off it) line up with the subtitle's left crop
+          mark above — same offset formula as the subtitle's own margin
+          (72px band-gap minus its -26px bracket offset = 46px + gap), so the
+          two track together at every width instead of a magic number. */}
+      <div className="grid items-end gap-14 lg:ml-[calc(46px+clamp(1.25rem,4vw,2.75rem))] lg:grid-cols-[minmax(0,370px)_1fr]">
         {/* Form — kept compact (p-6, 40px fields, 3-row message, gap-4) so the
             dark box sits trimly beside the campfire/chair rather than looming
             over them. */}
@@ -107,12 +112,12 @@ export default function Contact() {
               (2) right edge beside the Email field: filled resting flush on the
               edge (outside), outline continuing up-right. */}
           <span aria-hidden className="pointer-events-none absolute left-0 top-0 hidden lg:block">
-            <span className="absolute -left-[36px] -top-[36px] size-[18px]" style={{ background: PURPLE }} />
-            <span className="absolute -left-[18px] -top-[18px] size-[18px]" style={{ border: `1px solid ${PURPLE}` }} />
+            <span className="absolute -left-[20px] -top-[20px] size-[10px] accent-flicker-a" style={{ background: PURPLE, ["--enter" as string]: "0.9s" } as CSSProperties} />
+            <span className="absolute -left-[10px] -top-[10px] size-[10px] accent-flicker-b" style={{ border: `1px solid ${PURPLE}`, ["--enter" as string]: "1.1s" } as CSSProperties} />
           </span>
           <span aria-hidden className="pointer-events-none absolute left-full top-[140px] hidden lg:block">
-            <span className="absolute left-0 top-0 size-[18px]" style={{ background: PURPLE }} />
-            <span className="absolute left-[18px] -top-[18px] size-[18px]" style={{ border: `1px solid ${PURPLE}` }} />
+            <span className="absolute left-0 top-0 size-[10px] accent-flicker-b" style={{ background: PURPLE, ["--enter" as string]: "1.3s" } as CSSProperties} />
+            <span className="absolute left-[10px] -top-[10px] size-[10px] accent-flicker-a" style={{ border: `1px solid ${PURPLE}`, ["--enter" as string]: "1.5s" } as CSSProperties} />
           </span>
           <div className="flex flex-col gap-4">
             <label className="flex flex-col gap-2">
