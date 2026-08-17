@@ -2,9 +2,28 @@ import CaseHero from "@/components/case/CaseHero";
 import Beat, { P } from "@/components/case/Beat";
 import BandLine from "@/components/case/BandLine";
 import SquareList from "@/components/case/SquareList";
-import MarkLadder from "@/components/case/MarkLadder";
 import CaseOverview from "@/components/case/CaseOverview";
 import { Figure, FigureGrid, ComparePair } from "@/components/case/Figure";
+import TitanConstruction from "@/components/case/TitanConstruction";
+import DirectionMark, { BoilDefs } from "@/components/case/DirectionMark";
+import TypeBento from "@/components/case/TypeBento";
+import GradientSwatch from "@/components/case/GradientSwatch";
+import InUseBento from "@/components/case/InUseBento";
+import CampaignPair from "@/components/case/CampaignPair";
+import Image from "next/image";
+
+/** The six directions that didn't survive. Labels stay generic on purpose —
+ *  naming them would invite the reader to judge each one, when the argument
+ *  the grid makes is about the volume of dead ends, not their individual
+ *  merits. */
+const DIRECTIONS = [
+  "Direction 01",
+  "Direction 02",
+  "Direction 03",
+  "Direction 04",
+  "Direction 05",
+  "Direction 06",
+] as const;
 
 /**
  * TITAN — the first case study.
@@ -34,15 +53,20 @@ export default function TitanCaseStudy() {
             One process artifact, before any designed work — it shows that
             thinking happened before making, which no finished asset can. */}
         <Beat kicker="The context" title="The brief was open.">
-          <P>A brand, start to finish, three months, on my own.</P>
+          <P>I got here because of a Travis Scott show, weirdly enough.</P>
           <P>
-            I picked eyewear because I&rsquo;d spent an embarrassing amount of time before a
-            Travis Scott show looking for a pair of glasses to wear and not finding them.
-            What I noticed while looking was that almost everything on the market is
-            designed to be seen. Very little of it is designed to do anything.
+            I spent way too long beforehand trying to find a pair of glasses I actually
+            wanted to wear, and never landed on anything. Most of what I tried on was
+            clearly built to be looked at. Whether it did anything once you actually had
+            it on felt like an afterthought.
           </P>
-          <P>I chose the name Titan because it had weight and somewhere to go.</P>
-          <P>Sport is where my head goes by default, so I took it toward performance.</P>
+          <P>
+            The brief was open, so I gave that problem to Titan. It&rsquo;s a name that
+            already carries weight, and performance is a segment it has simply never
+            touched. The project is what that move would look like if the brand actually
+            made it: three months, start to finish, on my own.
+          </P>
+          <P>Sport is where my head goes by default, so that&rsquo;s the version of Titan I built.</P>
         </Beat>
 
         <Figure label="Sketchbook &amp; reference board" ratio={3 / 2} />
@@ -78,17 +102,17 @@ export default function TitanCaseStudy() {
           </P>
         </Beat>
 
+        {/* 4:3 rather than the square this held as a Placeholder: the marks
+            run from 3.4:1 to 0.8:1, and in a square box the widest of them
+            would have sat at a third of the cell height. */}
         <FigureGrid
           columns={3}
-          ratio={1}
-          items={[
-            "Direction 01",
-            "Direction 02",
-            "Direction 03",
-            "Direction 04",
-            "Direction 05",
-            "Direction 06",
-          ]}
+          ratio={4 / 3}
+          items={DIRECTIONS}
+          before={<BoilDefs count={DIRECTIONS.length} />}
+          visuals={DIRECTIONS.map((label, i) => (
+            <DirectionMark key={label} index={i} label={label} />
+          ))}
         />
 
         {/* ---- The turn --------------------------------------------------- */}
@@ -106,7 +130,21 @@ export default function TitanCaseStudy() {
           <P>That became the thesis.</P>
         </Beat>
 
-        <Figure label="Eagle spread — sharp / speed / designed with intention" ratio={16 / 9} />
+        {/* Native ratio, not 16:9 — cropping this frame would cost the wingtips,
+            which are the whole point of it. */}
+        <Figure
+          label="Eagle spread — sharp / speed / designed with intention"
+          ratio={1920 / 918}
+          visual={
+            <Image
+              src="/case/titan/eagle-spread.webp"
+              alt="An eagle seen head-on, wings raised into a sharp triangular arch as it drops toward the water at speed"
+              fill
+              sizes="(max-width: 880px) 100vw, 880px"
+              className="object-cover"
+            />
+          }
+        />
       </div>
 
       {/* The thesis breaks out of the text column into a full-width band. */}
@@ -138,7 +176,21 @@ export default function TitanCaseStudy() {
         <ComparePair
           left="Reference"
           right="Construction"
-          ratio={1}
+          leftVisual={
+            <Image
+              src="/case/titan/reference-eagle.webp"
+              alt="Golden eagle photographed head-on, with the mark's x and y axes, its sight lines and the words 'designed with intention' drawn over it"
+              fill
+              sizes="(max-width: 640px) 100vw, 480px"
+              className="object-cover"
+            />
+          }
+          rightVisual={<TitanConstruction />}
+          // The reference's own 932×1145. Both halves then bleed to their edges
+          // with nothing cropped: a square box would have taken 19% off the
+          // reference's bottom, including its "Y – AXIS" label — losing half of
+          // a labelled pair in the one figure whose argument IS the annotation.
+          ratio={932 / 1145}
           caption={
             <>
               The correspondence, part for part: the brow ridge and outer eyes become the two
@@ -163,7 +215,7 @@ export default function TitanCaseStudy() {
           </P>
         </Beat>
 
-        <Figure label="Morgant original vs. the custom cut — corner detail" ratio={16 / 9} />
+        <TypeBento />
 
         {/* ---- The system — a breadth beat. Volume is the argument. ------- */}
         <Beat kicker="The system" title="The colours came from material in the first place.">
@@ -184,36 +236,77 @@ export default function TitanCaseStudy() {
           </P>
         </Beat>
 
+        {/* 4:3 is the charred-wood export's own ratio, so the cell that carries
+            the palette crops nothing. The manual (1.27:1) loses 5% off its
+            top and bottom, all of it table. */}
         <FigureGrid
           columns={2}
           ratio={4 / 3}
           items={[
             "Colour on charred wood",
-            "The two gradients",
-            "Typography spread",
+            "Gradient — clarity",
+            "Gradient — heat",
             "Printed manual",
+          ]}
+          visuals={[
+            <Image
+              key="wood"
+              src="/case/titan/system/charred-wood.webp"
+              alt="The three brand colours — Obsidian Depth, Arctic Light and Steel Veil — as chips laid over a photograph of charred wood"
+              fill
+              sizes="(max-width: 640px) 100vw, 480px"
+              className="object-cover"
+            />,
+            // Plain <img>: Next won't optimise SVG without `dangerouslyAllowSVG`.
+            // Native 1.37:1 against a 1.333 cell, so `cover` shaves 3% off the
+            // sides — and since the ramp runs top to bottom (the rect's
+            // rotate(90) puts the gradient axis on the vertical), none of it
+            // comes off the ramp.
+            <GradientSwatch key="clarity">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/case/titan/system/gradient-clarity.svg"
+                alt="The clarity gradient, ramping from near-black through blue to near-white, with the TITAN mark centred on it"
+                className="absolute inset-0 h-full w-full object-cover"
+              />
+            </GradientSwatch>,
+            // `object-fill`, uniquely on this one. It's a 0.56:1 portrait and
+            // its ramp is also vertical, so `cover` into a landscape cell would
+            // keep only the middle 42% — showing a slice of the gradient
+            // instead of the gradient. Stretching preserves the full ramp; the
+            // only casualty is the radial bloom widening, which on a swatch
+            // reads as intended rather than as distortion.
+            <GradientSwatch key="heat">
+              <Image
+                src="/case/titan/system/gradient-heat.webp"
+                alt="The heat gradient, ramping from pale cream through orange to black, with the TITAN mark centred on it"
+                fill
+                sizes="(max-width: 640px) 100vw, 480px"
+                className="object-fill"
+              />
+            </GradientSwatch>,
+            <Image
+              key="manual"
+              src="/case/titan/system/printed-manual.webp"
+              alt="The printed TITAN brand manual held in one hand over a dark wood table"
+              fill
+              sizes="(max-width: 640px) 100vw, 480px"
+              className="object-cover"
+            />,
           ]}
         />
 
-        {/* ---- The hinge constraint — the mark surviving. ----------------- */}
-        <Beat kicker="A constraint that shaped the design" title="On eyewear, the identity has to survive the hinge.">
-          <P>
-            The mark gets stamped on a temple arm a few millimetres wide, and that&rsquo;s
-            where most eyewear logos quietly stop working.
-          </P>
-          <P>
-            So I built the sizing ladder backwards, from 185px down to 55px, and let the
-            smallest size decide how much detail the mark was allowed to carry. Anything
-            that disappeared at the bottom didn&rsquo;t belong at the top.
-          </P>
+        {/* ---- In use ----------------------------------------------------
+            Same shape as the campaign beat below it: label, a title that is
+            just the list, then one line of commentary on it. */}
+        <Beat
+          kicker="In use"
+          title="Frames, packaging, business cards, an ID, a letterhead."
+        >
+          <P>This is the part I wanted to see finished rather than described.</P>
         </Beat>
 
-        <figure>
-          <MarkLadder />
-          <figcaption className="type-caption text-ink-muted mx-auto mt-4 max-w-[560px] text-center">
-            The mark at its smallest, where most eyewear identities stop working.
-          </figcaption>
-        </figure>
+        <InUseBento />
 
         {/* ---- The campaign ---------------------------------------------- */}
         <Beat kicker="The campaign" title="Four faces. Mud, snow, heat, endurance.">
@@ -235,13 +328,8 @@ export default function TitanCaseStudy() {
           </P>
         </Beat>
 
-        {/* Payoff grid — alternating cool and warm so no two hot frames sit
-            adjacent, per the campaign's own sequencing. */}
-        <FigureGrid
-          columns={2}
-          ratio={3 / 4}
-          items={["Snow", "Heat", "Endurance", "Mud"]}
-        />
+        {/* The payoff, placed rather than presented — see CampaignPair. */}
+        <CampaignPair />
 
         {/* ---- Reflection — no images. ----------------------------------- */}
         <Beat kicker="What stayed with me" title="A thesis is worth more than a reference.">

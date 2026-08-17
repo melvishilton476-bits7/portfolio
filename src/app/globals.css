@@ -203,6 +203,47 @@ body {
   color: var(--color-ink-muted);
 }
 
+/* Justified running prose — case-study body copy.
+   Justification only works if the line has enough places it can break, or the
+   spaces stretch to fill the deficit and you get rivers. So the alignment never
+   ships alone; everything below is what makes it survivable:
+
+   - hyphens, to buy break opportunities. hyphenate-limit-chars is measured, not
+     guessed: 5 2 3 was the setting that actually moved the numbers. Allowing a
+     2-letter head (re-, de-, in-) is the one parameter that matters — it takes
+     the median line from 1.31x natural word-space to 1.22x and halves the lines
+     over 1.6x. Keeping the tail at 3 is what still bans a stranded "-ly" or
+     "-ed", which is the half of a bad break you actually notice.
+   - inter-word, so the slack goes into spaces only. The default can letterspace
+     to fill, and stretched letterforms read as a different weight mid-paragraph.
+   - kerning and common ligatures on, since tight-set justified text is where
+     unkerned pairs actually show.
+   - tracking is set here rather than inline, and looser than the -0.02em the
+     ragged version used. Negative tracking pulls glyphs together while
+     justification pushes word-spaces apart, and at -0.02em the two fight
+     visibly — the gaps read as holes because the words either side are dense.
+
+   Below sm it goes back to ragged-right: at a phone measure there are only
+   6-8 words a line, too few for the spaces to absorb without gaping. Hyphens
+   stay on there, where they tidy the rag instead. */
+.prose-justified {
+  hyphens: auto;
+  -webkit-hyphens: auto;
+  hyphenate-limit-chars: 5 2 3;
+  font-kerning: normal;
+  font-variant-ligatures: common-ligatures;
+  letter-spacing: -0.011em;
+}
+
+@media (width >= 40rem) {
+  .prose-justified {
+    text-align: justify;
+    text-justify: inter-word;
+    /* The last line stays left, never stretched to the full measure. */
+    text-align-last: left;
+  }
+}
+
 .type-label {
   font-family: var(--font-display);
   font-size: var(--text-label);
@@ -681,8 +722,12 @@ body {
   .fireplace-boil,
   .asterisk-boil,
   .chair-boil,
-  .cat-boil {
-    filter: none;
+  .cat-boil,
+  /* The logo directions boil through CSS `filter` rather than an SVG
+     attribute, so `none` here is overriding an inline style — same result,
+     but it needs the specificity note. */
+  .direction-boil {
+    filter: none !important;
   }
 }
 
@@ -1252,6 +1297,105 @@ body {
     opacity: 1;
     transform: none;
     transition: none;
+  }
+}
+
+/* ==========================================================================
+   TITAN CONSTRUCTION DIAGRAM
+   The mark animated as a derivation — geometry, then the points that geometry
+   lands on, then the form. All the timing lives on the elements as `--d`
+   (see TitanConstruction.tsx, which solves each node's moment from where its
+   line actually crosses it); this file only supplies the motion.
+
+   Every line and path carries pathLength="1", so dasharray/offset work in a
+   normalised 0–1 space and long lines just travel faster — the set finishes
+   together.
+   ========================================================================== */
+.tc-line {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  opacity: 0;
+}
+.is-grown .tc-line {
+  animation: tc-draw 800ms cubic-bezier(0.22, 0.61, 0.36, 1) var(--d) forwards;
+}
+/* Settles to .59 — the opacity the source artwork carries on its line group,
+   so the resting state matches the file exactly while the draw itself runs
+   brighter. */
+@keyframes tc-draw {
+  from {
+    stroke-dashoffset: 1;
+    opacity: 0.95;
+  }
+  to {
+    stroke-dashoffset: 0;
+    opacity: 0.59;
+  }
+}
+
+/* fill-box so a 1.49px square scales about its own centre rather than the
+   SVG origin. Overshoots hard (2.6x) because at the rendered size these are
+   ~1.6px marks — without the overshoot the pop is invisible. */
+.tc-node {
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+.is-grown .tc-node {
+  animation: tc-node-pop 260ms cubic-bezier(0.34, 1.3, 0.64, 1) var(--d) forwards;
+}
+@keyframes tc-node-pop {
+  0% {
+    opacity: 0;
+    transform: scale(0);
+  }
+  55% {
+    opacity: 1;
+    transform: scale(2.6);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.tc-mark {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  fill-opacity: 0;
+}
+.is-grown .tc-mark {
+  animation:
+    tc-mark-draw 620ms cubic-bezier(0.22, 0.61, 0.36, 1) var(--d) forwards,
+    tc-mark-fill 520ms ease-out var(--fd) forwards;
+}
+@keyframes tc-mark-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes tc-mark-fill {
+  to {
+    fill-opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tc-line,
+  .tc-node,
+  .tc-mark {
+    animation: none !important;
+  }
+  .tc-line {
+    stroke-dashoffset: 0;
+    opacity: 0.59;
+  }
+  .tc-node {
+    opacity: 1;
+  }
+  .tc-mark {
+    stroke-dashoffset: 0;
+    fill-opacity: 1;
   }
 }
 

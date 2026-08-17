@@ -27,8 +27,14 @@ export default function BandLine({
     /* The rules are absolutely positioned against THIS box and run to both
        viewport edges, so it stays full-bleed; the text sits in the padded
        container inside it. Without that inner padding the line ran straight
-       off the screen on mobile, where the heading is wider than the viewport. */
-    <div className="relative w-full py-2">
+       off the screen on mobile, where the heading is wider than the viewport.
+
+       No VERTICAL padding, deliberately: the box collapses to the hatch cells'
+       own 58px, which puts the rules flush on the cells' top and bottom edges
+       so each corner dot straddles a rule. That is how every other band on the
+       site is built (see the "Come have a seat!" header) — an 8px inset here
+       floated the dots in empty space and broke the pattern. */
+    <div className="relative w-full">
       <DashRule edge="top" />
       <DashRule edge="bottom" />
       <div className="page-container flex items-center justify-center gap-[clamp(1.25rem,4vw,2.75rem)]">

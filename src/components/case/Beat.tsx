@@ -37,16 +37,21 @@ export default function Beat({
 /**
  * Body paragraph — the lead token, matching the hero tagline exactly.
  *
+ * Justified via `prose-justified` (globals.css), which also carries the
+ * hyphenation, the inter-word setting and the tracking the alignment needs to
+ * not river. Tracking lives there rather than inline for that reason: it is part
+ * of the justification, not a property of this component.
+ *
  * `text-pretty`, not `text-balance`: balancing equalises line lengths, which is
- * right for a two-line headline and wrong for running prose — it pulls the last
- * lines short and leaves the paragraph visibly ragged. Pretty only guards
- * against orphans, which is the actual problem in a column this narrow.
+ * right for a two-line headline and wrong for running prose. Pretty guards
+ * against a one-word last line, which justification makes worse rather than
+ * better — a stranded word sits alone against a hard flush edge above it.
  */
 export function P({ children }: { children: ReactNode }) {
   return (
     <p
-      className="type-lead text-pretty"
-      style={{ letterSpacing: "-0.02em", fontWeight: 300 }}
+      className="type-lead prose-justified text-pretty"
+      style={{ fontWeight: 300 }}
     >
       {children}
     </p>
