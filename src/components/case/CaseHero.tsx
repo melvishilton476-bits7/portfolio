@@ -1,6 +1,7 @@
 import type { CSSProperties } from "react";
 import Image from "next/image";
 import GrowOnView from "../GrowOnView";
+import Placeholder from "../Placeholder";
 import { TiltCard } from "../ui/tilt-card";
 import CropMarks from "./CropMarks";
 
@@ -46,11 +47,28 @@ export default function CaseHero({
   title,
   dek,
   frameLabel,
+  image,
+  lockup,
+  fade = true,
 }: {
   eyebrow: string;
   title: string;
   dek: string;
   frameLabel: string;
+  /** The hero plate. `ratio` defaults to 16:9, and `objectPosition` anchors
+   *  the crop when the artwork's own ratio differs from it. Omit `src` and the
+   *  plate keeps a <Placeholder> at the same ratio, so a hero can reserve its
+   *  shape before the export lands — the same convention <Figure> follows. */
+  image?: { src?: string; ratio?: number; objectPosition?: string };
+  /** Optional second layer, floated toward the viewer so it swings wider than
+   *  the plate under tilt. Omit on a hero whose plate already carries its own
+   *  lockup — a second one would just repeat the title. */
+  lockup?: { src: string; width: number; height: number };
+  /** The white bottom gradient. It dissolves a dark, full-bleed photograph
+   *  into the page, which is what Titan's hero needs. Turn it OFF for flat
+   *  artwork on a light ground: there is no edge to dissolve, and the ramp
+   *  just bleaches the bottom two thirds of the art. */
+  fade?: boolean;
 }) {
   return (
     <header className="pt-32 sm:pt-40">
@@ -96,45 +114,63 @@ export default function CaseHero({
               glare={0.06}
               className="overflow-visible"
             >
-              {/* The plate. Native art is 1.415:1 against this 16:9 box, so
-                  cover crops ~20% — anchored to the top so the crop always
-                  comes off the bottom (dark coat, which the fade eats anyway)
-                  and never off the helmet. */}
-              <div
-                className="relative w-full overflow-hidden rounded-[3px]"
-                style={{ aspectRatio: "16 / 9" }}
-              >
-                <Image
-                  src="/case/titan/hero-bg.webp"
-                  alt={frameLabel}
-                  fill
-                  priority
-                  sizes="(max-width: 1100px) 100vw, 1100px"
-                  className="object-cover object-top"
+              {/* The plate. On Titan the native art is 1.415:1 against a 16:9
+                  box, so cover crops ~20% — anchored to the top so the crop
+                  always comes off the bottom (dark coat, which the fade eats
+                  anyway) and never off the helmet. A hero whose art is already
+                  the right shape passes its own ratio and crops nothing. */}
+              {image?.src ? (
+                <div
+                  className="relative w-full overflow-hidden rounded-[3px]"
+                  style={{ aspectRatio: String(image.ratio ?? 16 / 9) }}
+                >
+                  <Image
+                    src={image.src}
+                    alt={frameLabel}
+                    fill
+                    priority
+                    sizes="(max-width: 1100px) 100vw, 1100px"
+                    className="object-cover"
+                    style={{ objectPosition: image.objectPosition ?? "top" }}
+                  />
+                </div>
+              ) : (
+                <Placeholder
+                  label={frameLabel}
+                  ratio={image?.ratio ?? 16 / 9}
+                  className="rounded-[3px]"
                 />
-              </div>
+              )}
 
               {/* The lockup, floated toward the viewer. Centred on the plate,
                   so it lands over the ember lens. */}
-              <div
-                aria-hidden
-                className="pointer-events-none absolute inset-0 grid place-items-center"
-                style={{ transform: LOCKUP_TRANSFORM }}
-              >
-                <Image
-                  src="/case/titan/hero-lockup.png"
-                  alt=""
-                  width={684}
-                  height={280}
-                  priority
-                  style={{ width: LOCKUP_WIDTH, height: "auto" }}
-                />
-              </div>
-              {/* Top two corners only — the lower pair sits inside the fade,
-                  where a mark would only half-appear. Keeps the hero's original
-                  26 × 18 offsets rather than the figures' tighter 8 × 8: at
-                  1100px wide the marks need the extra room to read. */}
-              <CropMarks offsetX={26} offsetY={18} corners={["tl", "tr"]} />
+              {lockup ? (
+                <div
+                  aria-hidden
+                  className="pointer-events-none absolute inset-0 grid place-items-center"
+                  style={{ transform: LOCKUP_TRANSFORM }}
+                >
+                  <Image
+                    src={lockup.src}
+                    alt=""
+                    width={lockup.width}
+                    height={lockup.height}
+                    priority
+                    style={{ width: LOCKUP_WIDTH, height: "auto" }}
+                  />
+                </div>
+              ) : null}
+              {/* Top two corners only when the fade is on — the lower pair
+                  would sit inside it and only half-appear. Without the fade
+                  there is nothing to hide them, so the frame closes properly.
+                  Keeps the hero's original 26 × 18 offsets rather than the
+                  figures' tighter 8 × 8: at 1100px wide the marks need the
+                  extra room to read. */}
+              <CropMarks
+                offsetX={26}
+                offsetY={18}
+                corners={fade ? ["tl", "tr"] : undefined}
+              />
             </TiltCard>
           </GrowOnView>
         </div>
@@ -149,11 +185,13 @@ export default function CaseHero({
             the overhang the frame's dashed bottom border pokes out below the
             fade as a hard line on hover. The gradient's last stop is opaque
             #fff on a #fff page, so the overhang itself is invisible. */}
-        <div
-          aria-hidden
-          className="pointer-events-none absolute -bottom-4 h-[calc(65%+1rem)] w-screen"
-          style={{ left: "calc(50% - 50vw)", background: `linear-gradient(to top, ${FADE_STOPS})` }}
-        />
+        {fade ? (
+          <div
+            aria-hidden
+            className="pointer-events-none absolute -bottom-4 h-[calc(65%+1rem)] w-screen"
+            style={{ left: "calc(50% - 50vw)", background: `linear-gradient(to top, ${FADE_STOPS})` }}
+          />
+        ) : null}
       </div>
     </header>
   );

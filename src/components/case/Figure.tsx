@@ -60,16 +60,28 @@ export function Figure({
   label,
   ratio = 16 / 9,
   caption,
+  heading,
   visual,
+  maxWidth = 880,
 }: {
   label: string;
   ratio?: number;
   caption?: React.ReactNode;
+  /** A statement rather than a note. Set on a figure that carries a claim the
+   *  page is making — it renders as a heading under the frame instead of the
+   *  small muted caption, because "the warning sign is visible before the
+   *  hazard it names" is the argument, not an aside about the picture. */
+  heading?: React.ReactNode;
   /** Real artwork. Omit and the slot keeps its Placeholder. */
   visual?: React.ReactNode;
+  /** Cap in px, for artwork the default 880 would render absurdly tall. A
+   *  portrait panel at 0.77 is 1148px tall across the full measure; a border
+   *  detail at 0.39 is over 2000. Width is the only lever, since the ratio is
+   *  the artwork's own and cropping it is what this figure exists to avoid. */
+  maxWidth?: number;
 }) {
   return (
-    <figure className="mx-auto w-full max-w-[880px]">
+    <figure className="mx-auto w-full" style={{ maxWidth }}>
       <GrowOnView className="case-figure relative block">
         <Framed>
           {visual ? (
@@ -84,7 +96,19 @@ export function Figure({
         </Framed>
         <CropMarks />
       </GrowOnView>
-      {caption ? <figcaption><Caption>{caption}</Caption></figcaption> : null}
+      {heading || caption ? (
+        <figcaption>
+          {heading ? (
+            <h3
+              className="type-caption mx-auto mt-4 max-w-[560px] text-center leading-relaxed"
+              style={{ color: "var(--color-ink)" }}
+            >
+              {heading}
+            </h3>
+          ) : null}
+          {caption ? <Caption>{caption}</Caption> : null}
+        </figcaption>
+      ) : null}
     </figure>
   );
 }

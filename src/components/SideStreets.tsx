@@ -27,12 +27,15 @@ const PURPLE = "#8581ff";
 const QUOTE =
   "“A conceptual rebrand of Titan, India’s iconic eyewear brand, reimagined for the athletic market.”";
 
+const NAGARHOLE_QUOTE =
+  "“A concept wayfinding system for the Kabini range, where three sign families share one gold and nothing else.”";
+
 type SideProject = { title: string; quote: string; href: string };
 
 const PROJECTS: SideProject[] = [
   { title: "TITAN REBRAND", quote: QUOTE, href: "/work/titan-rebrand" },
   { title: "ZENXO | UI & UX", quote: QUOTE, href: "#" },
-  { title: "NAGARHOLE | WAYFINDING", quote: QUOTE, href: "#" },
+  { title: "NAGARHOLE | WAYFINDING", quote: NAGARHOLE_QUOTE, href: "/work/nagarhole-wayfinding" },
   { title: "TITAN REBRAND", quote: QUOTE, href: "/work/titan-rebrand" },
 ];
 
@@ -153,9 +156,6 @@ function CardFoot({ p }: { p: SideProject }) {
         href={p.href}
         className="relative mt-3 flex h-10 items-center justify-center bg-btn-dark text-white/90 transition-opacity hover:opacity-90"
       >
-        <span className="absolute inset-y-0 left-0 flex aspect-square items-center justify-center bg-ink">
-          <span className="size-[15px] rounded-full bg-white" />
-        </span>
         <span className="type-caption">View Project</span>
       </a>
     </div>

@@ -22,14 +22,21 @@ export default function Beat({
   /** Omitted on a beat that continues the previous one across a thesis band —
    *  a second label there would read as a new section rather than a resumption. */
   kicker?: string;
-  title: string;
+  /** Omitted on a bare paragraph that belongs to the section above it but
+   *  isn't a new claim — a heading there would announce a section that the
+   *  copy doesn't actually start. */
+  title?: string;
   children?: ReactNode;
 }) {
   return (
     <section className="mx-auto w-full max-w-[620px]">
       {kicker ? <CaseKicker>{kicker}</CaseKicker> : null}
-      <h2 className={`type-subheading text-ink-alt ${kicker ? "mt-7" : ""}`}>{title}</h2>
-      {children ? <div className="mt-5 flex flex-col gap-5">{children}</div> : null}
+      {title ? (
+        <h2 className={`type-subheading text-ink-alt ${kicker ? "mt-7" : ""}`}>{title}</h2>
+      ) : null}
+      {children ? (
+        <div className={`flex flex-col gap-5 ${kicker || title ? "mt-5" : ""}`}>{children}</div>
+      ) : null}
     </section>
   );
 }

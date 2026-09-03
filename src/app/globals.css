@@ -28,14 +28,6 @@
   --color-accent-strong: #3dbb5e;
   --color-accent-ink: #171717; /* text on accent surfaces */
 
-  /* ---- shadcn-compat tokens --------------------------------------------- */
-  /* Consumed by /components/ui primitives (e.g. the tubelight navbar) that
-     expect the shadcn token names. Mapped onto this project's palette. */
-  --color-foreground: #171717; /* = ink */
-  --color-border: #e5e5e5;
-  --color-muted: #f0f0f0;
-  --color-primary: #171717; /* = ink black — drives the tubelight lamp */
-
   /* ---- Color: featured-project card ------------------------------------ */
   /* TUNE — sampled by eye from the design reference. Constant across all
      three projects; only the ticket colour cycles. */
@@ -1399,6 +1391,94 @@ body {
   }
 }
 
+/* ============================================================================
+   KABINI LOGO MARKUP RINGS  (KabiniLogo.tsx)
+   Unlike .tc-line above, these loop rather than fire once: the Titan diagram
+   draws itself in on the one moment it enters view, but this figure has no
+   equivalent "arrival" to spend that on, so the two pencil circles keep
+   re-tracing themselves the way a presenter circles something twice for
+   emphasis. `pathLength="1"` on each ring normalises the draw to 0–1
+   regardless of its real length. The leaders and arrowheads pointing at the
+   rings are NOT part of this animation — they are the pointer, not the
+   emphasis, and a wandering arrow would read as distraction rather than
+   emphasis.
+   ========================================================================== */
+.kabini-ring {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  opacity: 0;
+  animation: kabini-ring-draw 3400ms cubic-bezier(0.22, 0.61, 0.36, 1) infinite;
+}
+/* Staggered so the two rings don't draw in lockstep — one circling while the
+   other holds reads as two independent notes, not one blinking pair. */
+.kabini-ring--b {
+  animation-delay: 900ms;
+}
+@keyframes kabini-ring-draw {
+  0% {
+    stroke-dashoffset: 1;
+    opacity: 0;
+  }
+  6% {
+    opacity: 1;
+  }
+  46%,
+  72% {
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+  88% {
+    opacity: 0;
+  }
+  100% {
+    stroke-dashoffset: 1;
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .kabini-ring {
+    animation: none;
+    stroke-dashoffset: 0;
+    opacity: 0.85;
+  }
+}
+
+/* --- The camera move ------------------------------------------------------
+   The sheet is two frames wide and starts on the construction drawing; once
+   the figure arrives it travels one full frame left, which reads as the
+   camera panning right onto the finished mark. Fire-once, not a loop: a
+   reveal that keeps re-hiding its own payoff is a carousel, and the finished
+   logo is where this figure is meant to come to rest.
+
+   The long hold at the head of the keyframes is doing real work — it lets the
+   rings circle the construction drawing at least once before the view leaves
+   them, so the markup is read rather than merely glimpsed. */
+.kabini-pan {
+  transform: translateX(0);
+}
+.is-grown .kabini-pan {
+  animation: kabini-pan-right 5200ms cubic-bezier(0.65, 0, 0.35, 1) 400ms forwards;
+}
+@keyframes kabini-pan-right {
+  0%,
+  46% {
+    transform: translateX(0);
+  }
+  92%,
+  100% {
+    transform: translateX(-50%);
+  }
+}
+/* Rests on the finished mark: the pan exists to deliver the colour, and a
+   still frame of the pencil stage would withhold the one thing this figure is
+   for. The construction drawing is still described in the aria-label. */
+@media (prefers-reduced-motion: reduce) {
+  .is-grown .kabini-pan {
+    animation: none;
+    transform: translateX(-50%);
+  }
+}
+
 /* The perforation. Drawn as a gradient rather than `border-dashed` so the
    dash rhythm matches the source (2.72 on, 2.72 off) instead of the
    browser's own. Inset past the notches so it spans notch to notch. */
@@ -1416,24 +1496,6 @@ body {
   opacity: 0.55;
 }
 
-/* The stub CTA's label. On hover it picks up a soft halo in the card's own ink
-   colour (currentColor, so it reads on both the dark tints and the light ones)
-   — two stacked shadows, a tight one for the bloom and a wider, fainter one
-   for the falloff. Kept low-opacity: the effect should register as the word
-   warming up, not lighting up. */
-.ticket-cta-label {
-  transition: text-shadow 300ms ease-out;
-}
-.group:hover .ticket-cta-label {
-  text-shadow:
-    0 0 6px color-mix(in srgb, currentColor 55%, transparent),
-    0 0 14px color-mix(in srgb, currentColor 30%, transparent);
-}
-@media (prefers-reduced-motion: reduce) {
-  .ticket-cta-label {
-    transition: none;
-  }
-}
 
 /* ============================================================================
    TEXT-SELECTION MOTIF
@@ -1663,5 +1725,39 @@ body {
   .hatch-cell.is-drawn .hatch-lines,
   .hatch-cell.is-drawn .hatch-dot {
     animation: none;
+  }
+}
+
+/* ==========================================================================
+   NAGARHOLE PALETTE WEIGHTING
+   Three palettes that open at equal thirds and settle into the weighting they
+   actually carry. The card's two dividers are fixed at 50% vertically and
+   `--top` horizontally; only `--top` moves, from 2/3 (which makes all three
+   colours exactly a third each) to 1/2 (25/25/50). See PaletteWeighting.tsx
+   for the derivation — nothing cross-fades and no cell changes place, so this
+   is one transitioned length rather than a morph between two layouts.
+   ========================================================================== */
+
+.palette-card {
+  --top: 66.6667%;
+}
+.palette-card .palette-top {
+  height: var(--top);
+  transition: height 900ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.is-weighted .palette-card {
+  --top: 50%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* Straight to the true weighting: the equal-thirds state is a reading of
+     this palette that is not correct, so it must never be what a reader is
+     left looking at. */
+  .palette-card,
+  .is-weighted .palette-card {
+    --top: 50%;
+  }
+  .palette-card .palette-top {
+    transition: none;
   }
 }

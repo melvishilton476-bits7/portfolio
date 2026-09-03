@@ -10,6 +10,7 @@ import TypeBento from "@/components/case/TypeBento";
 import GradientSwatch from "@/components/case/GradientSwatch";
 import InUseBento from "@/components/case/InUseBento";
 import CampaignPair from "@/components/case/CampaignPair";
+import ReferenceStrip from "@/components/case/ReferenceStrip";
 import Image from "next/image";
 
 /** The six directions that didn't survive. Labels stay generic on purpose —
@@ -46,6 +47,8 @@ export default function TitanCaseStudy() {
         title="TITAN"
         dek="Rebuilding a legacy name as performance eyewear."
         frameLabel="Goggles catching the ember"
+        image={{ src: "/case/titan/hero-bg.webp" }}
+        lockup={{ src: "/case/titan/hero-lockup.png", width: 684, height: 280 }}
       />
 
       <div className="page-container flex flex-col gap-24 pt-24 sm:gap-32 sm:pt-32">
@@ -56,9 +59,10 @@ export default function TitanCaseStudy() {
           <P>I got here because of a Travis Scott show, weirdly enough.</P>
           <P>
             I spent way too long beforehand trying to find a pair of glasses I actually
-            wanted to wear, and never landed on anything. Most of what I tried on was
-            clearly built to be looked at. Whether it did anything once you actually had
-            it on felt like an afterthought.
+            wanted to wear, and never landed on anything. That search stayed with me
+            longer than the concert did. Titan already makes the kind of glasses you&rsquo;d
+            wear every day, and somewhere in all that looking I kept wondering what the
+            brand would look like if it went after something rougher than that.
           </P>
           <P>
             The brief was open, so I gave that problem to Titan. It&rsquo;s a name that
@@ -69,7 +73,12 @@ export default function TitanCaseStudy() {
           <P>Sport is where my head goes by default, so that&rsquo;s the version of Titan I built.</P>
         </Beat>
 
-        <Figure label="Sketchbook &amp; reference board" ratio={3 / 2} />
+        {/* Ratio is 3x the 0.78 cell the three shots share — see ReferenceStrip. */}
+        <Figure
+          label="Sketchbook &amp; reference board"
+          ratio={3 * 0.78}
+          visual={<ReferenceStrip />}
+        />
 
         {/* ---- The problem — no images. Keep the reader reading. --------- */}
         <Beat kicker="The problem" title="Performance eyewear mostly shouts.">
