@@ -2206,6 +2206,123 @@ body {
 
 /* The welds have no entrance of their own — they are a property of the joint,
    so they simply arrive with the wire that makes them. */
+/* ============================================================================
+   THE POINTER  (Cursor.tsx)
+   A periwinkle dot standing in for the native cursor, swelling into a labelled
+   pill over anything carrying `data-cursor`.
+
+   `.has-cursor` is put on <html> BY THE COMPONENT, once it has confirmed a
+   fine, hovering pointer — never by this stylesheet. A blanket `cursor: none`
+   here would apply before hydration, on touch screens, and on any visit where
+   the script does not run, each of which leaves the page with no pointer at
+   all. Scoping every rule under a class the component owns means the native
+   cursor is only ever taken away once something has replaced it.
+   ========================================================================== */
+.has-cursor,
+.has-cursor * {
+  cursor: none;
+}
+/* Except where a caret has to be placed between two characters — no disc can
+   show you that, so the I-beam comes back and the dot gets out of the way. */
+.has-cursor input,
+.has-cursor textarea,
+.has-cursor [contenteditable=""],
+.has-cursor [contenteditable="true"] {
+  cursor: text;
+}
+
+.site-cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 2147483000;
+  display: none;
+  pointer-events: none;
+  /* The dot's CENTRE lands on the hotspot. The capsule then opens to the
+     right of it, so a label never sits over the thing being pointed at. */
+  margin-top: calc(var(--dot) / -2);
+  margin-left: calc(var(--dot) / -2);
+  will-change: transform;
+}
+.has-cursor .site-cursor[data-on] {
+  display: block;
+}
+/* Over a text field the native caret is doing the work; two cursors on one
+   screen is one too many. */
+.site-cursor[data-mode="text"] {
+  display: none !important;
+}
+
+.site-cursor__capsule {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: var(--dot);
+  /* The floor that makes the resting state a DISC. Width here is content
+     width, and at rest the label and arrow are both collapsed to zero — so
+     without a minimum the dot is 14px tall, 0px wide, and invisible. In pill
+     mode the label is wider than this and it stops applying. */
+  min-width: var(--dot);
+  padding: 0;
+  border-radius: 999px;
+  background: var(--dot-bg);
+  color: #fff;
+  font-family: var(--font-display);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  /* Height, padding and colour tween; the label's own max-width is what
+     actually opens the capsule. `width: auto` cannot be transitioned, and
+     measuring the text to get a pixel width would mean a layout read on every
+     hover — a max-width that starts at zero costs neither. */
+  transition:
+    height 220ms cubic-bezier(0.22, 1, 0.36, 1),
+    padding 220ms cubic-bezier(0.22, 1, 0.36, 1),
+    background-color 220ms ease-out;
+}
+.site-cursor__label,
+.site-cursor__arrow {
+  display: block;
+  max-width: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition:
+    max-width 260ms cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 140ms ease-out,
+    margin 220ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.site-cursor__arrow {
+  font-size: 0.75rem;
+  line-height: 1;
+}
+
+.site-cursor[data-mode="pill"] .site-cursor__capsule {
+  height: var(--pill-h);
+  padding: 0 0.75rem;
+  background: var(--pill-bg);
+}
+.site-cursor[data-mode="pill"] .site-cursor__label {
+  max-width: 18rem;
+  opacity: 1;
+}
+.site-cursor[data-mode="pill"] .site-cursor__arrow {
+  max-width: 2rem;
+  margin-left: 0.4rem;
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* The dot still tracks — that is the pointer, not an animation — but the
+     capsule stops tweening and simply is one shape or the other. */
+  .site-cursor__capsule,
+  .site-cursor__label,
+  .site-cursor__arrow {
+    transition: none;
+  }
+}
+
 /* ---- Status ellipsis -------------------------------------------------------
    The three dots after "In progress" on the print's course badge. Staggered
    opacity rather than anything that moves: the dots sit in a line of type, and

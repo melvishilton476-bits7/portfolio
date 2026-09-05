@@ -77,8 +77,12 @@ export default function Ticket({
             the mark stays legible on the darkly tinted tickets — the ink here
             IS the card's foreground colour. */}
         <div className="flex h-16 items-center px-4">
+          {/* The words the site cursor swells into over this link. Declared on
+              the target rather than in <Cursor>, so the label lives next to the
+              thing it describes. */}
           <a
             href={href}
+            data-cursor="View case study"
             className="type-caption group relative block w-full py-2 text-center transition-opacity hover:opacity-85"
           >
             {/* TL */}

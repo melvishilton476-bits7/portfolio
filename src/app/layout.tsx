@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Space_Grotesk, JetBrains_Mono, Inter } from "next/font/google";
 import "./globals.css";
+import Cursor from "@/components/Cursor";
 
 /* Primary display + body typeface used across the site. */
 const spaceGrotesk = Space_Grotesk({
@@ -44,6 +45,9 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col bg-background text-ink">
         {children}
+        {/* Last in the body and fixed at the top of the stack, so it paints
+            over everything without joining any section's stacking context. */}
+        <Cursor />
       </body>
     </html>
   );
