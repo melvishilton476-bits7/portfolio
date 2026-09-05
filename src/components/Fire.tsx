@@ -5,11 +5,11 @@ import dynamic from "next/dynamic";
 import type { LottieRefCurrentProps } from "lottie-react";
 import fireData from "@/animations/fire.json";
 
-/* Loaded on demand, not in the first-load bundle. lottie-web and its React
-   wrapper are a quarter of a megabyte of JavaScript to play one decorative
-   campfire that sits near the bottom of the page — every visitor was paying
-   for it before the hero had painted. `ssr: false` because lottie-web touches
-   the DOM on construction. */
+/* Loaded on demand, and only once the fire is about to be seen. The player and
+   its animation data are ~60KB of JavaScript for one decorative campfire near
+   the foot of the page; every visitor used to download it during the first
+   load, including the ones who never scrolled that far. `ssr: false` because
+   lottie-web touches the DOM on construction. */
 const Lottie = dynamic(() => import("lottie-react"), { ssr: false });
 
 /**
@@ -34,7 +34,26 @@ export default function Fire({
   style?: React.CSSProperties;
 }) {
   const lottieRef = useRef<LottieRefCurrentProps>(null);
+  const hostRef = useRef<HTMLDivElement>(null);
   const [reduceMotion, setReduceMotion] = useState(false);
+  const [near, setNear] = useState(false);
+
+  // Fetch the player a screen ahead of the fire coming into view, so it is
+  // ready by the time it matters without ever competing with the first paint.
+  useEffect(() => {
+    const el = hostRef.current;
+    if (!el) return;
+    const io = new IntersectionObserver(
+      ([e]) => {
+        if (!e.isIntersecting) return;
+        setNear(true);
+        io.disconnect();
+      },
+      { rootMargin: "100% 0px" },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
 
   useEffect(() => {
     const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -48,15 +67,18 @@ export default function Fire({
     return () => mq.removeEventListener("change", apply);
   }, []);
 
+  // The host div holds the fire's slot either way, so nothing shifts when the
+  // player arrives.
   return (
-    <Lottie
-      lottieRef={lottieRef}
-      animationData={fireData}
-      loop
-      autoplay={!reduceMotion}
-      aria-hidden
-      className={className}
-      style={style}
-    />
+    <div ref={hostRef} aria-hidden className={className} style={style}>
+      {near && (
+        <Lottie
+          lottieRef={lottieRef}
+          animationData={fireData}
+          loop
+          autoplay={!reduceMotion}
+        />
+      )}
+    </div>
   );
 }
