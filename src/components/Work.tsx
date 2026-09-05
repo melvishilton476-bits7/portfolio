@@ -91,6 +91,11 @@ const PROJECTS: Project[] = [
     // composited at the artboard fraction, so the card shows exactly what the
     // project opens with rather than a second, different picture.
     thumb: "/case/titan/thumb.webp",
+    // The ticket's letterbox strip is a far tighter band than the card, and at
+    // centre it cut the bull in half. 35% lifts the window onto the mark and
+    // the ember lens; the card, whose art is nearly its own shape, barely
+    // moves.
+    thumbPosition: "center 35%",
     thumbAlt:
       "A figure in goggles catching an ember reflection, the TITAN lockup across it.",
   },
@@ -103,9 +108,11 @@ const PROJECTS: Project[] = [
     tags: ["Signage", "Systems"],
     href: "/work/nagarhole-wayfinding",
     thumb: "/case/nagarhole/hero-leopard.webp",
-    // Portrait art in a landscape slot. Same steer the case hero uses: 33%
-    // keeps the cat and the wordmark and drops the empty water at the foot.
-    thumbPosition: "center 33%",
+    // Portrait art in a landscape slot. The hero's own 33% centres the
+    // wordmark, which on the ticket's narrow band left no room for anything
+    // else — the strip read as type on grass. 43% drops below the lettering
+    // onto the leopard at the waterline, and the card keeps both.
+    thumbPosition: "center 43%",
     thumbAlt:
       "A black leopard at the waterline, with the Nagarhole wordmark.",
   },
