@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef } from "react";
+import Image from "next/image";
 import Placeholder from "./Placeholder";
 import CursorFollower from "./CursorFollower";
 
@@ -15,9 +16,10 @@ const CURSOR_LABEL = "Go ahead click, Don’t be shy";
  * comes from the floating asterisks around the card and the ticket below,
  * not from the card chrome.
  *
- * The media slot stays a Placeholder deliberately: the timecode, guides and
- * ruler in the design are baked into the exported asset, so nothing is
- * rendered over it here.
+ * The media slot takes the project's own thumbnail. Nothing is drawn over it:
+ * the timecode, guides and ruler in the design are baked into the exported
+ * asset. A project without one falls back to the dashed Placeholder, so a new
+ * entry can be laid out before its art exists.
  *
  * The `<a>` is the real control under the cursor-follower label; everything
  * else is presentational. `flat` (small screens / reduced motion) just drops
@@ -27,12 +29,17 @@ export default function FeaturedProject({
   title,
   quote,
   href = "#",
+  thumb,
+  thumbAlt,
   current = false,
   flat = false,
 }: {
   title: string;
   quote: string;
   href?: string;
+  /** Path under /public. Omit to keep the dashed placeholder. */
+  thumb?: string;
+  thumbAlt?: string;
   /** True while this card owns the centre of the filmstrip — gates the
       cursor follower, which only makes sense on the interactive slide. */
   current?: boolean;
@@ -51,12 +58,30 @@ export default function FeaturedProject({
         {/* Paper-grain texture on the ink fill — see globals.css → CARD GRAIN. */}
         <div aria-hidden className="card-grain" />
 
-        <Placeholder
-          label="Featured project"
-          ratio={493 / 256}
-          variant="dark"
-          className="rounded-card border-0"
-        />
+        {thumb ? (
+          // Fixed 493:256 box with the art cropped to fill it, so every project
+          // reads at the same size whatever shape its source asset is.
+          <div
+            className="rounded-card relative w-full overflow-hidden"
+            style={{ aspectRatio: "493 / 256" }}
+          >
+            <Image
+              src={thumb}
+              alt={thumbAlt ?? title}
+              fill
+              // The card caps at 560px and carries 20px of padding either side.
+              sizes="(min-width: 600px) 520px, 92vw"
+              className="object-cover"
+            />
+          </div>
+        ) : (
+          <Placeholder
+            label="Featured project"
+            ratio={493 / 256}
+            variant="dark"
+            className="rounded-card border-0"
+          />
+        )}
 
         <blockquote
           // Was .type-label — a LABEL token (weight 500) carrying descriptive

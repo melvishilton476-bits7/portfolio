@@ -87,24 +87,21 @@ const PROJECTS: Project[] = [
       "A conceptual rebrand of Titan, India’s iconic eyewear brand, reimagined for the athletic market.",
     tags: ["Branding", "UI/UX"],
     href: "/work/titan-rebrand",
+    thumb: "/case/titan/eagle-spread.webp",
+    thumbAlt:
+      "The Titan eagle mark spread across a dark field, wings drawn as a single continuous stroke.",
   },
   {
-    title: "TITAN - REBRAND",
-    meta: "SOLO,2025",
+    title: "NAGARHOLE - WAYFINDING",
+    meta: "SOLO,2026",
     color: "#171717",
     quote:
-      "A conceptual rebrand of Titan, India’s iconic eyewear brand, reimagined for the athletic market.",
-    tags: ["Branding", "UI/UX"],
-    href: "/work/titan-rebrand",
-  },
-  {
-    title: "TITAN - REBRAND",
-    meta: "SOLO,2025",
-    color: "#171717",
-    quote:
-      "A conceptual rebrand of Titan, India’s iconic eyewear brand, reimagined for the athletic market.",
-    tags: ["Branding", "UI/UX"],
-    href: "/work/titan-rebrand",
+      "A signage system built to disappear into Nagarhole National Park — except where disappearing would be dangerous.",
+    tags: ["Signage", "Systems"],
+    href: "/work/nagarhole-wayfinding",
+    thumb: "/case/nagarhole/mockup-warning.webp",
+    thumbAlt:
+      "A warning sign from the Nagarhole system standing in situ at the forest edge.",
   },
 ];
 
@@ -192,6 +189,8 @@ function StaticWork() {
               title={project.title}
               quote={project.quote}
               href={project.href}
+              thumb={project.thumb}
+              thumbAlt={project.thumbAlt}
               flat
             />
             <Ticket {...project} />

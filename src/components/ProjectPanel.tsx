@@ -20,6 +20,10 @@ export type Project = {
   /** Exactly two — they render as the tabs behind the card's top edge. */
   tags: readonly [string, string];
   href?: string;
+  /** Cover art, under /public. Shown on both the featured card and the
+      ticket; omit and both fall back to their dashed placeholders. */
+  thumb?: string;
+  thumbAlt?: string;
   pieces?: boolean;
 };
 
@@ -106,6 +110,8 @@ export default function ProjectPanel({
         title={project.title}
         quote={project.quote}
         href={project.href}
+        thumb={project.thumb}
+        thumbAlt={project.thumbAlt}
         current={current}
       />
       <Ticket {...project} active={current} />

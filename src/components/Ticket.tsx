@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Placeholder from "./Placeholder";
 import GrowOnView from "./GrowOnView";
 // import PuzzlePiece from "./PuzzlePiece"; // puzzle pieces commented out for now
@@ -10,6 +11,10 @@ type TicketProps = {
   /** Set when the tint is light enough that ink text reads better than white. */
   darkText?: boolean;
   href?: string;
+  /** Path under /public for the letterboxed still. Omit to keep the dashed
+      placeholder — a ticket can be laid out before its art exists. */
+  thumb?: string;
+  thumbAlt?: string;
   /** Show the lime puzzle pieces growing out from behind the card. On by
       default — every ticket carries the same lime pieces. */
   pieces?: boolean;
@@ -33,6 +38,8 @@ export default function Ticket({
   color,
   darkText = false,
   href = "#",
+  thumb,
+  thumbAlt,
   // pieces prop kept in the type but unused while puzzle pieces are commented out
   active,
 }: TicketProps) {
@@ -58,13 +65,30 @@ export default function Ticket({
           <p className="type-caption mt-1 opacity-80">{meta}</p>
         </div>
 
-        {/* Letterboxed still — full-bleed across the ticket. */}
-        <Placeholder
-          label={title}
-          ratio={232 / 34}
-          variant="dark"
-          className="mt-3 mb-4 border-0"
-        />
+        {/* Letterboxed still — full-bleed across the ticket. The 232:34 slot is
+            far wider than any source asset, so the art is cropped to a band
+            rather than letterboxed with bars. */}
+        {thumb ? (
+          <div
+            className="relative mt-3 mb-4 w-full overflow-hidden"
+            style={{ aspectRatio: "232 / 34" }}
+          >
+            <Image
+              src={thumb}
+              alt={thumbAlt ?? title}
+              fill
+              sizes="204px"
+              className="object-cover"
+            />
+          </div>
+        ) : (
+          <Placeholder
+            label={title}
+            ratio={232 / 34}
+            variant="dark"
+            className="mt-3 mb-4 border-0"
+          />
+        )}
 
         {/* Stub — height matches --tear-y (4rem). The CTA is just the label in
             the card's ink colour, framed by four crop-mark brackets (same ink)
