@@ -22,6 +22,14 @@ import CodeMotes from "./CodeMotes";
 const DASH_H = `repeating-linear-gradient(to right, rgba(23,23,23,0.16) 0px, rgba(23,23,23,0.16) 10px, transparent 10px, transparent 18px)`;
 const PURPLE = "#8581ff";
 
+/** The two form actions. Periwinkle rather than the lime `--color-accent`:
+ *  every other accent in this section — the registration squares straddling
+ *  the card, the hatch cells bracketing the heading, the nav's active state —
+ *  is #8581ff, and the lime was the one surface here speaking a different
+ *  brand colour. Fixed height, not padding, so both sit level. */
+const actionBtn =
+  "inline-flex h-11 items-center gap-2 px-5";
+
 /** Full-bleed dashed hairline pinned to the top or bottom of its relative
  *  parent — runs off-centre to both viewport edges (clipped by the body). */
 function Rule({ edge }: { edge: "top" | "bottom" }) {
@@ -138,18 +146,18 @@ export default function Contact() {
             </label>
           </div>
 
-          <div className="mt-5 flex flex-wrap gap-3">
-            <button
-              type="submit"
-              className="inline-flex items-center gap-2 bg-accent px-5 py-2.5 text-accent-ink"
-            >
-              <span aria-hidden>←</span>
+          {/* Both actions share one class so they are the same object at two
+              labels. The height is FIXED rather than padding-derived: the
+              submit carries an arrow glyph whose line box is taller than the
+              type-caption next to it, so equal padding produced two different
+              heights and the pair sat off-level. `items-center` then centres
+              each label inside that shared height. */}
+          <div className="mt-5 flex flex-wrap items-center gap-3">
+            <button type="submit" className={`${actionBtn} text-white`} style={{ background: PURPLE }}>
+              <span aria-hidden className="leading-none">←</span>
               <span className="type-caption font-medium">Book a Slot</span>
             </button>
-            <a
-              href="#"
-              className="inline-flex items-center bg-white/10 px-5 py-2.5 text-white"
-            >
+            <a href="#" className={`${actionBtn} bg-white/10 text-white`}>
               <span className="type-caption font-medium">Go To LinkedIn</span>
             </a>
           </div>

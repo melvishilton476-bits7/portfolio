@@ -7,6 +7,7 @@ import DirectionalCycle from "@/components/case/DirectionalCycle";
 import SpeciesCycle from "@/components/case/SpeciesCycle";
 import KabiniLogo from "@/components/case/KabiniLogo";
 import SpeciesIcons from "@/components/case/SpeciesIcons";
+import TypePoster from "@/components/case/TypePoster";
 import WarningCycle from "@/components/case/WarningCycle";
 import { Figure } from "@/components/case/Figure";
 import Image from "next/image";
@@ -218,13 +219,16 @@ export default function NagarholeCaseStudy() {
         <Figure
           label="Kannada beneath the English name"
           ratio={714 / 933}
-          maxWidth={PORTRAIT}
+          // Narrower than the other portraits on purpose: this figure is one
+          // board on its own rather than a cycling set, and at the shared 560
+          // it sat heavier on the page than the point it carries.
+          maxWidth={400}
           visual={
             <Image
               src="/case/nagarhole/board-species-gaur.webp"
               alt="The Indian gaur species board, the animal's name set in Kannada directly beneath the English at the same weight"
               fill
-              sizes="(max-width: 560px) 90vw, 560px"
+              sizes="(max-width: 400px) 90vw, 400px"
               className="object-cover"
             />
           }
@@ -233,6 +237,40 @@ export default function NagarholeCaseStudy() {
 
         <Moment
           index={2}
+          kicker="The type"
+          title="One geometric face across all three families, so the signs read as one system before the colour has said which kind they are"
+        >
+          <P>
+            Every board is set in MuseoModerno. Its skeleton is geometric — near-circular
+            bowls, wide apertures, strokes of almost even weight — which is what holds a name
+            together at the distance a sign is actually read from, under canopy where the
+            light is low and flat.
+          </P>
+          <P>
+            The rounded terminals are the reason it is this face and not a grotesque. A park is
+            not a municipal building, and a sign that reads as official is a sign a visitor
+            skims past. Montserrat sits underneath it for the long copy — the paragraphs on a
+            species board run to five sections, and a display face asked to carry that much
+            text at small sizes stops being a display face.
+          </P>
+        </Moment>
+
+        <Figure
+          label="MuseoModerno — the display face every board is set in"
+          ratio={16 / 9}
+          visual={<TypePoster face="museo" />}
+          caption="Set on the information family's own base and yellow, because a specimen on white would be showing the face somewhere it never appears."
+        />
+
+        <Figure
+          label="Montserrat — the secondary face, for running copy"
+          ratio={16 / 9}
+          visual={<TypePoster face="montserrat" />}
+          caption="Both are open-licence variable families, so the whole system is two files and neither weight nor language coverage costs another download."
+        />
+
+        <Moment
+          index={3}
           kicker="The mark"
           title="The identity carries the black leopard, so the mark stands for the park before a single board is read"
         >

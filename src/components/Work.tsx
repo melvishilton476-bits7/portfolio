@@ -169,7 +169,7 @@ function Heading() {
           <span aria-hidden className="pointer-events-none absolute -right-[26px] -top-[18px] size-[3px] -translate-x-[4px] translate-y-[4px] rounded-full bg-[#171717]" />
           <span aria-hidden className="pointer-events-none absolute -bottom-[18px] -left-[26px] size-[3px] translate-x-[4px] -translate-y-[4px] rounded-full bg-[#171717]" />
           <span aria-hidden className="pointer-events-none absolute -bottom-[18px] -right-[26px] size-[3px] -translate-x-[4px] -translate-y-[4px] rounded-full bg-[#171717]" />
-          <p className="type-caption text-ink-muted leading-none" style={{ fontSize: "0.9375rem" }}>
+          <p className="type-note text-ink-muted leading-none">
             <span className="text-ink-alt">Problems</span> walked into.{" "}
             <span className="text-ink-alt">Solutions</span> built out of.
           </p>

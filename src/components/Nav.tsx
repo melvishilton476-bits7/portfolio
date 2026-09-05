@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { motion, useScroll, useMotionValueEvent } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 import { Home, User, Gamepad2, PenLine } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { RandomLetterSwap } from "./ui/random-letter-swap";
@@ -13,7 +14,7 @@ import { RandomLetterSwap } from "./ui/random-letter-swap";
    leading slash sends it back to the home page and then to the anchor. */
 const NAV_ITEMS = [
   { name: "Home", url: "/#top", icon: Home },
-  { name: "About", url: "/#about", icon: User },
+  { name: "About", url: "/about", icon: User },
   { name: "Playground", url: "/#playground", icon: Gamepad2 },
   { name: "Blogs", url: "/#blogs", icon: PenLine },
 ];
@@ -30,7 +31,17 @@ const NAV_ITEMS = [
  * a local const and there are no props to thread.
  */
 export default function Nav() {
-  const [activeTab, setActiveTab] = useState(NAV_ITEMS[0].name);
+  const pathname = usePathname();
+  /* Items that are real routes (About) light up from the URL; the rest are
+     anchors on the home page, where there is no path to key off, so they stay
+     click-driven. Deriving from the pathname matters on arrival — landing on
+     /about directly, or hitting back, has to mark About active without a click
+     that never happened. */
+  const routeActive = NAV_ITEMS.find(
+    (item) => item.url.startsWith("/") && !item.url.includes("#") && pathname === item.url,
+  );
+  const [clickedTab, setClickedTab] = useState(NAV_ITEMS[0].name);
+  const activeTab = routeActive ? routeActive.name : clickedTab;
   const [isMobile, setIsMobile] = useState(false);
   const [visible, setVisible] = useState(true);
 
@@ -159,7 +170,7 @@ export default function Nav() {
             <Link
               key={item.name}
               href={item.url}
-              onClick={() => setActiveTab(item.name)}
+              onClick={() => setClickedTab(item.name)}
               className={cn(
                 "relative cursor-pointer px-1 py-2 font-light uppercase transition-colors",
                 "text-[12px] tracking-[-0.08em]",

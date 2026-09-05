@@ -19,7 +19,17 @@ import type { CSSProperties } from "react";
  */
 const DASH_H = `repeating-linear-gradient(to right, rgba(23,23,23,0.16) 0px, rgba(23,23,23,0.16) 10px, transparent 10px, transparent 18px)`;
 
-export default function DashRule({ edge }: { edge: "top" | "bottom" }) {
+export default function DashRule({
+  edge,
+  style,
+}: {
+  edge: "top" | "bottom";
+  /** Geometry override. The default runs the rule the full width of the
+   *  viewport; a caller that has something sitting ON the rule's path (the
+   *  About page's photo card) passes explicit left/right so the line stops at
+   *  it instead of disappearing behind it and re-emerging on the far side. */
+  style?: CSSProperties;
+}) {
   const ref = useRef<HTMLSpanElement>(null);
   const [drawn, setDrawn] = useState(false);
 
@@ -42,12 +52,13 @@ export default function DashRule({ edge }: { edge: "top" | "bottom" }) {
     <span
       ref={ref}
       aria-hidden
-      className={`side-rule pointer-events-none absolute hidden h-px w-screen lg:block ${drawn ? "is-drawn" : ""}`}
+      className={`side-rule pointer-events-none absolute hidden h-px lg:block ${style ? "" : "w-screen"} ${drawn ? "is-drawn" : ""}`}
       style={{
         left: "calc(50% - 50vw)",
         [edge]: 0,
         backgroundImage: DASH_H,
         ["--march" as string]: "18px",
+        ...style,
       } as CSSProperties}
     />
   );
