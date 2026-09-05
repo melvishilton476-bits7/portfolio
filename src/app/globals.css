@@ -710,7 +710,10 @@ body {
   display: inline-block;
   opacity: 0;
   transform: translateY(0.5em);
-  will-change: opacity, transform;
+  /* No will-change. It is a hint to give the element its own compositor layer,
+     and a sentence is hundreds of letters: the hint that helps one element
+     costs more than it saves multiplied by every glyph on the page. A 0.55s
+     opacity/transform pair needs no help. */
 }
 .reveal-text.reveal-armed.is-shown .reveal-word > span {
   animation: reveal-letter 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;

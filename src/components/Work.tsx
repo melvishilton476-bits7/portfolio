@@ -366,16 +366,23 @@ function Carousel() {
             <ProjectPanel key={i} project={project} index={i} step={step} />
           ))}
 
-          {/* Glass edges: a frosted white gradient that dissolves the peeking
-              neighbours into the frame, masked so the frost itself fades out
-              toward the centre rather than sitting as a hard band. */}
+          {/* Glass edges: a white gradient that dissolves the peeking
+              neighbours into the frame, masked so it fades out toward the
+              centre rather than sitting as a hard band.
+
+              NO backdrop-filter here. These are two full-height strips sitting
+              over the one part of the page that is always in motion, and a
+              backdrop blur has to re-read and re-blur everything behind it on
+              every single frame of the slide. Over a near-white ground the
+              gradient alone is all but indistinguishable from the frosted
+              version, and it costs nothing. */}
           <div
             aria-hidden
-            className="pointer-events-none absolute inset-y-0 left-0 z-20 w-[14vw] bg-gradient-to-r from-background via-background/70 to-transparent backdrop-blur-sm [mask-image:linear-gradient(to_right,#000,transparent)]"
+            className="pointer-events-none absolute inset-y-0 left-0 z-20 w-[14vw] bg-gradient-to-r from-background via-background/70 to-transparent [mask-image:linear-gradient(to_right,#000,transparent)]"
           />
           <div
             aria-hidden
-            className="pointer-events-none absolute inset-y-0 right-0 z-20 w-[14vw] bg-gradient-to-l from-background via-background/70 to-transparent backdrop-blur-sm [mask-image:linear-gradient(to_left,#000,transparent)]"
+            className="pointer-events-none absolute inset-y-0 right-0 z-20 w-[14vw] bg-gradient-to-l from-background via-background/70 to-transparent [mask-image:linear-gradient(to_left,#000,transparent)]"
           />
 
           {/* Foreground asterisk: sharp, above the glass edges, tucked into

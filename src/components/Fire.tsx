@@ -1,16 +1,24 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Lottie, { type LottieRefCurrentProps } from "lottie-react";
+import dynamic from "next/dynamic";
+import type { LottieRefCurrentProps } from "lottie-react";
 import fireData from "@/animations/fire.json";
+
+/* Loaded on demand, not in the first-load bundle. lottie-web and its React
+   wrapper are a quarter of a megabyte of JavaScript to play one decorative
+   campfire that sits near the bottom of the page — every visitor was paying
+   for it before the hero had painted. `ssr: false` because lottie-web touches
+   the DOM on construction. */
+const Lottie = dynamic(() => import("lottie-react"), { ssr: false });
 
 /**
  * The looping campfire beside the Contact "come have a seat" chair — a Lottie
  * animation hand-authored in After Effects (exported via Bodymovin, its one
  * raster layer embedded into the JSON so the file is self-contained).
  *
- * Client-only: lottie-react renders in the browser, so this file is `"use
- * client"`. It plays on a continuous loop, but honours `prefers-reduced-motion`
+ * Client-only, and loaded lazily: lottie-react renders in the browser, so this
+ * file is `"use client"` and the player itself arrives in its own chunk. It plays on a continuous loop, but honours `prefers-reduced-motion`
  * — when the user asks for reduced motion we stop on the first frame so the
  * fire shows as a still ember instead of flickering.
  *
