@@ -1,0 +1,20 @@
+# The CLI uploads the working directory and does NOT read .gitignore — only
+# this file — so anything large and local has to be named again here.
+
+# 560MB of raw design sources (PSD/AEP/MOV/reference art). Gitignored, and the
+# reason the first deploy failed: the CLI shipped all of it, and "Comp 1.mov"
+# alone is 358MB, past Vercel's 100MB per-file limit.
+/design-source
+
+# Build output and deps — Vercel installs and builds from source itself.
+/node_modules
+/.next
+/out
+/build
+
+# Local only.
+/.git
+.DS_Store
+*.pem
+.env*
+*.tsbuildinfo
