@@ -24,6 +24,9 @@ export type Project = {
       ticket; omit and both fall back to their dashed placeholders. */
   thumb?: string;
   thumbAlt?: string;
+  /** object-position for the crop, when the art's own shape differs from the
+      card's. Mirrors what the case hero uses so both frame the same thing. */
+  thumbPosition?: string;
   pieces?: boolean;
 };
 
@@ -112,6 +115,7 @@ export default function ProjectPanel({
         href={project.href}
         thumb={project.thumb}
         thumbAlt={project.thumbAlt}
+        thumbPosition={project.thumbPosition}
         current={current}
       />
       <Ticket {...project} active={current} />

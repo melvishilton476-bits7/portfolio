@@ -31,6 +31,7 @@ export default function FeaturedProject({
   href = "#",
   thumb,
   thumbAlt,
+  thumbPosition,
   current = false,
   flat = false,
 }: {
@@ -40,6 +41,8 @@ export default function FeaturedProject({
   /** Path under /public. Omit to keep the dashed placeholder. */
   thumb?: string;
   thumbAlt?: string;
+  /** object-position for the crop; defaults to centre. */
+  thumbPosition?: string;
   /** True while this card owns the centre of the filmstrip — gates the
       cursor follower, which only makes sense on the interactive slide. */
   current?: boolean;
@@ -72,6 +75,7 @@ export default function FeaturedProject({
               // The card caps at 560px and carries 20px of padding either side.
               sizes="(min-width: 600px) 520px, 92vw"
               className="object-cover"
+              style={{ objectPosition: thumbPosition }}
             />
           </div>
         ) : (

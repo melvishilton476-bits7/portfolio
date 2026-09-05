@@ -15,6 +15,8 @@ type TicketProps = {
       placeholder — a ticket can be laid out before its art exists. */
   thumb?: string;
   thumbAlt?: string;
+  /** object-position for the crop; defaults to centre. */
+  thumbPosition?: string;
   /** Show the lime puzzle pieces growing out from behind the card. On by
       default — every ticket carries the same lime pieces. */
   pieces?: boolean;
@@ -40,6 +42,7 @@ export default function Ticket({
   href = "#",
   thumb,
   thumbAlt,
+  thumbPosition,
   // pieces prop kept in the type but unused while puzzle pieces are commented out
   active,
 }: TicketProps) {
@@ -79,6 +82,7 @@ export default function Ticket({
               fill
               sizes="204px"
               className="object-cover"
+              style={{ objectPosition: thumbPosition }}
             />
           </div>
         ) : (

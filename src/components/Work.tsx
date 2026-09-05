@@ -87,9 +87,12 @@ const PROJECTS: Project[] = [
       "A conceptual rebrand of Titan, India’s iconic eyewear brand, reimagined for the athletic market.",
     tags: ["Branding", "UI/UX"],
     href: "/work/titan-rebrand",
-    thumb: "/case/titan/eagle-spread.webp",
+    // The case study's own opener: hero-bg cropped to 16:9 with the lockup
+    // composited at the artboard fraction, so the card shows exactly what the
+    // project opens with rather than a second, different picture.
+    thumb: "/case/titan/thumb.webp",
     thumbAlt:
-      "The Titan eagle mark spread across a dark field, wings drawn as a single continuous stroke.",
+      "A figure in goggles catching an ember reflection, the TITAN lockup across it.",
   },
   {
     title: "NAGARHOLE - WAYFINDING",
@@ -99,9 +102,12 @@ const PROJECTS: Project[] = [
       "A signage system built to disappear into Nagarhole National Park — except where disappearing would be dangerous.",
     tags: ["Signage", "Systems"],
     href: "/work/nagarhole-wayfinding",
-    thumb: "/case/nagarhole/mockup-warning.webp",
+    thumb: "/case/nagarhole/hero-leopard.webp",
+    // Portrait art in a landscape slot. Same steer the case hero uses: 33%
+    // keeps the cat and the wordmark and drops the empty water at the foot.
+    thumbPosition: "center 33%",
     thumbAlt:
-      "A warning sign from the Nagarhole system standing in situ at the forest edge.",
+      "A black leopard at the waterline, with the Nagarhole wordmark.",
   },
 ];
 
