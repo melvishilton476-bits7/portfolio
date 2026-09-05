@@ -1,6 +1,7 @@
 import type { ComponentType } from "react";
 import TitanCaseStudy from "./titan";
 import NagarholeCaseStudy from "./nagarhole";
+import ZenxoCaseStudy from "./zenxo";
 
 /**
  * Slug → case study. The dynamic route reads this for both its static params
@@ -31,6 +32,13 @@ export const CASE_STUDIES: Record<string, CaseStudy> = {
     description:
       "A concept signage system for Nagarhole National Park. Every sign was built to disappear into the forest; the warning family breaks that rule on purpose, because camouflaged danger is a design failure.",
     Component: NagarholeCaseStudy,
+  },
+  "zenxo-strategy-builder": {
+    name: "Zenxo",
+    title: "ZENXO — A visual strategy builder for Indian options traders",
+    description:
+      "A canvas could show what a form never could. Keeping the form next to it is the reason traders actually learned it.",
+    Component: ZenxoCaseStudy,
   },
 };
 

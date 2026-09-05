@@ -100,7 +100,11 @@ const PROJECTS: Project[] = [
       "A figure in goggles catching an ember reflection, the TITAN lockup across it.",
   },
   {
-    title: "NAGARHOLE - WAYFINDING",
+    // "NAGARHOLE - WAYFINDING" wrapped to two lines in the 172px the ticket
+    // body leaves for a title, which pushed the whole card out of step with
+    // Titan's. Measured against the real font: this holds one line, the
+    // hyphenated form does not.
+    title: "NAGARHOLE SIGNS",
     meta: "SOLO,2026",
     color: "#171717",
     quote:
@@ -115,6 +119,17 @@ const PROJECTS: Project[] = [
     thumbPosition: "center 43%",
     thumbAlt:
       "A black leopard at the waterline, with the Nagarhole wordmark.",
+  },
+  {
+    title: "ZENXO - BUILDER",
+    meta: "TEAM,2026",
+    color: "#171717",
+    quote:
+      "A canvas could show what a form never could. Keeping the form next to it is the reason traders actually learned it.",
+    tags: ["Product", "Interaction"],
+    href: "/work/zenxo-strategy-builder",
+    // No cover art yet — the card keeps its placeholder until a builder
+    // capture lands, same as every frame inside the case study itself.
   },
 ];
 
