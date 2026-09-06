@@ -152,17 +152,27 @@ export default function AboutIntro() {
             {/* Last in the column rather than centred under the whole row: it
                 is the end of what the page is saying, and it belongs to the
                 voice saying it. */}
-            {/* TODO: LinkedIn and X await real URLs. Rendered as plain text
-                until then rather than pointing somewhere wrong. */}
+            {/* TODO: X still awaits a real URL, so it stays a <span> rather
+                than a link pointing nowhere. LinkedIn and email are live.
+                External links carry rel="noreferrer" — target="_blank" hands
+                the new tab a window.opener back to this page without it. */}
             {/* Same type-note as the two blocks above it. It was a caption —
                 a smaller token — which read as a footnote to the column rather
                 than the last thing the column says. */}
             <p className="type-note text-ink-alt leading-relaxed">
               To befriend me or hire me, reach out on{" "}
-              <span className="font-medium underline decoration-from-font underline-offset-2">LinkedIn</span>,{" "}
+              <a
+                href="https://www.linkedin.com/in/melvis-hilton-1b2982291"
+                target="_blank"
+                rel="noreferrer"
+                className="hover:text-ink font-medium underline decoration-from-font underline-offset-2 transition-colors"
+              >
+                LinkedIn
+              </a>
+              ,{" "}
               <span className="font-medium underline decoration-from-font underline-offset-2">X</span>, or by{" "}
               <a
-                href="mailto:melvishilton476@gmail.com"
+                href="mailto:hiltonmelvis@gmail.com"
                 className="hover:text-ink font-medium underline decoration-from-font underline-offset-2 transition-colors"
               >
                 email
