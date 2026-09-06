@@ -2279,7 +2279,10 @@ body {
   font-size: 0.6875rem;
   font-weight: 500;
   letter-spacing: 0.04em;
-  text-transform: uppercase;
+  /* NO text-transform. The label is content, not chrome: the fun-grid prints
+     carry asides written in a voice ("gluttony 1", "Obsessing over that 2px
+     gap"), and shouting them in caps flattens that into a UI string. Anything
+     that wants caps types them. */
   white-space: nowrap;
   /* Height, padding and colour tween; the label's own max-width is what
      actually opens the capsule. `width: auto` cannot be transitioned, and
@@ -2312,7 +2315,10 @@ body {
   background: var(--pill-bg);
 }
 .site-cursor[data-mode="pill"] .site-cursor__label {
-  max-width: 18rem;
+  /* Wide enough for the longest aside on the page — the cap only exists to
+     stop a runaway label, so it should sit above the real copy, not inside
+     it. */
+  max-width: 26rem;
   opacity: 1;
 }
 .site-cursor[data-mode="pill"] .site-cursor__arrow {

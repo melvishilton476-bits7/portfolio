@@ -119,21 +119,26 @@ type Shot = {
   mount?: number;
   mountColor?: string;
   objectPosition?: string;
+  /** What the site cursor swells into over this print. Declared on the shot
+   *  rather than in <Cursor>, so the words live next to the picture they
+   *  belong to. Kept in the voice they were written in — these are asides, not
+   *  UI labels. */
+  note: string;
 };
 
 const SHOTS: Shot[] = [
-  { id: "fun-02", src: "/about/fun-02.webp", alt: "A group at a karaoke bar, the screen lit behind them", at: [518, 1433, 126.485, 126.485] },
-  { id: "fun-04", src: "/about/fun-04.webp", alt: "Melvis at a food court holding a drink", at: [791, 1432, 121.843, 132.287] },
-  { id: "fun-01", src: "/about/fun-01.webp", alt: "Melvis with family in a cinema, popcorn in hand", at: [361, 1496, 126.485, 126.485] },
-  { id: "fun-05", src: "/about/fun-05.webp", alt: "A full table of food mid-meal", at: [645, 1583, 126.485, 126.485] },
-  { id: "fun-03", src: "/about/fun-03.webp", alt: "Three friends leaning in for a selfie", at: [298, 1644, 126.485, 126.485] },
-  { id: "fun-06", src: "/about/fun-06.webp", alt: "A road at dusk with two figures walking along it", at: [498.62, 1717.21, 126.485, 126.485] },
-  { id: "fun-07", src: "/about/fun-07.webp", alt: "A group of children sitting together outdoors", at: [765.52, 1721.86, 126.485, 126.485], mount: 4, mountColor: "#7b9aff" },
-  { id: "fun-08", src: "/about/fun-08.webp", alt: "Melvis working at a laptop in low light", at: [463.77, 1859, 126.485, 126.485] },
-  { id: "fun-09", src: "/about/fun-09.webp", alt: "A boat moored on a backwater", at: [627.32, 1888.37, 126.485, 126.485] },
-  { id: "fun-11", src: "/about/fun-11.webp", alt: "A stack of books seen spine-on", at: [849.39, 1971, 126.485, 126.485] },
-  { id: "fun-10", src: "/about/fun-10.webp", alt: "Four friends on a beach with the sea behind them", at: [333.65, 1995, 126.485, 126.485], objectPosition: "bottom" },
-  { id: "fun-12", src: "/about/fun-12.webp", alt: "A group photo on a trip, everyone squinting into the sun", at: [521, 2094, 186.826, 126.485] },
+  { id: "fun-02", src: "/about/fun-02.webp", alt: "A group at a karaoke bar, the screen lit behind them", at: [518, 1433, 126.485, 126.485], note: "More movies of course" },
+  { id: "fun-04", src: "/about/fun-04.webp", alt: "Melvis at a food court holding a drink", at: [791, 1432, 121.843, 132.287], note: "gluttony 1" },
+  { id: "fun-01", src: "/about/fun-01.webp", alt: "Melvis with family in a cinema, popcorn in hand", at: [361, 1496, 126.485, 126.485], note: "Like a true cinephile I always need a tub" },
+  { id: "fun-05", src: "/about/fun-05.webp", alt: "A full table of food mid-meal", at: [645, 1583, 126.485, 126.485], note: "more gluttony" },
+  { id: "fun-03", src: "/about/fun-03.webp", alt: "Three friends leaning in for a selfie", at: [298, 1644, 126.485, 126.485], note: "More food (Saadhya) with my boys" },
+  { id: "fun-06", src: "/about/fun-06.webp", alt: "A road at dusk with two figures walking along it", at: [498.62, 1717.21, 126.485, 126.485], note: "Meditative" },
+  { id: "fun-07", src: "/about/fun-07.webp", alt: "A group of children sitting together outdoors", at: [765.52, 1721.86, 126.485, 126.485], mount: 4, mountColor: "#7b9aff", note: "My first love" },
+  { id: "fun-08", src: "/about/fun-08.webp", alt: "Melvis working at a laptop in low light", at: [463.77, 1859, 126.485, 126.485], note: "Obsessing over that 2px gap" },
+  { id: "fun-09", src: "/about/fun-09.webp", alt: "A boat moored on a backwater", at: [627.32, 1888.37, 126.485, 126.485], note: "fishing like a professional :)" },
+  { id: "fun-11", src: "/about/fun-11.webp", alt: "A stack of books seen spine-on", at: [849.39, 1971, 126.485, 126.485], note: "Words of Greatness" },
+  { id: "fun-10", src: "/about/fun-10.webp", alt: "Four friends on a beach with the sea behind them", at: [333.65, 1995, 126.485, 126.485], objectPosition: "bottom", note: "beaches are so fun I almost jumped off this cliff" },
+  { id: "fun-12", src: "/about/fun-12.webp", alt: "A group photo on a trip, everyone squinting into the sun", at: [521, 2094, 186.826, 126.485], note: "Country roads take me Oman." },
 ];
 
 /** The joins, as the source draws them: twelve straight 5px strokes, given here
@@ -564,6 +569,7 @@ export default function FunGrid() {
                 }}
                 className="absolute will-change-transform"
                 style={box(...shot.at)}
+                data-cursor={shot.note}
               >
                 <Mount shot={shot} className="h-full w-full" bare />
                 <MountOutline shot={shot} boilId={boilId} />
