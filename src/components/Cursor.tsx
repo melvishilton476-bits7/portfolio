@@ -38,11 +38,16 @@ import { useEffect, useRef } from "react";
 const DOT = 14;
 const PILL_H = 28;
 
-/** Periwinkle for the dot — the site's accent, the colour ENGINEER locks onto.
- *  Ink for the pill, because the label has to stay readable over photographs
- *  and case-study art, and white on periwinkle is under 3:1. */
+/** Periwinkle throughout — the site's accent, the colour ENGINEER locks onto.
+ *  The pill was ink, which read as a different object appearing rather than
+ *  the dot growing. It stays periwinkle and the LABEL turns dark instead:
+ *  white on periwinkle measures 3.19:1, which fails AA at this size; ink
+ *  on it is 5.62:1, which passes. So the capsule keeps the accent and the
+ *  words stay readable over photographs. */
 const DOT_BG = "#8581ff";
-const PILL_BG = "#171717";
+const PILL_BG = "#8581ff";
+/** The label's colour once the capsule opens. */
+const PILL_FG = "#171717";
 
 const TYPING =
   'input, textarea, [contenteditable=""], [contenteditable="true"]';
@@ -157,6 +162,7 @@ export default function Cursor() {
         style={{
           ["--dot-bg" as string]: DOT_BG,
           ["--pill-bg" as string]: PILL_BG,
+          ["--pill-fg" as string]: PILL_FG,
         }}
       >
         <span ref={labelRef} className="site-cursor__label" />

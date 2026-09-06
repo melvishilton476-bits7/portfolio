@@ -2289,9 +2289,10 @@ body {
      measuring the text to get a pixel width would mean a layout read on every
      hover — a max-width that starts at zero costs neither. */
   transition:
-    height 220ms cubic-bezier(0.22, 1, 0.36, 1),
-    padding 220ms cubic-bezier(0.22, 1, 0.36, 1),
-    background-color 220ms ease-out;
+    height 380ms cubic-bezier(0.22, 1, 0.36, 1),
+    padding 380ms cubic-bezier(0.22, 1, 0.36, 1),
+    color 300ms ease-out,
+    background-color 380ms ease-out;
 }
 .site-cursor__label,
 .site-cursor__arrow {
@@ -2299,10 +2300,14 @@ body {
   max-width: 0;
   overflow: hidden;
   opacity: 0;
+  /* The label's max-width is what actually opens the capsule, so this is the
+     duration the gesture reads at. Opacity trails it rather than leading:
+     letters fading in while the box is still travelling looks like two
+     separate events. */
   transition:
-    max-width 260ms cubic-bezier(0.22, 1, 0.36, 1),
-    opacity 140ms ease-out,
-    margin 220ms cubic-bezier(0.22, 1, 0.36, 1);
+    max-width 460ms cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 260ms ease-out 90ms,
+    margin 380ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 .site-cursor__arrow {
   font-size: 0.75rem;
@@ -2313,6 +2318,7 @@ body {
   height: var(--pill-h);
   padding: 0 0.75rem;
   background: var(--pill-bg);
+  color: var(--pill-fg);
 }
 .site-cursor[data-mode="pill"] .site-cursor__label {
   /* Wide enough for the longest aside on the page — the cap only exists to
