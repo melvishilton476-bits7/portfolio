@@ -145,6 +145,84 @@ const CROP: Record<Side, Box> = {
 };
 const WIRE_SW = 2.655;
 
+/** The print's pixel dissolve — the card's own colour punched back through the
+ *  photograph as 9px squares, dense along the photo's bottom edge and thinning
+ *  as they climb, with a staircase up the right side and a few strays out over
+ *  the sky.
+ *
+ *  Read off the source artboard rather than scattered by a random function.
+ *  These are placed: the density falls off in a particular way, the right-hand
+ *  staircase steps at a particular rate, and the three high strays are where
+ *  they are because the composition wanted them there. A seeded scatter would
+ *  produce something that looked similar and read as noise, which is the
+ *  opposite of the point — the card is eating the picture from the bottom up.
+ *
+ *  Source coordinates, same space every other box on the stage uses. */
+const PIXELS: readonly [number, number, number, number][] = [
+  [496, 448, 9, 9],
+  [514, 489, 9, 9],
+  [721, 504, 9, 9],
+  [658, 513, 9, 9],
+  [496, 517, 9, 9],
+  [496, 535, 9, 9],
+  [514, 535, 9, 9],
+  [698, 547, 9, 9],
+  [496, 577, 9, 9],
+  [505, 577, 9, 9],
+  [716, 578, 9, 9],
+  [725, 578, 9, 9],
+  [496, 586, 9, 9],
+  [716, 587, 9, 9],
+  [734, 587, 9, 9],
+  [743, 587, 9, 9],
+  [689, 596, 9, 9],
+  [698, 596, 9, 9],
+  [716, 596, 9, 9],
+  [725, 596, 9, 9],
+  [689, 605, 9, 9],
+  [716, 605, 9, 9],
+  [542, 613, 9, 10],
+  [607, 614, 9, 9],
+  [616, 614, 9, 9],
+  [662, 614, 9, 9],
+  [671, 614, 9, 9],
+  [689, 614, 9, 9],
+  [698, 614, 9, 9],
+  [707, 614, 9, 9],
+  [716, 614, 9, 9],
+  [496, 623, 9, 9],
+  [514, 623, 10, 9],
+  [533, 623, 9, 9],
+  [561, 623, 9, 9],
+  [570, 623, 9, 9],
+  [579, 623, 9, 9],
+  [588, 623, 9, 9],
+  [597, 623, 10, 9],
+  [635, 623, 9, 9],
+  [662, 623, 9, 9],
+  [689, 623, 9, 9],
+  [716, 623, 9, 9],
+  [496, 632, 9, 9],
+  [505, 632, 9, 9],
+  [524, 632, 9, 9],
+  [542, 632, 9, 9],
+  [551, 632, 10, 9],
+  [561, 632, 9, 9],
+  [570, 632, 9, 9],
+  [579, 632, 9, 9],
+  [588, 632, 9, 9],
+  [625, 632, 9, 9],
+  [634, 632, 9, 9],
+  [643, 632, 9, 9],
+  [652, 632, 9, 9],
+  [680, 632, 9, 9],
+  [689, 632, 9, 9],
+  [707, 632, 9, 9],
+  [716, 632, 9, 9],
+];
+
+
+
 /** Where a wire meets a frame: which vertical edge, and how far down it. The
  *  fractions are read off the source's own line endpoints — but the EDGE is
  *  snapped to, rather than taken from the source, which draws its ends a pixel
@@ -804,6 +882,22 @@ export default function Polaroid() {
           never to the fruits of your work &rdquo;
         </span>
       </blockquote>
+
+      {/* ---- The pixel dissolve --------------------------------------------
+          Above the photograph so the squares punch through it, below the
+          apparatus (z-20) so the drawn frame and its wires still run over the
+          top — the card is eating the picture, not the diagram. Same
+          #8581ff as the card itself, because that is what they are: card
+          showing through. */}
+      <div aria-hidden className="pointer-events-none absolute inset-0 z-[5]">
+        {PIXELS.map(([x, y, w, h]) => (
+          <span
+            key={`${x}-${y}`}
+            className="absolute bg-[#8581ff]"
+            style={box(x, y, w, h)}
+          />
+        ))}
+      </div>
 
       {/* ---- The crops' photographs ----------------------------------------
           UNDER the apparatus, so each frame's stroke reads as a frame around
