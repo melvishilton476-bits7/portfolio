@@ -67,7 +67,16 @@ export default function Journey() {
 
       <div className="page-container mt-20 lg:mt-24">
         <GrowOnView>
-          <ol className="grid gap-y-20 lg:grid-cols-2 lg:gap-x-20">
+          {/* Two equal halves, each entry centred in its own. No column gap:
+              the gap is what stopped a half from being a half — with 80px
+              between them, column one ran 0 to (W-80)/2 and its centre sat
+              short of the quarter line. The frames are content-width, so the
+              air around them is the gutter now.
+
+              Centring only at lg. Below it there is one column, and a
+              max-content item in a narrower column overflows rather than
+              centres. */}
+          <ol className="grid gap-y-20 lg:grid-cols-2 lg:justify-items-center">
             {STOPS.map((stop) => (
               <li key={stop.name}>
                 {/* The frame hugs the whole entry, not the title — these are
