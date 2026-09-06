@@ -2280,7 +2280,10 @@ body {
   color: var(--pill-fg);
   font-family: var(--font-display);
   font-size: 0.6875rem;
-  font-weight: 500;
+  /* 400, not 500. The label sits on a pale fill in ink at 11:1 — it had
+     plenty of presence without the extra weight, and medium made an aside
+     ("gluttony 1") read with the insistence of a button. */
+  font-weight: 400;
   letter-spacing: 0.04em;
   /* NO text-transform. The label is content, not chrome: the fun-grid prints
      carry asides written in a voice ("gluttony 1", "Obsessing over that 2px
