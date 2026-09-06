@@ -154,7 +154,10 @@ export default function AboutIntro() {
                 voice saying it. */}
             {/* TODO: LinkedIn and X await real URLs. Rendered as plain text
                 until then rather than pointing somewhere wrong. */}
-            <p className="type-caption text-ink-alt">
+            {/* Same type-note as the two blocks above it. It was a caption —
+                a smaller token — which read as a footnote to the column rather
+                than the last thing the column says. */}
+            <p className="type-note text-ink-alt leading-relaxed">
               To befriend me or hire me, reach out on{" "}
               <span className="font-medium underline decoration-from-font underline-offset-2">LinkedIn</span>,{" "}
               <span className="font-medium underline decoration-from-font underline-offset-2">X</span>, or by{" "}
