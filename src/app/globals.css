@@ -2358,6 +2358,32 @@ body {
   }
 }
 
+/* ---- The print's pixel dissolve -------------------------------------------
+   Each square switches ON rather than fading in — two held steps, no
+   interpolation. A pixel that eases from 0 to 1 opacity reads as a soft blue
+   shape appearing over the photograph; a pixel that snaps through one
+   intermediate value reads as a pixel. The per-square delay (--d, set in
+   Polaroid.tsx) carries the rise from the floor upward. */
+.about-pixel {
+  opacity: 0;
+}
+.is-grown .about-pixel {
+  animation: about-pixel-in 170ms var(--d) forwards;
+}
+@keyframes about-pixel-in {
+  0% {
+    opacity: 0;
+    animation-timing-function: steps(1);
+  }
+  50% {
+    opacity: 0.45;
+    animation-timing-function: steps(1);
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
 .about-weld {
   opacity: 0;
 }
@@ -2412,6 +2438,15 @@ body {
   }
   .about-status-dots > span {
     animation: none;
+    opacity: 1;
+  }
+
+  /* The dissolve is part of the composition, not a flourish on it — so under
+     reduced motion the squares are simply there, exactly as the source
+     artboard has them. */
+  .about-pixel,
+  .is-grown .about-pixel {
+    animation: none !important;
     opacity: 1;
   }
 

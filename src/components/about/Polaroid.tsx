@@ -221,6 +221,32 @@ const PIXELS: readonly [number, number, number, number][] = [
   [716, 632, 9, 9],
 ];
 
+/* The dissolve arrives as a rising tide rather than all at once, because that
+   is what the effect claims: the card is eating the picture FROM THE BOTTOM.
+   Squares switch on in order of height — the dense floor band first, the three
+   strays over the sky last — so the direction of the animation and the meaning
+   of the composition are the same thing. A simultaneous fade would have shown
+   the same sixty squares and said nothing.
+
+   `PIX_FLOOR` is read off the array rather than written down, so moving a
+   square never leaves the timing pointing at a row that no longer exists.
+
+   The jitter is deterministic, keyed off x: without it a row of nine squares
+   at the same height flips as one bar, which reads as a shutter rather than a
+   spread. It is a hash, not Math.random, so the server and the client agree
+   and the reveal is the same every time — it was composed, not rolled. */
+const PIX_FLOOR = Math.max(...PIXELS.map(([, y]) => y));
+/** ms before the lowest square appears — under the apparatus's own 620ms, so
+ *  the print is already coming apart as the frame draws over it. */
+const PIX_BASE = 180;
+/** ms added per source unit of climb. */
+const PIX_RISE = 4.2;
+/** ms of column-to-column scatter within a row. */
+const PIX_JITTER = 22;
+
+const pixelDelay = (x: number, y: number) =>
+  Math.round(PIX_BASE + (PIX_FLOOR - y) * PIX_RISE + (((x * 7919) % 5) * PIX_JITTER));
+
 
 
 /** Where a wire meets a frame: which vertical edge, and how far down it. The
@@ -893,8 +919,11 @@ export default function Polaroid() {
         {PIXELS.map(([x, y, w, h]) => (
           <span
             key={`${x}-${y}`}
-            className="absolute bg-[#8581ff]"
-            style={box(x, y, w, h)}
+            className="about-pixel absolute bg-[#8581ff]"
+            style={{
+              ...box(x, y, w, h),
+              ["--d" as string]: `${pixelDelay(x, y)}ms`,
+            }}
           />
         ))}
       </div>
