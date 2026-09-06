@@ -779,12 +779,20 @@ export default function Polaroid() {
           means something if something is written in it, and in the source this
           is what fills it. */}
       <blockquote
-        className="absolute flex items-start justify-center text-center font-light text-black"
+        className="absolute flex items-start justify-center text-center text-black"
         style={{
           ...box(492, 653, 260, 44),
-          fontSize: cq(11.348),
-          letterSpacing: "-0.08em",
-          lineHeight: 1.4,
+          fontFamily: "var(--font-typewriter)",
+          /* Sized and tracked for the typewriter, not inherited from the
+             display face it replaced. A monospace sets every glyph on a 0.6em
+             advance, so the 41-character first line runs ~25em wide against a
+             260-unit box — at the old 11.348 it overshot the print. The
+             negative tracking goes too: that was there to tighten Space
+             Grotesk, and on a typewriter face it closes gaps the design of the
+             letterform depends on. */
+          fontSize: cq(9.9),
+          letterSpacing: "0",
+          lineHeight: 1.5,
         }}
       >
         {/* Broken at the comma rather than left to wrap: the natural break
