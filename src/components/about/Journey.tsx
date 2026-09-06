@@ -74,8 +74,27 @@ export default function Journey() {
                     exhibits on a board, and marks around the heading alone
                     would leave the body copy outside the thing it belongs to.
                     Wider offsets than the default because a stop is a block,
-                    not a caption. */}
-                <CropFrame as="div" x={40} y={25}>
+                    not a caption.
+
+                    IT TAKES ITS CONTENT'S WIDTH (w-fit), not the grid
+                    column's. Filling the column, the frame ran 536px wide
+                    while the copy stopped around 400, so the right-hand
+                    brackets registered the edge of an invisible column 139px
+                    past the last word — a crop mark marking nothing. It also
+                    left the two entries' marks touching: 40px of offset either
+                    side exactly consumed the 80px gutter, so the inner pair met
+                    edge to edge and read as one 16px mark straddling the gap
+                    rather than two frames closing.
+
+                    Fit-content rather than a fixed cap, because the widest
+                    thing in a stop is its title row, and a cap tight enough to
+                    hug the prose wrapped the logo, name and dates onto three
+                    lines. The two frames end up slightly different widths.
+                    That is the honest result: they are exhibits of different
+                    sizes, and marks that lie about where the work ends are
+                    worth less than marks that are not perfectly aligned with
+                    each other. */}
+                <CropFrame as="div" x={40} y={25} className="w-fit">
                   <div className="flex flex-wrap items-center gap-x-4 gap-y-3">
                     <span
                       className={`relative block size-[37px] shrink-0 overflow-hidden rounded-[3px] ${
