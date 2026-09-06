@@ -38,14 +38,21 @@ import { useEffect, useRef } from "react";
 const DOT = 14;
 const PILL_H = 28;
 
-/** Periwinkle throughout — the site's accent, the colour ENGINEER locks onto.
- *  The pill was ink, which read as a different object appearing rather than
- *  the dot growing. It stays periwinkle and the LABEL turns dark instead:
- *  white on periwinkle measures 3.19:1, which fails AA at this size; ink
- *  on it is 5.62:1, which passes. So the capsule keeps the accent and the
- *  words stay readable over photographs. */
-const DOT_BG = "#8581ff";
-const PILL_BG = "#8581ff";
+/** The pale periwinkle of the blueprint hatch cells — the light end of the
+ *  same ramp #8581ff sits at.
+ *
+ *  IT CARRIES A RING, and that is not decoration. #c8c6ff against the page is
+ *  1.58:1: as a 14px disc on a white section, or over the bright half of a
+ *  photograph, it all but disappears — and a cursor you cannot find is worse
+ *  than no custom cursor at all, because the real one has already been taken
+ *  away. A hairline of the full-strength accent (3.11:1 on the page) gives the
+ *  shape an edge to be found by while the fill stays as pale as the hatch.
+ *
+ *  Ink for the label: on this fill it measures 11.08:1, the most readable the
+ *  pill has been. */
+const DOT_BG = "#c8c6ff";
+const PILL_BG = "#c8c6ff";
+const CURSOR_RING = "#8581ff";
 /** The label's colour once the capsule opens. */
 const PILL_FG = "#171717";
 
@@ -163,6 +170,7 @@ export default function Cursor() {
           ["--dot-bg" as string]: DOT_BG,
           ["--pill-bg" as string]: PILL_BG,
           ["--pill-fg" as string]: PILL_FG,
+          ["--cursor-ring" as string]: CURSOR_RING,
         }}
       >
         <span ref={labelRef} className="site-cursor__label" />
