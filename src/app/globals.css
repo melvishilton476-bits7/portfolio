@@ -2746,21 +2746,32 @@ body {
    take an SVG one at all. This rides the site's existing pointer instead — the
    element is already mounted and already being moved on rAF, so the mallet is
    a background image on one span and the swing is a transition, not a second
-   pointer implementation. */
+   pointer implementation.
+
+   IT PIVOTS ON THE GRIP, the far end of the handle, the way a hammer pivots on
+   the wrist holding it. Spinning it about its own centre made it read as a
+   propeller rather than a swing.
+
+   That pivot decides where the artwork sits. The point that has to land on the
+   pointer is the HEAD AT THE MOMENT OF IMPACT, not the head at rest: you aim,
+   you press, and the head arrives exactly where you were aiming. In the
+   artwork's own coordinates the grip is (24,56) and the head centre (24,24),
+   so a 32px arm; swung to the strike angle the head sits at (-7.51, 61.56),
+   and the offsets below are simply that point pulled onto the hotspot. At rest
+   the head then hangs 28px above the aim point and 9px across it — cocked,
+   which is what you want to see while you are still choosing a mole. */
 .site-cursor__mallet {
   display: none;
   position: absolute;
-  /* The root is offset so the DOT's centre lands on the hotspot; this pulls
-     back off that so the mallet's HEAD centre lands there instead. */
-  left: calc(var(--dot) / 2 - 24px);
-  top: calc(var(--dot) / 2 - 24px);
+  /* dot/2 undoes the root's own offset (which centres the DOT on the hotspot);
+     the rest is the impact point, from the note above. */
+  left: calc(var(--dot) / 2 + 7.51px);
+  top: calc(var(--dot) / 2 - 61.56px);
   width: 48px;
   height: 56px;
   background: no-repeat center / 100% 100%
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 56'%3E%3Cg fill='%238581ff'%3E%3Crect x='2' y='15' width='44' height='18'/%3E%3Crect x='19' y='33' width='10' height='23'/%3E%3C/g%3E%3C/svg%3E");
-  /* Rotate about the head, not the element's centre, so the striking face
-     stays on the hotspot through the swing. */
-  transform-origin: 24px 24px;
+  transform-origin: 24px 56px;
   transform: rotate(-45deg);
   transition: transform 90ms cubic-bezier(0.2, 0.8, 0.3, 1);
 }
@@ -2771,7 +2782,7 @@ body {
   display: block;
 }
 .site-cursor[data-mode="mallet"][data-hit] .site-cursor__mallet {
-  transform: rotate(14deg);
+  transform: rotate(-100deg);
 }
 
 @media (prefers-reduced-motion: reduce) {

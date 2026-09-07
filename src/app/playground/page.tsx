@@ -66,6 +66,45 @@ function Tell({
   );
 }
 
+/** The instruction line and the two tells — everything you need before the
+ *  first mole and nothing you need after it. Rendered on the server and handed
+ *  to <Game> as a prop, which is what lets a client component decide when to
+ *  show it without a line of it landing in the client bundle. */
+function Brief() {
+  return (
+      <div className="page-container">
+        {/* Set in caps as drawn. The two coloured phrases are the tell,
+            and they are also the only two things on the line that are not
+            grey, so the eye lands on them before it reads the sentence. */}
+        <p className="type-note text-ink-alt mx-auto mt-8 max-w-[31rem] text-center leading-relaxed">
+          WHACK AS MANY{" "}
+          <span className="font-medium" style={{ color: PEST }}>
+            PIXEL PESTS
+          </span>{" "}
+          IN 1 MINUTE.{" "}
+          {/* Breaks where the design breaks, but only once there is a line
+              wide enough to hold the first half. */}
+          <br className="hidden sm:inline" />
+          DON&rsquo;T HARM THE{" "}
+          <span className="font-medium" style={{ color: PET }}>
+            PIXEL PETS
+          </span>
+          . ALL THE BEST, COMRADE.
+        </p>
+
+        {/* The two characters side by side, split by the same dashed
+            hairline the rest of the site divides things with. Colour is the
+            reliable tell — the names are one letter apart on purpose. */}
+        <div className="mx-auto mt-9 grid max-w-[54rem] gap-8 sm:grid-cols-2 sm:gap-0">
+          <Tell kind="pet" name="PIXEL PETS" verb={"DON\u2019T"} rest="WHACK THEM" />
+          <div className="sm:border-l sm:border-dashed sm:border-[rgba(23,23,23,0.16)]">
+            <Tell kind="pest" name="PIXEL PESTS" verb="ALWAYS" rest="WHACK THEM !" />
+          </div>
+        </div>
+      </div>
+  );
+}
+
 export default function PlaygroundPage() {
   return (
     <>
@@ -93,38 +132,7 @@ export default function PlaygroundPage() {
             </h1>
           </TitleBand>
 
-          <div className="page-container">
-            {/* Set in caps as drawn. The two coloured phrases are the tell,
-                and they are also the only two things on the line that are not
-                grey, so the eye lands on them before it reads the sentence. */}
-            <p className="type-note text-ink-alt mx-auto mt-8 max-w-[31rem] text-center leading-relaxed">
-              WHACK AS MANY{" "}
-              <span className="font-medium" style={{ color: PEST }}>
-                PIXEL PESTS
-              </span>{" "}
-              IN 1 MINUTE.{" "}
-              {/* Breaks where the design breaks, but only once there is a line
-                  wide enough to hold the first half. */}
-              <br className="hidden sm:inline" />
-              DON&rsquo;T HARM THE{" "}
-              <span className="font-medium" style={{ color: PET }}>
-                PIXEL PETS
-              </span>
-              . ALL THE BEST, COMRADE.
-            </p>
-
-            {/* The two characters side by side, split by the same dashed
-                hairline the rest of the site divides things with. Colour is the
-                reliable tell — the names are one letter apart on purpose. */}
-            <div className="mx-auto mt-9 grid max-w-[54rem] gap-8 sm:grid-cols-2 sm:gap-0">
-              <Tell kind="pet" name="PIXEL PETS" verb={"DON\u2019T"} rest="WHACK THEM" />
-              <div className="sm:border-l sm:border-dashed sm:border-[rgba(23,23,23,0.16)]">
-                <Tell kind="pest" name="PIXEL PESTS" verb="ALWAYS" rest="WHACK THEM !" />
-              </div>
-            </div>
-          </div>
-
-          <Game />
+          <Game brief={<Brief />} />
         </section>
 
         <section aria-labelledby="thoughts-title" className="relative pt-24 pb-24 md:pt-36 md:pb-36">

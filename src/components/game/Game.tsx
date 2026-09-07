@@ -1,5 +1,6 @@
 "use client";
 
+import type { ReactNode } from "react";
 import { useCallback, useRef, useState, useSyncExternalStore } from "react";
 import MoleFigure from "./MoleFigure";
 import useGameClock from "./useGameClock";
@@ -76,12 +77,20 @@ const SCENERY: { slot: number; kind: MoleKind; size: number }[] = [
  * has actually changed, so a quiet second of play re-renders this component
  * once, not six hundred times.
  *
+ * `brief` — the instructions and the two-character legend — is handed in from
+ * the server component rather than built here. Children passed down from a
+ * server parent stay server-rendered even though this component decides
+ * whether to show them, so the how-to-play copy is still in the HTML and costs
+ * the client bundle nothing. It is only up before a round: once the moles are
+ * out you are reading the arena, not the instructions, and the space it frees
+ * goes straight to the arena, because that is the part that grows.
+ *
  * Time is read from `Date.now()` against a deadline rather than counted down a
  * tick at a time: intervals drift, background tabs throttle them to about a
  * second, and the pet penalty is then just an adjustment to the deadline
  * instead of a special case in the counter.
  */
-export default function Game() {
+export default function Game({ brief }: { brief?: ReactNode }) {
   const [phase, setPhase] = useState<Phase>("idle");
   const [score, setScore] = useState(0);
   const [secs, setSecs] = useState(Math.round(DURATION_MS / 1000));
@@ -227,7 +236,10 @@ export default function Game() {
 
   return (
     <div className="pp">
-      {/* ---- Scoreboard ---------------------------------------------------- */}
+      {/* ---- Scoreboard ----------------------------------------------------
+          At the top of the section, under the title: it is a readout, and a
+          readout belongs where the eye starts rather than tucked against the
+          arena it describes. */}
       <div className="pp-hud type-caption text-ink">
         <span>
           <span className="text-ink-muted">SCORE</span> {String(score).padStart(3, "0")}
@@ -238,6 +250,9 @@ export default function Game() {
           {String(secs % 60).padStart(2, "0")}
         </span>
       </div>
+
+      {/* How to play — up until the first mole, and back again at the end. */}
+      {!playing && brief}
 
       {/* ---- Arena --------------------------------------------------------- */}
       {/* `data-cursor-mallet` is the whole hook-up for the pointer: the site
