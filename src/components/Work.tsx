@@ -391,7 +391,13 @@ function Carousel() {
           />
 
           {PROJECTS.map((project, i) => (
-            <ProjectPanel key={i} project={project} index={i} step={step} />
+            <ProjectPanel
+              key={i}
+              project={project}
+              index={i}
+              count={PROJECTS.length}
+              step={step}
+            />
           ))}
 
           {/* Glass edges: a white gradient that dissolves the peeking

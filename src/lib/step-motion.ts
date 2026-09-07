@@ -43,13 +43,19 @@ export const ANTICIPATION_PX = 12;
 export const OVERSHOOT_PX = 24;
 
 /**
- * The strip is a slack chain, not a rigid plank: the leading card takes up the
- * pull first and each card behind it follows a beat later.
+ * The strip is a slack chain, not a rigid plank: the card at the LEADING EDGE
+ * takes up the pull first and each card behind it follows a beat later.
  *
- * Advancing moves every card LEFT, so the leftmost is the leading edge — and
- * since panel `index` is always left of `index + 1`, the array order IS the
- * left-to-right order at every step. Staggering on the index therefore gives a
- * true front-to-back pull wherever the strip has got to.
+ * Which end leads depends on which way the strip is travelling. Advancing
+ * moves every card left, so the leftmost is out in front; scrolling back moves
+ * them right, and the order has to invert with it — a chain is pulled from
+ * whichever end is going first, and a stagger that ignores direction turns the
+ * reverse into a push, with the back of the chain somehow moving before the
+ * front.
+ *
+ * Panel `index` is always left of `index + 1`, so the array order IS the
+ * left-to-right order at every step; leading-edge order is that, or its
+ * mirror.
  *
  * An earlier version keyed off the slot offset from centre and clamped to the
  * three cards on stage. It was wrong at the ends: at the last step the strip
@@ -59,8 +65,13 @@ export const OVERSHOOT_PX = 24;
  */
 export const STAGGER = 0.08;
 
-/** @param index the panel's position in the strip, left to right. */
-export const stepDelay = (index: number) => STAGGER * index;
+/**
+ * @param index      the panel's position in the strip, left to right
+ * @param count      how many panels there are
+ * @param travelSign -1 travelling left (advancing), +1 travelling right (back)
+ */
+export const stepDelay = (index: number, count: number, travelSign: number) =>
+  STAGGER * (travelSign > 0 ? Math.max(count - 1 - index, 0) : index);
 
 /**
  * Wall-clock length of one filmstrip step: the whole gesture, from the leading

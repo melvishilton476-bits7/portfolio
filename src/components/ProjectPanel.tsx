@@ -52,10 +52,14 @@ const SLOT = SLIDE_W + GAP;
 export default function ProjectPanel({
   project,
   index,
+  count,
   step,
 }: {
   project: Project;
   index: number;
+  /** How many panels are in the strip — the stagger counts back from the far
+   *  end when the strip reverses, so it needs to know where that end is. */
+  count: number;
   step: number;
 }) {
   const current = index === step;
@@ -71,16 +75,15 @@ export default function ProjectPanel({
   }, [step]);
   const prevStep = prevStepRef.current;
 
-  /* Where this card sits in the chain, and so how long after the leading edge
-     it takes up the pull — the array order is the left-to-right order, and
-     advancing pulls the strip leftward, so index 0 is the front of the
-     chain. */
-  const lead = stepDelay(index);
-
   const target = (index - step) * SLOT;
   const prevX = (index - prevStep) * SLOT;
   const travelSign = Math.sign(target - prevX); // -1 left, +1 right, 0 still
   const moving = travelSign !== 0;
+
+  /* How long after the leading edge this card takes up the pull. Depends on
+     the direction: going forward the strip runs left and index 0 is out in
+     front; going back it runs right and the last card leads instead. */
+  const lead = stepDelay(index, count, travelSign);
 
   // With a travel direction, play the full gesture as a keyframed `x`: hold at
   // the current spot, recoil `ANTICIPATION_PX` against the travel, sweep all
