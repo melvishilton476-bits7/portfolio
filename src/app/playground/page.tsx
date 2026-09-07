@@ -56,7 +56,7 @@ function Tell({
         className="shrink-0"
         style={{ ["--mole-w" as string]: "clamp(56px, 6.4vw, 82px)" }}
       />
-      <div className="pt-1 text-[0.9375rem] tracking-[0.01em]">
+      <div className="type-note pt-1">
         <p style={{ color: kind === "pet" ? PET : PEST }}>{name}</p>
         <p className="text-ink-muted mt-2">
           <span className="font-medium text-ink">{verb}</span> {rest}
@@ -75,7 +75,7 @@ export default function PlaygroundPage() {
           <TitleBand>
             <h1
               id="playground-title"
-              className="type-heading text-ink-hero text-center font-light"
+              className="type-heading text-ink-hero text-center"
             >
               FIGHT BAD DESIGN WITH ME
             </h1>
@@ -85,7 +85,7 @@ export default function PlaygroundPage() {
             {/* Set in caps as drawn. The two coloured phrases are the tell,
                 and they are also the only two things on the line that are not
                 grey, so the eye lands on them before it reads the sentence. */}
-            <p className="text-ink-alt mx-auto mt-10 max-w-[31rem] text-center text-[0.9375rem] leading-[1.7] tracking-[0.01em]">
+            <p className="type-note text-ink-alt mx-auto mt-10 max-w-[31rem] text-center leading-relaxed">
               WHACK AS MANY{" "}
               <span className="font-medium" style={{ color: PEST }}>
                 PIXEL PESTS
@@ -117,7 +117,7 @@ export default function PlaygroundPage() {
 
         <section aria-labelledby="thoughts-title" className="relative pt-24 pb-24 md:pt-36 md:pb-36">
           <TitleBand cell={250}>
-            <h2 id="thoughts-title" className="type-heading text-ink-hero text-center font-light">
+            <h2 id="thoughts-title" className="type-heading text-ink-alt text-center">
               3 : 24 AM THOUGHTS
             </h2>
           </TitleBand>

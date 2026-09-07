@@ -228,7 +228,7 @@ export default function Game() {
   return (
     <div className="pp">
       {/* ---- Scoreboard ---------------------------------------------------- */}
-      <div className="pp-hud type-caption font-mono text-ink">
+      <div className="pp-hud type-caption text-ink">
         <span>
           <span className="text-ink-muted">SCORE</span> {String(score).padStart(3, "0")}
         </span>
@@ -284,7 +284,7 @@ export default function Game() {
           <span
             key={m.id}
             aria-hidden
-            className="pp-mark type-caption font-mono"
+            className="pp-mark type-caption"
             data-kind={m.kind}
             style={{ left: `${STAND[m.slot]}%` }}
           >
@@ -294,22 +294,22 @@ export default function Game() {
 
         {phase === "idle" && (
           <div className="pp-overlay">
-            <button type="button" className="pp-btn type-caption font-mono" onClick={start}>
+            <button type="button" className="pp-btn type-caption" onClick={start}>
               START
             </button>
-            <p className="type-caption font-mono text-ink-muted">60 SECONDS · GO</p>
+            <p className="type-caption text-ink-muted">60 SECONDS · GO</p>
           </div>
         )}
 
         {phase === "over" && (
           <div className="pp-overlay">
             <div className="pp-card">
-              <p className="type-caption font-mono text-ink-muted">TIME</p>
+              <p className="type-caption text-ink-muted">TIME</p>
               <p className="pp-card__score">{score}</p>
-              <p className="type-caption font-mono text-ink-muted">
+              <p className="type-caption text-ink-muted">
                 {beaten ? "NEW BEST" : `BEST ${best}`}
               </p>
-              <button type="button" className="pp-btn type-caption font-mono" onClick={start}>
+              <button type="button" className="pp-btn type-caption" onClick={start}>
                 PLAY AGAIN
               </button>
             </div>

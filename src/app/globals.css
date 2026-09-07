@@ -2547,6 +2547,21 @@ body {
   right: calc(var(--w) * 0.0976);
 }
 
+/* Every readout in the arena is uppercase mono on the caption tier, and the
+   tier needs two corrections to sit there.
+   THE FACE HAS TO BE SET HERE, NOT WITH A `font-mono` CLASS ON THE ELEMENT:
+   .type-caption also declares font-family, at the same specificity and later
+   in this stylesheet, so it wins and the scoreboard quietly renders in the
+   sans. And the tier tracks at -0.06em, which is right for the sans it was
+   drawn for and wrong for caps, which need air rather than less of it. */
+.pp-hud,
+.pp-mark,
+.pp-btn,
+.pp-overlay p {
+  font-family: var(--font-mono);
+  letter-spacing: 0.06em;
+}
+
 /* ---- Scoreboard ---------------------------------------------------------- */
 .pp {
   position: relative;
@@ -2562,7 +2577,6 @@ body {
   margin-inline: auto;
   padding-inline: clamp(1.25rem, 5vw, 4rem);
   padding-bottom: 0.75rem;
-  letter-spacing: 0.04em;
 }
 .pp-hud__best {
   display: none;
@@ -2651,7 +2665,6 @@ body {
   translate: -50% 0;
   pointer-events: none;
   font-weight: 500;
-  letter-spacing: 0.04em;
   color: #171717;
   animation: pp-mark 650ms ease-out both;
 }
@@ -2693,7 +2706,6 @@ body {
   background: #8581ff;
   color: #171717;
   font-weight: 500;
-  letter-spacing: 0.08em;
   transition: background-color 180ms ease;
 }
 .pp-btn:hover {
@@ -2710,9 +2722,9 @@ body {
 }
 .pp-card__score {
   font-family: var(--font-display);
-  font-size: 3.25rem;
-  line-height: 1;
-  letter-spacing: -0.06em;
+  font-size: var(--text-heading);
+  line-height: var(--text-heading--line-height);
+  letter-spacing: var(--text-heading--letter-spacing);
   color: #171717;
 }
 
