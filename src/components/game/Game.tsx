@@ -56,15 +56,6 @@ const STAND = Array.from({ length: SLOTS }, (_, i) => {
   return even + (((i * 7919) % 11) - 5) * 0.55;
 });
 
-/** Four moles standing about before the round starts — the arena as the design
- *  draws it, so the section is never an empty rectangle. */
-const SCENERY: { slot: number; kind: MoleKind; size: number }[] = [
-  { slot: 1, kind: "pet", size: 1 },
-  { slot: 2, kind: "pest", size: 0.72 },
-  { slot: 5, kind: "pest", size: 1 },
-  { slot: 7, kind: "pet", size: 0.72 },
-];
-
 /**
  * Pixel Pests & Pixel Pets — sixty seconds, ten points a pest, two seconds off
  * the clock for every pet you take down with them.
@@ -259,41 +250,29 @@ export default function Game({ brief }: { brief?: ReactNode }) {
           cursor swaps its dot for a mallet inside this box and swings it on
           press. Nothing here has to know the cursor exists. */}
       <div className="pp-arena" data-cursor-mallet>
-        {playing
-          ? moles.map((mole) => (
-              <button
-                key={mole.id}
-                type="button"
-                className="pp-mole"
-                style={{
-                  left: `${STAND[mole.slot]}%`,
-                  ["--mole-w" as string]: `calc(var(--pp-mole) * ${mole.size})`,
-                  ["--life" as string]: `${Math.round(mole.life)}ms`,
-                }}
-                /* pointerdown, not click: it fires on the way down rather than
-                   on release, which is about 100ms earlier, and it covers mouse
-                   and touch through one path. */
-                onPointerDown={(e) => {
-                  e.preventDefault();
-                  whack(mole);
-                }}
-                aria-label={mole.kind === "pest" ? "Pixel pest" : "Pixel pet"}
-              >
-                <MoleFigure kind={mole.kind} />
-              </button>
-            ))
-          : SCENERY.map((s) => (
-              <span
-                key={s.slot}
-                className="pp-mole pp-mole--still"
-                style={{
-                  left: `${STAND[s.slot]}%`,
-                  ["--mole-w" as string]: `calc(var(--pp-mole) * ${s.size})`,
-                }}
-              >
-                <MoleFigure kind={s.kind} />
-              </span>
-            ))}
+        {playing &&
+          moles.map((mole) => (
+            <button
+              key={mole.id}
+              type="button"
+              className="pp-mole"
+              style={{
+                left: `${STAND[mole.slot]}%`,
+                ["--mole-w" as string]: `calc(var(--pp-mole) * ${mole.size})`,
+                ["--life" as string]: `${Math.round(mole.life)}ms`,
+              }}
+              /* pointerdown, not click: it fires on the way down rather than
+                 on release, which is about 100ms earlier, and it covers mouse
+                 and touch through one path. */
+              onPointerDown={(e) => {
+                e.preventDefault();
+                whack(mole);
+              }}
+              aria-label={mole.kind === "pest" ? "Pixel pest" : "Pixel pet"}
+            >
+              <MoleFigure kind={mole.kind} />
+            </button>
+          ))}
 
         {marks.map((m) => (
           <span
@@ -319,7 +298,7 @@ export default function Game({ brief }: { brief?: ReactNode }) {
         {phase === "over" && (
           <div className="pp-overlay">
             <div className="pp-card">
-              <p className="type-caption text-ink-muted">TIME</p>
+              <p className="type-caption text-ink-muted">TIME UP</p>
               <p className="pp-card__score">{score}</p>
               <p className="type-caption text-ink-muted">
                 {beaten ? "NEW BEST" : `BEST ${best}`}

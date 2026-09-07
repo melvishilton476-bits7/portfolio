@@ -2649,10 +2649,6 @@ body {
   line-height: 0;
   animation: pp-rise var(--life) both;
 }
-/* The four standing about before the round starts. */
-.pp-mole--still {
-  animation: none;
-}
 @keyframes pp-rise {
   0% {
     transform: translateY(112%);
