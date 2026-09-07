@@ -2,7 +2,8 @@ import type { CSSProperties } from "react";
 import DashRule from "@/components/DashRule";
 import HatchCell from "@/components/HatchCell";
 import GrowOnView from "@/components/GrowOnView";
-import Polaroid from "./Polaroid";
+import CropFrame from "@/components/CropFrame";
+import Polaroid, { BLUE } from "./Polaroid";
 
 /**
  * The top of the About page: the title band, then the bio, the portrait and the
@@ -93,18 +94,14 @@ export default function AboutIntro() {
               they would read as two unrelated marks at the far sides of the
               screen instead of as brackets on the heading. Hidden below lg,
               where the heading wraps and there is no room beside it. */}
-          <HatchCell className="absolute inset-y-0 hidden w-[48px] lg:block" style={{ right: "calc(50% + 426px)" }} delay={0} />
-          <h1
-            id="about-title"
-            className="type-heading text-ink-hero text-center"
-            style={{ fontSize: "clamp(1.5rem, 0.6rem + 2.9vw, 2.375rem)", letterSpacing: "-0.08em" }}
-          >
-            <span className="font-light">An </span>
-            <span className="font-medium">OBSESSIVE</span>
-            <span className="font-light"> Designer &amp; Professional </span>
-            <span className="font-medium">FUN HAVER</span>
+          {/* Hard against the title, which is now a single short word — the
+              426px the old sentence needed would leave the cells stranded out
+              in the gutters with nothing between them. */}
+          <HatchCell className="absolute inset-y-0 hidden w-[48px] lg:block" style={{ right: "calc(50% + 120px)" }} delay={0} />
+          <h1 id="about-title" className="type-heading text-ink-hero text-center">
+            ABOUT
           </h1>
-          <HatchCell className="absolute inset-y-0 hidden w-[48px] lg:block" style={{ left: "calc(50% + 426px)" }} delay={120} />
+          <HatchCell className="absolute inset-y-0 hidden w-[48px] lg:block" style={{ left: "calc(50% + 120px)" }} delay={120} />
         </div>
       </div>
 
@@ -126,7 +123,25 @@ export default function AboutIntro() {
               for a reply. Centred rather than spread edge to edge: `between`
               would open holes as large as the ones this layout was meant to
               close the moment the print grew taller than the words. */}
-          <div className="order-2 flex flex-col justify-center gap-9 lg:order-none lg:col-start-3">
+          <div className="order-2 flex flex-col gap-9 lg:order-none lg:col-start-3 lg:justify-start">
+            {/* The line the title used to carry. It reads better here, next to
+                the face it describes, than as a sentence stretched across a
+                band — and it lets the band say the one word a page title
+                should. Crop marks because it is a plate, not a paragraph: the
+                same frame the "SIGHTS to SEE" caption wears. */}
+            <CropFrame as="div" x={30} y={12}>
+              {/* Leading is an inline style, not a `leading-` class: the
+                  type-* utilities are declared after Tailwind's in globals.css
+                  and set line-height themselves, so at equal specificity the
+                  tier wins and the class silently does nothing. */}
+              <p className="type-subheading" style={{ lineHeight: 1.5 }}>
+                <span className="block" style={{ color: BLUE }}>
+                  OBSESSIVE DESIGNER
+                </span>
+                <span className="text-ink-hero block">&amp; PROFESSIONAL FUN HAVER</span>
+              </p>
+            </CropFrame>
+
             <p className="type-note text-ink-alt leading-relaxed">
               I like working <strong className="font-medium">with people</strong>, on{" "}
               <strong className="font-medium">products for people</strong> — and pushing the limits

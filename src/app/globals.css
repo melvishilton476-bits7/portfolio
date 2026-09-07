@@ -2562,6 +2562,70 @@ body {
   letter-spacing: 0.06em;
 }
 
+/* ---- Line boil -----------------------------------------------------------
+   Hand-drawn animation redraws every shape on every frame, and no two drawings
+   of the same edge land in quite the same place, so the outline appears to
+   simmer. Reproduced by stepping each PART of a figure through three slightly
+   different positions at about nine frames a second.
+
+   steps(1), never eased. The effect lives entirely in the SWITCH: tween
+   between the positions and it stops reading as a redrawn line and starts
+   reading as a wobble, which is a different and much worse thing.
+
+   Written with `translate` and `rotate` — the individual transform properties —
+   rather than `transform`, for two reasons. They are compositor-only, so a
+   couple of dozen simmering parts cost nothing on the main thread. And they
+   COMPOSE with `transform` instead of overwriting it, which matters because
+   `transform` is already spoken for on both things that boil: the mole's rise
+   out of the ground, and the mallet's swing.
+
+   Each part gets a different cycle so a figure never boils in lockstep — one
+   shape moving as a block is a shake, not a boil. */
+@keyframes boil-a {
+  0% { translate: 0 0; rotate: 0deg; }
+  33% { translate: 0.6px -0.45px; rotate: 0.4deg; }
+  66% { translate: -0.5px 0.3px; rotate: -0.3deg; }
+  100% { translate: 0 0; rotate: 0deg; }
+}
+@keyframes boil-b {
+  0% { translate: 0 0; rotate: -0.25deg; }
+  33% { translate: -0.55px 0.4px; rotate: 0.3deg; }
+  66% { translate: 0.45px 0.35px; rotate: 0deg; }
+  100% { translate: 0 0; rotate: -0.25deg; }
+}
+@keyframes boil-c {
+  0% { translate: 0.4px 0.3px; }
+  33% { translate: -0.45px -0.35px; }
+  66% { translate: 0.3px -0.4px; }
+  100% { translate: 0.4px 0.3px; }
+}
+
+.mole-figure__hat,
+.mole-figure__body,
+.mole-figure__eye,
+.site-cursor__mallet {
+  animation-duration: 330ms;
+  animation-timing-function: steps(1);
+  animation-iteration-count: infinite;
+}
+.mole-figure__hat {
+  animation-name: boil-a;
+}
+.mole-figure__body {
+  animation-name: boil-b;
+}
+/* The eyes only shift — a rotation on an 11px square is a smear, not a line. */
+.mole-figure__eye {
+  animation-name: boil-c;
+}
+.mole-figure__eye:last-child {
+  /* Negative delay starts it mid-cycle, so the two eyes never land together. */
+  animation-delay: -160ms;
+}
+.site-cursor__mallet {
+  animation-name: boil-a;
+}
+
 /* ---- Scoreboard ---------------------------------------------------------- */
 /* Takes every pixel the header stack did not, so the ground finishes flush
    with the bottom of the screen. */
@@ -2812,5 +2876,13 @@ body {
   }
   .site-cursor__mallet {
     transition: none;
+  }
+  /* The boil is decoration — unlike a mole arriving, nothing is lost by
+     holding every part still. */
+  .mole-figure__hat,
+  .mole-figure__body,
+  .mole-figure__eye,
+  .site-cursor__mallet {
+    animation: none;
   }
 }

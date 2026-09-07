@@ -35,9 +35,12 @@ const STAGE_H = 376;
 const OX = 346;
 const OY = 348.91;
 
-/** Figma's detector blue. Not a site token — it belongs to this graphic only,
- *  the way the traffic light's reds do. */
-const BLUE = "#003cff";
+/** Figma's detector blue. Not a site token, but no longer private to this
+ *  graphic either: the About intro sets its opening line in the same blue, so
+ *  the words and the apparatus beside them read as one thought. Exported from
+ *  here rather than lifted to a token because that is still the only pairing
+ *  it has — the rest of the site accents in periwinkle. */
+export const BLUE = "#003cff";
 
 /** x/y/w/h in STAGE px → a percentage style object against the stage. */
 const boxS = (x: number, y: number, w: number, h: number) => ({
