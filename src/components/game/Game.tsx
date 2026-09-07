@@ -231,7 +231,7 @@ export default function Game({ brief }: { brief?: ReactNode }) {
           At the top of the section, under the title: it is a readout, and a
           readout belongs where the eye starts rather than tucked against the
           arena it describes. */}
-      <div className="pp-hud type-caption text-ink">
+      <div className="pp-hud type-readout text-ink">
         <span>
           <span className="text-ink-muted">SCORE</span> {String(score).padStart(3, "0")}
         </span>
@@ -278,7 +278,7 @@ export default function Game({ brief }: { brief?: ReactNode }) {
           <span
             key={m.id}
             aria-hidden
-            className="pp-mark type-caption"
+            className="pp-mark type-readout"
             data-kind={m.kind}
             style={{ left: `${STAND[m.slot]}%` }}
           >
@@ -288,22 +288,22 @@ export default function Game({ brief }: { brief?: ReactNode }) {
 
         {phase === "idle" && (
           <div className="pp-overlay">
-            <button type="button" className="pp-btn type-caption" onClick={start}>
+            <button type="button" className="pp-btn type-readout" onClick={start}>
               START
             </button>
-            <p className="type-caption text-ink-muted">60 SECONDS · GO</p>
+            <p className="type-readout text-ink-muted">60 SECONDS · GO</p>
           </div>
         )}
 
         {phase === "over" && (
           <div className="pp-overlay">
             <div className="pp-card">
-              <p className="type-caption text-ink-muted">TIME UP</p>
+              <p className="type-readout text-ink-muted">TIME UP</p>
               <p className="pp-card__score">{score}</p>
-              <p className="type-caption text-ink-muted">
+              <p className="type-readout text-ink-muted">
                 {beaten ? "NEW BEST" : `BEST ${best}`}
               </p>
-              <button type="button" className="pp-btn type-caption" onClick={start}>
+              <button type="button" className="pp-btn type-readout" onClick={start}>
                 PLAY AGAIN
               </button>
             </div>
