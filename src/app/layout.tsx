@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Space_Grotesk, JetBrains_Mono, Inter, Courier_Prime } from "next/font/google";
+import { Space_Grotesk, JetBrains_Mono, Inter } from "next/font/google";
 import "./globals.css";
 import Cursor from "@/components/Cursor";
 
@@ -16,18 +16,6 @@ const jetbrainsMono = JetBrains_Mono({
   variable: "--font-jetbrains-mono",
   subsets: ["latin"],
   weight: ["400", "500"],
-  display: "swap",
-});
-
-/* Typewriter — the quote struck onto the print in the About polaroid. Courier
-   Prime rather than the JetBrains mono already loaded: JetBrains is a screen
-   face for code, drawn even and open, and it reads as a terminal. This one is
-   a typewriter, which is what a line typed onto a photographic print should
-   look like. Regular only; nothing here needs the bold. */
-const courierPrime = Courier_Prime({
-  variable: "--font-courier-prime",
-  subsets: ["latin"],
-  weight: ["400"],
   display: "swap",
 });
 
@@ -53,7 +41,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${spaceGrotesk.variable} ${jetbrainsMono.variable} ${inter.variable} ${courierPrime.variable} h-full antialiased`}
+      className={`${spaceGrotesk.variable} ${jetbrainsMono.variable} ${inter.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-background text-ink">
         {children}

@@ -60,11 +60,12 @@
   --font-sans: var(--font-space-grotesk), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-jetbrains-mono), ui-monospace, monospace;
   --font-ui: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
-  /* Typewriter, distinct from --font-mono: that one is JetBrains, a code face.
-     Courier New is the fallback because it is the one typewriter metric every
-     platform already has, so a failed webfont degrades in kind. */
+  /* Typewriter — the same JetBrains as --font-mono, kept as its own name so
+     the struck quote on the print can be re-faced without touching code type.
+     Courier New is the fallback: the one typewriter metric every platform
+     already has, so a failed webfont degrades in kind. */
   --font-typewriter:
-    var(--font-courier-prime), "Courier New", ui-monospace, monospace;
+    var(--font-jetbrains-mono), "Courier New", ui-monospace, monospace;
 
   /* ---- Type scale (fluid; desktop source sizes noted) ------------------- */
   /* Display headline — the single largest title on the site, reserved for the
