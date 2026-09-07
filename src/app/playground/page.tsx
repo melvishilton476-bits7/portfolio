@@ -54,7 +54,7 @@ function Tell({
       <MoleFigure
         kind={kind}
         className="shrink-0"
-        style={{ ["--mole-w" as string]: "clamp(56px, 6.4vw, 82px)" }}
+        style={{ ["--mole-w" as string]: "clamp(48px, min(4.6vw, 8.5vh), 66px)" }}
       />
       <div className="type-note pt-1">
         <p style={{ color: kind === "pet" ? PET : PEST }}>{name}</p>
@@ -71,7 +71,19 @@ export default function PlaygroundPage() {
     <>
       <Nav />
       <main className="flex-1 overflow-x-clip">
-        <section aria-labelledby="playground-title" className="relative pt-12 md:pt-28">
+        {/* ONE SCREEN, NOT A STACK OF PADDINGS. The header, the instruction
+            line and the legend take the height they need off the top; the
+            arena is the only thing that grows, so the ground band lands on the
+            bottom edge of the viewport at any height instead of the section
+            adding up to whatever its margins happen to total.
+
+            Desktop only: below md the nav is fixed to the BOTTOM of the screen,
+            where a full-height section would run the ground straight underneath
+            it. There the section just flows at its natural height. */}
+        <section
+          aria-labelledby="playground-title"
+          className="relative flex flex-col pt-12 md:min-h-svh md:pt-20"
+        >
           <TitleBand>
             <h1
               id="playground-title"
@@ -85,7 +97,7 @@ export default function PlaygroundPage() {
             {/* Set in caps as drawn. The two coloured phrases are the tell,
                 and they are also the only two things on the line that are not
                 grey, so the eye lands on them before it reads the sentence. */}
-            <p className="type-note text-ink-alt mx-auto mt-10 max-w-[31rem] text-center leading-relaxed">
+            <p className="type-note text-ink-alt mx-auto mt-8 max-w-[31rem] text-center leading-relaxed">
               WHACK AS MANY{" "}
               <span className="font-medium" style={{ color: PEST }}>
                 PIXEL PESTS
@@ -104,7 +116,7 @@ export default function PlaygroundPage() {
             {/* The two characters side by side, split by the same dashed
                 hairline the rest of the site divides things with. Colour is the
                 reliable tell — the names are one letter apart on purpose. */}
-            <div className="mx-auto mt-12 grid max-w-[54rem] gap-10 sm:grid-cols-2 sm:gap-0">
+            <div className="mx-auto mt-9 grid max-w-[54rem] gap-8 sm:grid-cols-2 sm:gap-0">
               <Tell kind="pet" name="PIXEL PETS" verb={"DON\u2019T"} rest="WHACK THEM" />
               <div className="sm:border-l sm:border-dashed sm:border-[rgba(23,23,23,0.16)]">
                 <Tell kind="pest" name="PIXEL PESTS" verb="ALWAYS" rest="WHACK THEM !" />

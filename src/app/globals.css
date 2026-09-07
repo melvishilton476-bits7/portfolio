@@ -2563,9 +2563,15 @@ body {
 }
 
 /* ---- Scoreboard ---------------------------------------------------------- */
+/* Takes every pixel the header stack did not, so the ground finishes flush
+   with the bottom of the screen. */
 .pp {
   position: relative;
-  margin-top: clamp(2.5rem, 6vw, 5rem);
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  justify-content: flex-end;
+  margin-top: clamp(1.5rem, 3vw, 2.5rem);
 }
 .pp-hud {
   display: flex;
@@ -2598,11 +2604,18 @@ body {
    out of sight: there are no holes in this game, so "gone" is simply below the
    line with the overflow hidden. */
 .pp-arena {
-  --pp-mole: clamp(46px, 6.4vw, 82px);
+  /* Sized off BOTH axes. Width alone reads fine on a big monitor and then
+     puts a 134px mole in a 160px arena on a short laptop window, where the
+     height is the scarce dimension, not the width. */
+  --pp-mole: clamp(42px, min(6.4vw, 12.5vh), 82px);
   position: relative;
   width: 100%;
   max-width: var(--container-page);
-  height: clamp(180px, 23vw, 290px);
+  /* Grows into whatever the section has left. The floor is what holds the
+     arena open on a short window, and below md — where the section is not
+     full-height — it is the whole height. */
+  flex: 1 1 auto;
+  min-height: clamp(132px, 20vh, 260px);
   margin-inline: auto;
   padding-inline: clamp(1.25rem, 5vw, 4rem);
   overflow: hidden;
