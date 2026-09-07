@@ -15,7 +15,7 @@ import { RandomLetterSwap } from "./ui/random-letter-swap";
 const NAV_ITEMS = [
   { name: "Home", url: "/#top", icon: Home },
   { name: "About", url: "/about", icon: User },
-  { name: "Playground", url: "/#playground", icon: Gamepad2 },
+  { name: "Playground", url: "/playground", icon: Gamepad2 },
   { name: "Blogs", url: "/#blogs", icon: PenLine },
 ];
 

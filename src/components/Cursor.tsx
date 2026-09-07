@@ -115,6 +115,14 @@ export default function Cursor() {
         dot.dataset.mode = "text";
         return;
       }
+      /* The Playground arena. A whole region rather than one element, so the
+         mallet stays in hand between moles instead of flickering back to a dot
+         every time the pointer crosses the gap between two of them. */
+      if (t.closest("[data-cursor-mallet]")) {
+        dot.dataset.mode = "mallet";
+        return;
+      }
+
       const labelled = t.closest<HTMLElement>("[data-cursor]");
       const words = labelled?.dataset.cursor?.trim();
       if (words) {
@@ -136,12 +144,28 @@ export default function Cursor() {
       }
     };
 
+    /* Held down, not fired once: the swing is a transition between two
+       rotations, so re-pressing costs nothing and there is no animation to
+       restart. Only the mallet reads it. */
+    const press = () => {
+      dot.dataset.hit = "1";
+    };
+    const release = () => {
+      delete dot.dataset.hit;
+    };
+
     document.addEventListener("pointermove", move, { passive: true });
+    document.addEventListener("pointerdown", press, { passive: true });
+    document.addEventListener("pointerup", release, { passive: true });
+    document.addEventListener("pointercancel", release, { passive: true });
     document.addEventListener("pointerover", survey, { passive: true });
     document.addEventListener("pointerout", out, { passive: true });
 
     return () => {
       document.removeEventListener("pointermove", move);
+      document.removeEventListener("pointerdown", press);
+      document.removeEventListener("pointerup", release);
+      document.removeEventListener("pointercancel", release);
       document.removeEventListener("pointerover", survey);
       document.removeEventListener("pointerout", out);
       if (raf) cancelAnimationFrame(raf);
@@ -178,6 +202,11 @@ export default function Cursor() {
           &rarr;
         </span>
       </div>
+      {/* The Playground mallet. One span carrying a background image, hidden
+          until the pointer is over the arena — the art is a data URI in the
+          stylesheet, so an element that is display:none on every other page
+          costs a node and nothing else. */}
+      <span className="site-cursor__mallet" />
     </div>
   );
 }

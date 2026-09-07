@@ -2482,3 +2482,303 @@ body {
     stroke-dashoffset: 0;
   }
 }
+
+/* ============================================================================
+   PIXEL PESTS & PIXEL PETS  (components/game/*)
+   The Playground arena. Loaded with the rest of the stylesheet, but nothing
+   here paints unless the /playground markup is on the page.
+
+   NOTHING IN THIS SECTION IS DRIVEN FROM JAVASCRIPT. A mole's whole journey —
+   up, hold, back down — is one keyframe on a transform, so the compositor owns
+   the motion and the game loop only decides who exists. That is also why there
+   is no `will-change` anywhere below: these are short transform/opacity runs on
+   at most five elements, exactly the case that does not need the hint.
+   ========================================================================== */
+
+/* ---- The character -------------------------------------------------------
+   Traced off the Figma source at a reference width of 82px. Every dimension is
+   a ratio of `--mole-w`, so the figure scales from one length and the arena and
+   the legend can draw the same character at different sizes with no second set
+   of numbers. */
+.mole-figure {
+  /* Read through a local alias rather than defaulting `--mole-w` itself: a
+     custom property set in this rule lands ON the element and so beats the
+     value a caller inherits down or passes in `style`, which quietly pinned
+     every figure on the page to the reference size. */
+  --w: var(--mole-w, 82px);
+  --hat: #8581ff;
+  position: relative;
+  display: block;
+  width: var(--w);
+  height: calc(var(--w) * 1.4512); /* (16 + 103) / 82 */
+}
+.mole-figure[data-kind="pest"] {
+  --hat: #f00010;
+}
+/* A plain rectangle. It reads as a cap only because the body stands in front
+   of its middle — there is no brim and no crown. */
+.mole-figure__hat {
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+  height: calc(var(--w) * 0.7439); /* 61/82 */
+  background: var(--hat);
+}
+.mole-figure__body {
+  position: absolute;
+  left: 50%;
+  top: calc(var(--w) * 0.1951); /* 16/82 */
+  width: calc(var(--w) * 0.6829); /* 56/82 */
+  height: calc(var(--w) * 1.2561); /* 103/82 */
+  transform: translateX(-50%);
+  background: #d9d9d9;
+}
+.mole-figure__eye {
+  position: absolute;
+  top: calc(var(--w) * 0.1585); /* 13/82 */
+  width: calc(var(--w) * 0.1341); /* 11/82 */
+  height: calc(var(--w) * 0.1463); /* 12/82 */
+  background: #ffffff;
+}
+.mole-figure__eye:first-child {
+  left: calc(var(--w) * 0.0976); /* 8/82 */
+}
+.mole-figure__eye:last-child {
+  right: calc(var(--w) * 0.0976);
+}
+
+/* ---- Scoreboard ---------------------------------------------------------- */
+.pp {
+  position: relative;
+  margin-top: clamp(2.5rem, 6vw, 5rem);
+}
+.pp-hud {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  width: 100%;
+  max-width: var(--container-page);
+  margin-inline: auto;
+  padding-inline: clamp(1.25rem, 5vw, 4rem);
+  padding-bottom: 0.75rem;
+  letter-spacing: 0.04em;
+}
+.pp-hud__best {
+  display: none;
+}
+@media (min-width: 480px) {
+  .pp-hud__best {
+    display: inline;
+  }
+}
+/* The last ten seconds. The colour is carried by the numerals as well as the
+   label, so the child spans have to give up their muted grey. */
+.pp-hud [data-low],
+.pp-hud [data-low] span {
+  color: #f00010;
+}
+
+/* ---- Arena ---------------------------------------------------------------
+   The box is clipped at the ground line, which is what lets a mole slide down
+   out of sight: there are no holes in this game, so "gone" is simply below the
+   line with the overflow hidden. */
+.pp-arena {
+  --pp-mole: clamp(46px, 6.4vw, 82px);
+  position: relative;
+  width: 100%;
+  max-width: var(--container-page);
+  height: clamp(180px, 23vw, 290px);
+  margin-inline: auto;
+  padding-inline: clamp(1.25rem, 5vw, 4rem);
+  overflow: hidden;
+  /* No double-tap zoom and no text selection while someone is hammering at it. */
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* The ground itself — full-bleed, so the line runs off both edges of the
+   screen. The hairlines are raked a couple of degrees off horizontal, as drawn. */
+.pp-ground {
+  height: clamp(38px, 4.8vw, 62px);
+  background-color: #f4f4ff;
+  background-image: repeating-linear-gradient(
+    -2.4deg,
+    transparent 0 8px,
+    #e6e5ff 8px 8.7px
+  );
+}
+
+.pp-mole {
+  position: absolute;
+  bottom: 0;
+  /* The individual `translate` property, not `transform`: the keyframe below
+     owns `transform`, and these two compose instead of overwriting each other. */
+  translate: -50% 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  line-height: 0;
+  animation: pp-rise var(--life) both;
+}
+/* The four standing about before the round starts. */
+.pp-mole--still {
+  animation: none;
+}
+@keyframes pp-rise {
+  0% {
+    transform: translateY(112%);
+    animation-timing-function: cubic-bezier(0.18, 0.9, 0.32, 1);
+  }
+  17% {
+    transform: translateY(0);
+  }
+  83% {
+    transform: translateY(0);
+    animation-timing-function: cubic-bezier(0.55, 0, 0.85, 0.25);
+  }
+  100% {
+    transform: translateY(112%);
+  }
+}
+
+/* What a hit leaves behind. Points in ink, lost seconds in the pest red, so the
+   penalty is the one that catches the eye. */
+.pp-mark {
+  position: absolute;
+  bottom: 52%;
+  translate: -50% 0;
+  pointer-events: none;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: #171717;
+  animation: pp-mark 650ms ease-out both;
+}
+.pp-mark[data-kind="pet"] {
+  color: #f00010;
+}
+@keyframes pp-mark {
+  0% {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  18% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-24px);
+  }
+}
+
+/* ---- Start / game over --------------------------------------------------- */
+.pp-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.85rem;
+}
+.pp-btn {
+  display: inline-flex;
+  align-items: center;
+  height: 2.75rem;
+  padding-inline: 1.75rem;
+  /* Ink on periwinkle measures 5.62:1; white on the same fill is 3.19:1 and
+     fails at this size. */
+  background: #8581ff;
+  color: #171717;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  transition: background-color 180ms ease;
+}
+.pp-btn:hover {
+  background: #6f6bff;
+}
+.pp-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1.75rem 3rem;
+  background: #ffffff;
+  box-shadow: 0 0 0 1px rgba(23, 23, 23, 0.1);
+}
+.pp-card__score {
+  font-family: var(--font-display);
+  font-size: 3.25rem;
+  line-height: 1;
+  letter-spacing: -0.06em;
+  color: #171717;
+}
+
+/* ---- The mallet ----------------------------------------------------------
+   Not a `cursor: url()`: platforms cap a CSS cursor at 32px and Safari will not
+   take an SVG one at all. This rides the site's existing pointer instead — the
+   element is already mounted and already being moved on rAF, so the mallet is
+   a background image on one span and the swing is a transition, not a second
+   pointer implementation. */
+.site-cursor__mallet {
+  display: none;
+  position: absolute;
+  /* The root is offset so the DOT's centre lands on the hotspot; this pulls
+     back off that so the mallet's HEAD centre lands there instead. */
+  left: calc(var(--dot) / 2 - 24px);
+  top: calc(var(--dot) / 2 - 24px);
+  width: 48px;
+  height: 56px;
+  background: no-repeat center / 100% 100%
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 56'%3E%3Cg fill='%238581ff'%3E%3Crect x='2' y='15' width='44' height='18'/%3E%3Crect x='19' y='33' width='10' height='23'/%3E%3C/g%3E%3C/svg%3E");
+  /* Rotate about the head, not the element's centre, so the striking face
+     stays on the hotspot through the swing. */
+  transform-origin: 24px 24px;
+  transform: rotate(-45deg);
+  transition: transform 90ms cubic-bezier(0.2, 0.8, 0.3, 1);
+}
+.site-cursor[data-mode="mallet"] .site-cursor__capsule {
+  display: none;
+}
+.site-cursor[data-mode="mallet"] .site-cursor__mallet {
+  display: block;
+}
+.site-cursor[data-mode="mallet"][data-hit] .site-cursor__mallet {
+  transform: rotate(14deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* The game still has to show a mole arriving and leaving — that IS the game —
+     but it does not have to slide. Steps make it appear and vanish instead. */
+  .pp-mole {
+    animation-name: pp-blink;
+    animation-timing-function: steps(1);
+  }
+  @keyframes pp-blink {
+    0%,
+    100% {
+      opacity: 0;
+    }
+    1%,
+    99% {
+      opacity: 1;
+    }
+  }
+  .pp-mark {
+    animation: pp-mark-still 650ms steps(1) both;
+  }
+  @keyframes pp-mark-still {
+    0%,
+    99% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+    }
+  }
+  .site-cursor__mallet {
+    transition: none;
+  }
+}
