@@ -9,7 +9,7 @@ import ProjectPanel, { type Project } from "./ProjectPanel";
 import SlideHands from "./SlideHands";
 import Asterisk from "./Asterisk";
 import HatchCell from "./HatchCell";
-import { STEP_DURATION } from "@/lib/step-motion";
+import { stepDuration } from "@/lib/step-motion";
 
 /**
  * A floating asterisk pinned to the stage (it doesn't ride the filmstrip —
@@ -254,7 +254,7 @@ function thresholdStep(p: number, total: number) {
 /** `lg` and up, motion allowed: the pinned carousel. Scroll position is a
     trigger here, not a scrub source — crossing a threshold advances `step`
     by exactly one, and ProjectPanel plays that transition on its own timed
-    easing (STEP_DURATION), independent of scroll speed. While a step is
+    easing (stepDuration), independent of scroll speed. While a step is
     mid-transition, further threshold crossings are ignored; once it
     finishes, `settle` re-checks where the scroll actually is and advances
     again if the user scrolled further while locked, one step at a time,
@@ -280,7 +280,7 @@ function Carousel() {
     const next = target > stepRef.current ? stepRef.current + 1 : stepRef.current - 1;
     stepRef.current = next;
     setStep(next);
-    window.setTimeout(settle, STEP_DURATION * 1000);
+    window.setTimeout(settle, stepDuration(PROJECTS.length) * 1000);
   }
 
   useMotionValueEvent(scrollYProgress, "change", (p) => {

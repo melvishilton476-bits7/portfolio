@@ -7,6 +7,7 @@ import Ticket from "./Ticket";
 import {
   traverse,
   arrive,
+  stepDelay,
   ANTICIPATION_PX,
   OVERSHOOT_PX,
 } from "@/lib/step-motion";
@@ -70,6 +71,12 @@ export default function ProjectPanel({
   }, [step]);
   const prevStep = prevStepRef.current;
 
+  /* Where this card sits in the chain, and so how long after the leading edge
+     it takes up the pull — the array order is the left-to-right order, and
+     advancing pulls the strip leftward, so index 0 is the front of the
+     chain. */
+  const lead = stepDelay(index);
+
   const target = (index - step) * SLOT;
   const prevX = (index - prevStep) * SLOT;
   const travelSign = Math.sign(target - prevX); // -1 left, +1 right, 0 still
@@ -104,7 +111,22 @@ export default function ProjectPanel({
         scale: current ? 1 : 0.88,
         filter: current ? "blur(0px)" : "blur(3px)",
       }}
-      transition={{ x: moving ? arrive : traverse, scale: traverse, filter: traverse }}
+      /* The card's place in the pull. Only while travelling: on the first
+         paint there is nothing to stagger against, and a delay there would
+         leave the strip sitting at zero before jumping into position.
+
+         The delay goes on scale and filter too, so a card sharpens as IT
+         starts moving rather than every card sharpening on the same beat while
+         two of them are still standing still. */
+      transition={
+        moving
+          ? {
+              x: { ...arrive, delay: lead },
+              scale: { ...traverse, delay: lead },
+              filter: { ...traverse, delay: lead },
+            }
+          : { x: traverse, scale: traverse, filter: traverse }
+      }
       // Only the centred slide is interactive; the peeking neighbours are
       // decorative until they arrive.
       inert={!current}
