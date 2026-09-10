@@ -2,6 +2,7 @@ import type { ComponentType } from "react";
 import TitanCaseStudy from "./titan";
 import NagarholeCaseStudy from "./nagarhole";
 import ZenxoCaseStudy from "./zenxo";
+import EbbCaseStudy from "./ebb";
 
 /**
  * Slug → case study. The dynamic route reads this for both its static params
@@ -39,6 +40,13 @@ export const CASE_STUDIES: Record<string, CaseStudy> = {
     description:
       "A canvas could show what a form never could. Keeping the form next to it is the reason traders actually learned it.",
     Component: ZenxoCaseStudy,
+  },
+  "ebb-headspace": {
+    name: "ebb",
+    title: "ebb — a calm-focused companion for Headspace",
+    description:
+      "A 55-second spec motion piece: sensory overload stripped back, layer by layer, until only breath and calm remain. Concept, script, animation and edit solo in After Effects.",
+    Component: EbbCaseStudy,
   },
 };
 
