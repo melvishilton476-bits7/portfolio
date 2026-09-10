@@ -180,28 +180,30 @@ function CardHead({ p }: { p: SideProject }) {
           {p.title}
         </h3>
       </div>
-      {p.thumb ? (
-        // Fixed 388:216 box with the art cropped to fill it, so all four read
-        // at one size whatever shape their source asset is — the same rule the
-        // featured card uses.
-        <div className="relative w-full overflow-hidden border border-solid border-ink" style={{ aspectRatio: "388 / 216" }}>
-          <Image
-            src={p.thumb}
-            alt={p.thumbAlt ?? p.title}
-            fill
-            sizes="(min-width: 1024px) 44vw, 92vw"
-            className="object-cover"
-            style={{ objectPosition: p.thumbPosition }}
-          />
-        </div>
-      ) : (
-        <Placeholder
-          label={p.title}
-          ratio={388 / 216}
-          variant="dark"
-          className="border-solid border-ink"
-        />
-      )}
+      {/* The still sits on an ink slab, the same frame the featured card in
+          Sights to See gives its thumbnail — a mount, not a hairline. The
+          padding is equal on all four sides here, where the featured card
+          leaves its foot deep to carry the quote: this card's quote lives
+          below the frame, so a deep foot would just look like a mistake. */}
+      <div className="bg-ink p-[clamp(10px,1.6vw,18px)]">
+        {p.thumb ? (
+          // Fixed 388:216 box with the art cropped to fill it, so all four read
+          // at one size whatever shape their source asset is — the same rule the
+          // featured card uses.
+          <div className="relative w-full overflow-hidden" style={{ aspectRatio: "388 / 216" }}>
+            <Image
+              src={p.thumb}
+              alt={p.thumbAlt ?? p.title}
+              fill
+              sizes="(min-width: 1024px) 44vw, 92vw"
+              className="object-cover"
+              style={{ objectPosition: p.thumbPosition }}
+            />
+          </div>
+        ) : (
+          <Placeholder label={p.title} ratio={388 / 216} variant="dark" className="border-0" />
+        )}
+      </div>
     </div>
   );
 }

@@ -65,7 +65,7 @@ export default function FeaturedProject({
           // Fixed 493:256 box with the art cropped to fill it, so every project
           // reads at the same size whatever shape its source asset is.
           <div
-            className="rounded-card relative w-full overflow-hidden border border-solid border-ink"
+            className="rounded-card relative w-full overflow-hidden"
             style={{ aspectRatio: "493 / 256" }}
           >
             <Image

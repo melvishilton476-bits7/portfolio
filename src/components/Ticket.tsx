@@ -73,7 +73,7 @@ export default function Ticket({
             rather than letterboxed with bars. */}
         {thumb ? (
           <div
-            className="relative mt-3 mb-4 w-full overflow-hidden border-y border-solid border-ink"
+            className="relative mt-3 mb-4 w-full overflow-hidden"
             style={{ aspectRatio: "232 / 34" }}
           >
             <Image
