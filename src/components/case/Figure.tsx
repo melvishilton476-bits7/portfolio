@@ -7,6 +7,11 @@ import CropMarks from "./CropMarks";
  * this page follows treats them as different arguments:
  *
  *   Figure      — one image, makes one point, follows a specific claim.
+ *   FigurePair  — two Figures sharing a row, each keeping its own caption and
+ *                 its own ratio. NOT a comparison: use it when two figures
+ *                 each make their own point and neither needs the full
+ *                 measure to make it. Sharing a row is the argument that
+ *                 neither is the page's main event.
  *   FigureGrid  — many images, proves breadth; volume IS the argument.
  *   ComparePair — two images with one-word labels and a caption that
  *                 enumerates the difference. The only place a caption earns
@@ -35,35 +40,47 @@ export function Framed({
   children,
   className = "",
   style,
+  round = true,
+  shadow = true,
 }: {
   children: React.ReactNode;
   className?: string;
   style?: React.CSSProperties;
+  /** Set false for artwork whose own edge is the subject. A radius reads as
+   *  the frame's own softening on a photograph; on a screen capture cropped
+   *  flush to the UI it just clips the corners off real content. */
+  round?: boolean;
+  /** Set false when the artwork has no hard edge for a shadow to sit under —
+   *  a plate that fades out sideways, or a frame whose subject already casts
+   *  its own. A shadow needs an edge; drawn around something that dissolves,
+   *  it puts a rectangle back that the artwork spent its effort removing. */
+  shadow?: boolean;
 }) {
   return (
-    <div className={`${R} overflow-hidden ${className}`} style={style}>
+    <div
+      className={`${round ? R : ""} ${shadow ? "case-frame" : ""} overflow-hidden ${className}`}
+      style={style}
+    >
       {children}
     </div>
   );
 }
 
-/** Caption — used sparingly. Sits under the figure in the muted caption tone. */
+/** Caption — used sparingly. Sits under the figure in the muted caption tone.
+ *
+ *  Centred, like the heading above it. `mx-auto` on a 560px box centres the
+ *  BOX, not the text inside it, so under a wide figure the copy read as
+ *  hanging off to the left with no edge to justify it — the frame's own left
+ *  edge is 200px further out. */
 function Caption({ children }: { children: React.ReactNode }) {
   return (
-    <p className="type-caption text-ink-muted mx-auto mt-4 max-w-[560px] leading-relaxed">
+    <p className="type-caption text-ink-muted mx-auto mt-4 max-w-[560px] text-center leading-relaxed">
       {children}
     </p>
   );
 }
 
-export function Figure({
-  label,
-  ratio = 16 / 9,
-  caption,
-  heading,
-  visual,
-  maxWidth = 880,
-}: {
+export type FigureProps = {
   label: string;
   ratio?: number;
   caption?: React.ReactNode;
@@ -79,11 +96,46 @@ export function Figure({
    *  detail at 0.39 is over 2000. Width is the only lever, since the ratio is
    *  the artwork's own and cropping it is what this figure exists to avoid. */
   maxWidth?: number;
-}) {
+  /** Drop the frame's corner radius. For a capture cropped flush to the UI
+   *  inside it, where the corners are content rather than edge. */
+  square?: boolean;
+  /** Drop the frame's shadow. See <Framed>'s `shadow`. */
+  flat?: boolean;
+  /** A line ABOVE the frame, naming what the reader is about to look at.
+   *
+   *  Distinct from `heading`, which sits under the frame and reads as the
+   *  conclusion drawn FROM the picture. A title read before the picture is a
+   *  different job: it tells you what changed, so the eye knows what it is
+   *  looking for rather than working it out and then being told. Use it where
+   *  the figure is the payoff of an argument the prose has just made. */
+  title?: React.ReactNode;
+};
+
+export function Figure({
+  label,
+  ratio = 16 / 9,
+  caption,
+  heading,
+  visual,
+  maxWidth = 880,
+  square = false,
+  flat = false,
+  title,
+}: FigureProps) {
   return (
     <figure className="mx-auto w-full" style={{ maxWidth }}>
+      {/* Not a <figcaption>: an element can only carry one, and this figure's
+          belongs to the copy underneath. */}
+      {title ? (
+        <h3
+          className="type-lead text-pretty mx-auto mb-6 max-w-[620px] text-center"
+          style={{ color: "var(--color-ink)", fontWeight: 400 }}
+        >
+          {title}
+        </h3>
+      ) : null}
       <GrowOnView className="case-figure relative block">
-        <Framed>
+        <Framed round={!square} shadow={!flat}>
           {visual ? (
             // Same box the Placeholder reserved, so swapping art in moves
             // nothing around it.
@@ -110,6 +162,45 @@ export function Figure({
         </figcaption>
       ) : null}
     </figure>
+  );
+}
+
+/**
+ * Two figures side by side, each still a whole <Figure>.
+ *
+ * The reason this is not <ComparePair> is that the pair is not a comparison —
+ * there is no "before" and "after" here, just two visuals that would each
+ * dominate the page at full width and do not earn it. So there are no
+ * one-word side labels, and each half keeps its own heading or caption
+ * answering for itself.
+ *
+ * The two halves share a WIDTH, not a box: each passes its own `ratio`
+ * through, so a 16:9 capture and a 2:1 one sit at the same scale rather than
+ * being letterboxed into a common frame. Their bottoms will not line up, and
+ * that is the correct outcome — forcing them level would mean cropping one
+ * artefact to flatter the other.
+ */
+export function FigurePair({
+  left,
+  right,
+  maxWidth = 980,
+}: {
+  left: FigureProps;
+  right: FigureProps;
+  /** Cap for the ROW. Each half then takes half of it, less the gutter. */
+  maxWidth?: number;
+}) {
+  return (
+    <div
+      className="mx-auto grid w-full grid-cols-1 gap-8 sm:grid-cols-2 sm:gap-10"
+      style={{ maxWidth }}
+    >
+      {/* maxWidth undone per half: <Figure>'s own 880 default would cap a
+          column that is already narrower than that, and any half-specific cap
+          belongs to the row, not to the artwork. */}
+      <Figure {...left} maxWidth={9999} />
+      <Figure {...right} maxWidth={9999} />
+    </div>
   );
 }
 

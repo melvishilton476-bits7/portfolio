@@ -43,3 +43,26 @@ export default function Moment({
     </section>
   );
 }
+
+/**
+ * The rest of a moment, after a figure has interrupted it.
+ *
+ * A moment whose argument needs evidence partway through can't hold its prose
+ * in one block — the reader has to see the thing before the next paragraph
+ * means anything. This is the continuation: the same measure and the same
+ * dashed rule, carrying no numeral, kicker or heading, because those name the
+ * moment once and repeating them would read as a new one starting.
+ *
+ * The rule is what does the work. It picks back up at the same x on the far
+ * side of the image, so the thread is visibly the same thread and the figure
+ * reads as something the argument stepped around rather than the end of it.
+ */
+export function MomentContinued({ children }: { children: ReactNode }) {
+  return (
+    <section className="mx-auto w-full max-w-[620px]">
+      <div className="relative flex flex-col gap-5 border-l border-dashed border-black/20 pl-6">
+        {children}
+      </div>
+    </section>
+  );
+}

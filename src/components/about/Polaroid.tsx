@@ -250,6 +250,14 @@ const PIX_JITTER = 22;
 const pixelDelay = (x: number, y: number) =>
   Math.round(PIX_BASE + (PIX_FLOOR - y) * PIX_RISE + (((x * 7919) % 5) * PIX_JITTER));
 
+/** Where in the idle twinkle a square starts, spread across the whole period so
+ *  the field never blinks in unison — a few squares are always mid-blink and
+ *  the rest are simply on. Hashed off the coordinates rather than random, so it
+ *  is stable between server and client render. */
+const PIX_IDLE_MS = 2600;
+const pixelPhase = (x: number, y: number) =>
+  Math.round((((x * 73 + y * 149) % 100) / 100) * PIX_IDLE_MS);
+
 
 
 /** Where a wire meets a frame: which vertical edge, and how far down it. The
@@ -705,11 +713,19 @@ export default function Polaroid() {
          whole stage, so a percentage of their own box is a percentage of the
          stage, which is the same thing the viewBox units are. No measured
          scale, so there is nothing that can go stale on a resize and slide the
-         photographs out of the frames drawn around them. */
+         photographs out of the frames drawn around them.
+
+         A 2D `translate`, and no `will-change`, ON PURPOSE. The frame around
+         each photograph is an SVG `transform` attribute — a main-thread write.
+         Promoting the photograph to its own compositor layer lets the two be
+         PRESENTED on different frames: the picture is moved by the compositor
+         while its frame waits for the next paint, so under any load the image
+         visibly slides out from under the frame drawn around it. Keeping both
+         on the main thread means both land in the same commit, always. */
       const pc = (side: Side) =>
-        `translate3d(${(MOVE[side][0] * p * 100) / STAGE_W}%, ${
+        `translate(${(MOVE[side][0] * p * 100) / STAGE_W}%, ${
           (MOVE[side][1] * p * 100) / STAGE_H
-        }%, 0)`;
+        }%)`;
       for (const side of ["left", "right"] as const) {
         const [dx, dy] = MOVE[side];
         cropShapes.current[side]?.setAttribute(
@@ -886,7 +902,7 @@ export default function Polaroid() {
           means something if something is written in it, and in the source this
           is what fills it. */}
       <blockquote
-        className="absolute flex items-start justify-center text-center text-black"
+        className="absolute flex items-start justify-center text-center text-white"
         style={{
           ...box(492, 653, 260, 44),
           fontFamily: "var(--font-typewriter)",
@@ -926,6 +942,7 @@ export default function Polaroid() {
             style={{
               ...box(x, y, w, h),
               ["--d" as string]: `${pixelDelay(x, y)}ms`,
+              ["--p" as string]: `${pixelPhase(x, y)}ms`,
             }}
           />
         ))}
@@ -939,7 +956,7 @@ export default function Polaroid() {
           ref={(el) => {
             imgLeft.current = el;
           }}
-          className="absolute inset-0 will-change-transform"
+          className="absolute inset-0"
         >
           <div
             className="absolute overflow-hidden"
@@ -959,7 +976,7 @@ export default function Polaroid() {
           ref={(el) => {
             imgRight.current = el;
           }}
-          className="absolute inset-0 will-change-transform"
+          className="absolute inset-0"
         >
           <div
             className="absolute overflow-hidden"
@@ -999,7 +1016,7 @@ export default function Polaroid() {
           ref={(el) => {
             plateRight.current = el;
           }}
-          className="absolute inset-0 will-change-transform"
+          className="absolute inset-0"
         >
           <Plate
             style={plate(782.37, 463.1, 15.6)}

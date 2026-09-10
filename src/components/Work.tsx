@@ -128,8 +128,18 @@ const PROJECTS: Project[] = [
       "A canvas could show what a form never could. Keeping the form next to it is the reason traders actually learned it.",
     tags: ["Product", "Interaction"],
     href: "/work/zenxo-strategy-builder",
-    // No cover art yet — the card keeps its placeholder until a builder
-    // capture lands, same as every frame inside the case study itself.
+    // The case study's own opener, flattened: CaseHero stacks hero-ground and
+    // hero-scene (the scene is edge-to-edge and top-registered, and its
+    // surplus height bleeds off the bottom of the 17:10 frame), so the thumb
+    // is those two composited in that order and cropped to the card's 16:9.
+    // Same rule as Titan's — the card shows what the project opens with
+    // rather than a second, different picture.
+    thumb: "/case/zenxo/thumb.webp",
+    // Art nearly the card's own shape already, and the subject sits high in
+    // it, so the default centre would drift down onto the desk.
+    thumbPosition: "center 38%",
+    thumbAlt:
+      "Two traders at a monitor showing the Zenxo results page.",
   },
 ];
 

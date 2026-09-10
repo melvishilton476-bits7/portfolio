@@ -2403,8 +2403,35 @@ body {
 .about-pixel {
   opacity: 0;
 }
+/* Two animations, in order: the entry, then an idle that never stops. The
+   entry keeps `forwards` so it holds the square on once it has arrived; the
+   idle is delayed past the end of it (--d + 170ms) plus that square's own
+   phase, so it only ever takes over from a settled state.
+
+   The idle is mostly OFF-duty: each square sits at full for ~84% of the period
+   and blinks once. With the phase spread across the whole 2.6s, a handful of
+   squares are mid-blink at any moment and the field reads as still resolving
+   rather than as sixty things flashing. Stepped for the same reason the entry
+   is — a square that eases is a shape, a square that snaps is a pixel. */
 .is-grown .about-pixel {
-  animation: about-pixel-in 170ms var(--d) forwards;
+  animation:
+    about-pixel-in 170ms var(--d) forwards,
+    about-pixel-idle 2600ms calc(var(--d) + 170ms + var(--p)) infinite;
+}
+@keyframes about-pixel-idle {
+  0%,
+  84% {
+    opacity: 1;
+    animation-timing-function: steps(1);
+  }
+  88% {
+    opacity: 0.45;
+    animation-timing-function: steps(1);
+  }
+  92%,
+  100% {
+    opacity: 1;
+  }
 }
 @keyframes about-pixel-in {
   0% {
@@ -2822,5 +2849,1387 @@ body {
   .mole-figure__eye,
   .site-cursor__mallet {
     animation: none;
+  }
+}
+
+/* ============================================================================
+   BLOGS — THE PIXEL CUT, AND ITS BOIL
+   The article thumbnails are not rectangles: the design cuts each one out with
+   a stepped, 8-bit silhouette on a 10 x 10 grid of ~15 x 11px blocks. And it
+   does not hold still.
+
+   THE MOTION IS MEASURED, NOT INVENTED. Pulling the reference loop apart frame
+   by frame — 121 frames, two of its four panels analysed independently — says
+   three things, and all three are the opposite of the obvious guess:
+
+     • ONE BLOCK MOVES AT A TIME. 33 of the 39 changes across both panels are a
+       single block; the rest are two. Nothing shimmers. A block appears, or a
+       block goes, and then the shape sits still again.
+     • THE TIMING IS NOT A BEAT. Gaps between changes ran 1,2,3,4,5,6,7,10,11,
+       13 and 33 frames — 40ms to 1.3s, averaging ~250ms. A metronome reads as
+       a texture effect; irregular holds read as something being redrawn.
+     • DETACHED BLOCKS ARE THE RESTING STATE, not an accent. Two or more
+       separate islands were on screen in 113 of 121 frames in one panel and 93
+       of 121 in the other. There is nearly always a block floating clear.
+
+   So: 26 steps over 6.68s, each one flipping exactly ONE cell out of a fixed
+   set of thirteen that live at the silhouette's edge, held for irregular
+   stretches between 80ms and 1.04s. Adds and removes stay balanced, at most two
+   blocks are ever bitten out of the shape at once, and at least one detached
+   block is showing at every step — the last two are enforced while the sequence
+   is built rather than hoped for, because a blind shuffle strands it with a
+   third of the loop showing no detached block and four holes in the silhouette.
+
+   The walk is CLOSED: every cell flips an even number of times, so the last
+   step lands back on the first and the wrap is one more single-block flip. A
+   sequence that does not close snaps seven blocks at once every 6.68s, which is
+   the one thing that would give the whole trick away.
+
+   THERE IS NO KEYLINE. The design drew a thin white rim where the silhouette
+   met the card, and this carried one for a while: a second mask holding the
+   same shape dilated in its own geometry, painted white and sitting under the
+   picture. It was removed on request, along with its 26 masks and its own boil
+   — 38.7KB of stylesheet that existed only to draw an edge.
+
+   One trace of it is left on purpose. Both mask families were generated with a
+   rim-wide margin so the dilated shape had somewhere to go without being
+   clipped at the viewBox edge, and the cut masks still carry theirs. The
+   silhouette therefore sits about 1.8% smaller inside its box than it strictly
+   needs to now. That is invisible at this size, and undoing it would mean
+   regenerating all 26 masks to reclaim 1.8% of the picture's width.
+
+   Each step is an SVG data-URI carrying its own <mask>, so the image's alpha IS
+   the shape: black subtracts, white adds, painter's order settles overlaps, and
+   the CSS end needs no `mask-mode: luminance` to read it. Masks rather than the
+   clip-path this started as, because a clip-path is one closed region and
+   cannot hold a detached block. `mask-size: 100% 100%` keeps them scaling with
+   the card. 52 masks is ~65KB of CSS that gzips to 1.6KB — the silhouette path
+   is identical in every one of them — and costs no extra requests.
+   ========================================================================== */
+.blog-cut {
+  --cut-0: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 152.84 112.8' preserveAspectRatio='none'%3E%3Cmask id='c0'%3E%3Crect width='152.84' height='112.8' fill='black'/%3E%3Cg transform='translate(1.35 1.35)'%3E%3Cpath d='M143.9 18.77L150.1 18.77L150.1 46.29L130.1 46.29L130.1 63.81L140.1 63.81L140.1 91.33L112.6 91.33L112.6 82.58L97.59 82.58L97.59 110.1L75.07 110.1L75.07 97.59L56.3 97.59L56.3 77.57L45.04 77.57L45.04 70.06L37.53 70.06L37.53 82.58L15.01 82.58L15.01 70.06L0 70.06L0 42.54L15.01 42.54L15.01 28.78L2.502 28.78L2.502 1.252L30.03 1.252L30.03 18.77L37.53 18.77L37.53 27.53L45.04 27.53L45.04 22.52L60.05 22.52L60.05 18.77L78.82 18.77L78.82 1.252L101.3 1.252L101.3 13.76L116.4 13.76L116.4 0L143.9 0Z' fill='white'/%3E%3Crect x='0' y='88.08' width='15.01' height='11.01' fill='white'/%3E%3Crect x='0' y='99.09' width='15.01' height='11.01' fill='white'/%3E%3C/g%3E%3C/mask%3E%3Crect width='152.84' height='112.8' fill='white' mask='url(%23c0)'/%3E%3C/svg%3E");
+  --cut-1: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 152.84 112.8' preserveAspectRatio='none'%3E%3Cmask id='c1'%3E%3Crect width='152.84' height='112.8' fill='black'/%3E%3Cg transform='translate(1.35 1.35)'%3E%3Cpath d='M143.9 18.77L150.1 18.77L150.1 46.29L130.1 46.29L130.1 63.81L140.1 63.81L140.1 91.33L112.6 91.33L112.6 82.58L97.59 82.58L97.59 110.1L75.07 110.1L75.07 97.59L56.3 97.59L56.3 77.57L45.04 77.57L45.04 70.06L37.53 70.06L37.53 82.58L15.01 82.58L15.01 70.06L0 70.06L0 42.54L15.01 42.54L15.01 28.78L2.502 28.78L2.502 1.252L30.03 1.252L30.03 18.77L37.53 18.77L37.53 27.53L45.04 27.53L45.04 22.52L60.05 22.52L60.05 18.77L78.82 18.77L78.82 1.252L101.3 1.252L101.3 13.76L116.4 13.76L116.4 0L143.9 0Z' fill='white'/%3E%3Crect x='0' y='88.08' width='15.01' height='11.01' fill='white'/%3E%3Crect x='0' y='99.09' width='15.01' height='11.01' fill='white'/%3E%3Crect x='30.03' y='22.02' width='15.01' height='11.01' fill='black'/%3E%3C/g%3E%3C/mask%3E%3Crect width='152.84' height='112.8' fill='white' mask='url(%23c1)'/%3E%3C/svg%3E");
+  --cut-2: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 152.84 112.8' preserveAspectRatio='none'%3E%3Cmask id='c2'%3E%3Crect width='152.84' height='112.8' fill='black'/%3E%3Cg transform='translate(1.35 1.35)'%3E%3Cpath d='M143.9 18.77L150.1 18.77L150.1 46.29L130.1 46.29L130.1 63.81L140.1 63.81L140.1 91.33L112.6 91.33L112.6 82.58L97.59 82.58L97.59 110.1L75.07 110.1L75.07 97.59L56.3 97.59L56.3 77.57L45.04 77.57L45.04 70.06L37.53 70.06L37.53 82.58L15.01 82.58L15.01 70.06L0 70.06L0 42.54L15.01 42.54L15.01 28.78L2.502 28.78L2.502 1.252L30.03 1.252L30.03 18.77L37.53 18.77L37.53 27.53L45.04 27.53L45.04 22.52L60.05 22.52L60.05 18.77L78.82 18.77L78.82 1.252L101.3 1.252L101.3 13.76L116.4 13.76L116.4 0L143.9 0Z' fill='white'/%3E%3Crect x='0' y='88.08' width='15.01' height='11.01' fill='white'/%3E%3Crect x='0' y='99.09' width='15.01' height='11.01' fill='white'/%3E%3Crect x='30.03' y='11.01' width='15.01' height='11.01' fill='white'/%3E%3Crect x='30.03' y='22.02' width='15.01' height='11.01' fill='black'/%3E%3C/g%3E%3C/mask%3E%3Crect width='152.84' height='112.8' fill='white' mask='url(%23c2)'/%3E%3C/svg%3E");
+  --cut-3: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 152.84 112.8' preserveAspectRatio='none'%3E%3Cmask id='c3'%3E%3Crect width='152.84' height='112.8' fill='black'/%3E%3Cg transform='translate(1.35 1.35)'%3E%3Cpath d='M143.9 18.77L150.1 18.77L150.1 46.29L130.1 46.29L130.1 63.81L140.1 63.81L140.1 91.33L112.6 91.33L112.6 82.58L97.59 82.58L97.59 110.1L75.07 110.1L75.07 97.59L56.3 97.59L56.3 77.57L45.04 77.57L45.04 70.06L37.53 70.06L37.53 82.58L15.01 82.58L15.01 70.06L0 70.06L0 42.54L15.01 42.54L15.01 28.78L2.502 28.78L2.502 1.252L30.03 1.252L30.03 18.77L37.53 18.77L37.53 27.53L45.04 27.53L45.04 22.52L60.05 22.52L60.05 18.77L78.82 18.77L78.82 1.252L101.3 1.252L101.3 13.76L116.4 13.76L116.4 0L143.9 0Z' fill='white'/%3E%3Crect x='0' y='88.08' width='15.01' height='11.01' fill='white'/%3E%3Crect x='0' y='99.09' width='15.01' height='11.01' fill='white'/%3E%3Crect x='30.03' y='11.01' width='15.01' height='11.01' fill='white'/%3E%3Crect x='30.03' y='22.02' width='15.01' height='11.01' fill='black'/%3E%3Crect x='75.07' y='0' width='15.01' height='11.01' fill='black'/%3E%3C/g%3E%3C/mask%3E%3Crect width='152.84' height='112.8' fill='white' mask='url(%23c3)'/%3E%3C/svg%3E");
+  --cut-4: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 152.84 112.8' preserveAspectRatio='none'%3E%3Cmask id='c4'%3E%3Crect width='152.84' height='112.8' fill='black'/%3E%3Cg transform='translate(1.35 1.35)'%3E%3Cpath d='M143.9 18.77L150.1 18.77L150.1 46.29L130.1 46.29L130.1 63.81L140.1 63.81L140.1 91.33L112.6 91.33L112.6 82.58L97.59 82.58L97.59 110.1L75.07 110.1L75.07 97.59L56.3 97.59L56.3 77.57L45.04 77.57L45.04 70.06L37.53 70.06L37.53 82.58L15.01 82.58L15.01 70.06L0 70.06L0 42.54L15.01 42.54L15.01 28.78L2.502 28.78L2.502 1.252L30.03 1.252L30.03 18.77L37.53 18.77L37.53 27.53L45.04 27.53L45.04 22.52L60.05 22.52L60.05 18.77L78.82 18.77L78.82 1.252L101.3 1.252L101.3 13.76L116.4 13.76L116.4 0L143.9 0Z' fill='white'/%3E%3Crect x='0' y='99.09' width='15.01' height='11.01' fill='white'/%3E%3Crect x='30.03' y='11.01' width='15.01' height='11.01' fill='white'/%3E%3Crect x='30.03' y='22.02' width='15.01' height='11.01' fill='black'/%3E%3Crect x='75.07' y='0' width='15.01' height='11.01' fill='black'/%3E%3C/g%3E%3C/mask%3E%3Crect width='152.84' height='112.8' fill='white' mask='url(%23c4)'/%3E%3C/svg%3E");
+  --cut-5: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 152.84 112.8' preserveAspectRatio='none'%3E%3Cmask id='c5'%3E%3Crect width='152.84' height='112.8' fill='black'/%3E%3Cg transform='translate(1.35 1.35)'%3E%3Cpath d='M143.9 18.77L150.1 18.77L150.1 46.29L130.1 46.29L130.1 63.81L140.1 63.81L140.1 91.33L112.6 91.33L112.6 82.58L97.59 82.58L97.59 110.1L75.07 110.1L75.07 97.59L56.3 97.59L56.3 77.57L45.04 77.57L45.04 70.06L37.53 70.06L37.53 82.58L15.01 82.58L15.01 70.06L0 70.06L0 42.54L15.01 42.54L15.01 28.78L2.502 28.78L2.502 1.252L30.03 1.252L30.03 18.77L37.53 18.77L37.53 27.53L45.04 27.53L45.04 22.52L60.05 22.52L60.05 18.77L78.82 18.77L78.82 1.252L101.3 1.252L101.3 13.76L116.4 13.76L116.4 0L143.9 0Z' fill='white'/%3E%3Crect x='0' y='99.09' width='15.01' height='11.01' fill='white'/%3E%3Crect x='30.03' y='11.01' width='15.01' height='11.01' fill='white'/%3E%3Crect x='30.03' y='22.02' width='15.01' height='11.01' fill='black'/%3E%3C/g%3E%3C/mask%3E%3Crect width='152.84' height='112.8' fill='white' mask='url(%23c5)'/%3E%3C/svg%3E");
+  --cut-6: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 152.84 112.8' preserveAspectRatio='none'%3E%3Cmask id='c6'%3E%3Crect width='152.84' height='112.8' fill='black'/%3E%3Cg transform='translate(1.35 1.35)'%3E%3Cpath d='M143.9 18.77L150.1 18.77L150.1 46.29L130.1 46.29L130.1 63.81L140.1 63.81L140.1 91.33L112.6 91.33L112.6 82.58L97.59 82.58L97.59 110.1L75.07 110.1L75.07 97.59L56.3 97.59L56.3 77.57L45.04 77.57L45.04 70.06L37.53 70.06L37.53 82.58L15.01 82.58L15.01 70.06L0 70.06L0 42.54L15.01 42.54L15.01 28.78L2.502 28.78L2.502 1.252L30.03 1.252L30.03 18.77L37.53 18.77L37.53 27.53L45.04 27.53L45.04 22.52L60.05 22.52L60.05 18.77L78.82 18.77L78.82 1.252L101.3 1.252L101.3 13.76L116.4 13.76L116.4 0L143.9 0Z' fill='white'/%3E%3Crect x='0' y='99.09' width='15.01' height='11.01' fill='white'/%3E%3Crect x='30.03' y='11.01' width='15.01' height='11.01' fill='white'/%3E%3Crect x='135.1' y='77.07' width='15.01' height='11.01' fill='white'/%3E%3Crect x='30.03' y='22.02' width='15.01' height='11.01' fill='black'/%3E%3C/g%3E%3C/mask%3E%3Crect width='152.84' height='112.8' fill='white' mask='url(%23c6)'/%3E%3C/svg%3E");
+  --cut-7: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 152.84 112.8' preserveAspectRatio='none'%3E%3Cmask id='c7'%3E%3Crect width='152.84' height='112.8' fill='black'/%3E%3Cg transform='translate(1.35 1.35)'%3E%3Cpath d='M143.9 18.77L150.1 18.77L150.1 46.29L130.1 46.29L130.1 63.81L140.1 63.81L140.1 91.33L112.6 91.33L112.6 82.58L97.59 82.58L97.59 110.1L75.07 110.1L75.07 97.59L56.3 97.59L56.3 77.57L45.04 77.57L45.04 70.06L37.53 70.06L37.53 82.58L15.01 82.58L15.01 70.06L0 70.06L0 42.54L15.01 42.54L15.01 28.78L2.502 28.78L2.502 1.252L30.03 1.252L30.03 18.77L37.53 18.77L37.53 27.53L45.04 27.53L45.04 22.52L60.05 22.52L60.05 18.77L78.82 18.77L78.82 1.252L101.3 1.252L101.3 13.76L116.4 13.76L116.4 0L143.9 0Z' fill='white'/%3E%3Crect x='0' y='99.09' width='15.01' height='11.01' fill='white'/%3E%3Crect x='30.03' y='11.01' width='15.01' height='11.01' fill='white'/%3E%3Crect x='135.1' y='55.05' width='15.01' height='11.01' fill='white'/%3E%3Crect x='135.1' y='77.07' width='15.01' height='11.01' fill='white'/%3E%3Crect x='30.03' y='22.02' width='15.01' height='11.01' fill='black'/%3E%3C/g%3E%3C/mask%3E%3Crect width='152.84' height='112.8' fill='white' mask='url(%23c7)'/%3E%3C/svg%3E");
+  --cut-8: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 152.84 112.8' preserveAspectRatio='none'%3E%3Cmask id='c8'%3E%3Crect width='152.84' height='112.8' fill='black'/%3E%3Cg transform='translate(1.35 1.35)'%3E%3Cpath d='M143.9 18.77L150.1 18.77L150.1 46.29L130.1 46.29L130.1 63.81L140.1 63.81L140.1 91.33L112.6 91.33L112.6 82.58L97.59 82.58L97.59 110.1L75.07 110.1L75.07 97.59L56.3 97.59L56.3 77.57L45.04 77.57L45.04 70.06L37.53 70.06L37.53 82.58L15.01 82.58L15.01 70.06L0 70.06L0 42.54L15.01 42.54L15.01 28.78L2.502 28.78L2.502 1.252L30.03 1.252L30.03 18.77L37.53 18.77L37.53 27.53L45.04 27.53L45.04 22.52L60.05 22.52L60.05 18.77L78.82 18.77L78.82 1.252L101.3 1.252L101.3 13.76L116.4 13.76L116.4 0L143.9 0Z' fill='white'/%3E%3Crect x='0' y='99.09' width='15.01' height='11.01' fill='white'/%3E%3Crect x='30.03' y='11.01' width='15.01' height='11.01' fill='white'/%3E%3Crect x='135.1' y='55.05' width='15.01' height='11.01' fill='white'/%3E%3Crect x='135.1' y='77.07' width='15.01' height='11.01' fill='white'/%3E%3Crect x='135.1' y='99.09' width='15.01' height='11.01' fill='white'/%3E%3Crect x='30.03' y='22.02' width='15.01' height='11.01' fill='black'/%3E%3C/g%3E%3C/mask%3E%3Crect width='152.84' height='112.8' fill='white' mask='url(%23c8)'/%3E%3C/svg%3E");
+  --cut-9: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 152.84 112.8' preserveAspectRatio='none'%3E%3Cmask id='c9'%3E%3Crect width='152.84' height='112.8' fill='black'/%3E%3Cg transform='translate(1.35 1.35)'%3E%3Cpath d='M143.9 18.77L150.1 18.77L150.1 46.29L130.1 46.29L130.1 63.81L140.1 63.81L140.1 91.33L112.6 91.33L112.6 82.58L97.59 82.58L97.59 110.1L75.07 110.1L75.07 97.59L56.3 97.59L56.3 77.57L45.04 77.57L45.04 70.06L37.53 70.06L37.53 82.58L15.01 82.58L15.01 70.06L0 70.06L0 42.54L15.01 42.54L15.01 28.78L2.502 28.78L2.502 1.252L30.03 1.252L30.03 18.77L37.53 18.77L37.53 27.53L45.04 27.53L45.04 22.52L60.05 22.52L60.05 18.77L78.82 18.77L78.82 1.252L101.3 1.252L101.3 13.76L116.4 13.76L116.4 0L143.9 0Z' fill='white'/%3E%3Crect x='0' y='99.09' width='15.01' height='11.01' fill='white'/%3E%3Crect x='30.03' y='0' width='15.01' height='11.01' fill='white'/%3E%3Crect x='30.03' y='11.01' width='15.01' height='11.01' fill='white'/%3E%3Crect x='135.1' y='55.05' width='15.01' height='11.01' fill='white'/%3E%3Crect x='135.1' y='77.07' width='15.01' height='11.01' fill='white'/%3E%3Crect x='135.1' y='99.09' width='15.01' height='11.01' fill='white'/%3E%3Crect x='30.03' y='22.02' width='15.01' height='11.01' fill='black'/%3E%3C/g%3E%3C/mask%3E%3Crect width='152.84' height='112.8' fill='white' mask='url(%23c9)'/%3E%3C/svg%3E");
+  --cut-10: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 152.84 112.8' preserveAspectRatio='none'%3E%3Cmask id='c10'%3E%3Crect width='152.84' height='112.8' fill='black'/%3E%3Cg transform='translate(1.35 1.35)'%3E%3Cpath d='M143.9 18.77L150.1 18.77L150.1 46.29L130.1 46.29L130.1 63.81L140.1 63.81L140.1 91.33L112.6 91.33L112.6 82.58L97.59 82.58L97.59 110.1L75.07 110.1L75.07 97.59L56.3 97.59L56.3 77.57L45.04 77.57L45.04 70.06L37.53 70.06L37.53 82.58L15.01 82.58L15.01 70.06L0 70.06L0 42.54L15.01 42.54L15.01 28.78L2.502 28.78L2.502 1.252L30.03 1.252L30.03 18.77L37.53 18.77L37.53 27.53L45.04 27.53L45.04 22.52L60.05 22.52L60.05 18.77L78.82 18.77L78.82 1.252L101.3 1.252L101.3 13.76L116.4 13.76L116.4 0L143.9 0Z' fill='white'/%3E%3Crect x='0' y='99.09' width='15.01' height='11.01' fill='white'/%3E%3Crect x='30.03' y='0' width='15.01' height='11.01' fill='white'/%3E%3Crect x='30.03' y='11.01' width='15.01' height='11.01' fill='white'/%3E%3Crect x='135.1' y='55.05' width='15.01' height='11.01' fill='white'/%3E%3Crect x='135.1' y='77.07' width='15.01' height='11.01' fill='white'/%3E%3Crect x='135.1' y='99.09' width='15.01' height='11.01' fill='white'/%3E%3C/g%3E%3C/mask%3E%3Crect width='152.84' height='112.8' fill='white' mask='url(%23c10)'/%3E%3C/svg%3E");
+  --cut-11: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 152.84 112.8' preserveAspectRatio='none'%3E%3Cmask id='c11'%3E%3Crect width='152.84' height='112.8' fill='black'/%3E%3Cg transform='translate(1.35 1.35)'%3E%3Cpath d='M143.9 18.77L150.1 18.77L150.1 46.29L130.1 46.29L130.1 63.81L140.1 63.81L140.1 91.33L112.6 91.33L112.6 82.58L97.59 82.58L97.59 110.1L75.07 110.1L75.07 97.59L56.3 97.59L56.3 77.57L45.04 77.57L45.04 70.06L37.53 70.06L37.53 82.58L15.01 82.58L15.01 70.06L0 70.06L0 42.54L15.01 42.54L15.01 28.78L2.502 28.78L2.502 1.252L30.03 1.252L30.03 18.77L37.53 18.77L37.53 27.53L45.04 27.53L45.04 22.52L60.05 22.52L60.05 18.77L78.82 18.77L78.82 1.252L101.3 1.252L101.3 13.76L116.4 13.76L116.4 0L143.9 0Z' fill='white'/%3E%3Crect x='0' y='99.09' width='15.01' height='11.01' fill='white'/%3E%3Crect x='30.03' y='11.01' width='15.01' height='11.01' fill='white'/%3E%3Crect x='135.1' y='55.05' width='15.01' height='11.01' fill='white'/%3E%3Crect x='135.1' y='77.07' width='15.01' height='11.01' fill='white'/%3E%3Crect x='135.1' y='99.09' width='15.01' height='11.01' fill='white'/%3E%3C/g%3E%3C/mask%3E%3Crect width='152.84' height='112.8' fill='white' mask='url(%23c11)'/%3E%3C/svg%3E");
+  --cut-12: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 152.84 112.8' preserveAspectRatio='none'%3E%3Cmask id='c12'%3E%3Crect width='152.84' height='112.8' fill='black'/%3E%3Cg transform='translate(1.35 1.35)'%3E%3Cpath d='M143.9 18.77L150.1 18.77L150.1 46.29L130.1 46.29L130.1 63.81L140.1 63.81L140.1 91.33L112.6 91.33L112.6 82.58L97.59 82.58L97.59 110.1L75.07 110.1L75.07 97.59L56.3 97.59L56.3 77.57L45.04 77.57L45.04 70.06L37.53 70.06L37.53 82.58L15.01 82.58L15.01 70.06L0 70.06L0 42.54L15.01 42.54L15.01 28.78L2.502 28.78L2.502 1.252L30.03 1.252L30.03 18.77L37.53 18.77L37.53 27.53L45.04 27.53L45.04 22.52L60.05 22.52L60.05 18.77L78.82 18.77L78.82 1.252L101.3 1.252L101.3 13.76L116.4 13.76L116.4 0L143.9 0Z' fill='white'/%3E%3Crect x='0' y='99.09' width='15.01' height='11.01' fill='white'/%3E%3Crect x='30.03' y='11.01' width='15.01' height='11.01' fill='white'/%3E%3Crect x='60.05' y='0' width='15.01' height='11.01' fill='white'/%3E%3Crect x='135.1' y='55.05' width='15.01' height='11.01' fill='white'/%3E%3Crect x='135.1' y='77.07' width='15.01' height='11.01' fill='white'/%3E%3Crect x='135.1' y='99.09' width='15.01' height='11.01' fill='white'/%3E%3C/g%3E%3C/mask%3E%3Crect width='152.84' height='112.8' fill='white' mask='url(%23c12)'/%3E%3C/svg%3E");
+  --cut-13: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 152.84 112.8' preserveAspectRatio='none'%3E%3Cmask id='c13'%3E%3Crect width='152.84' height='112.8' fill='black'/%3E%3Cg transform='translate(1.35 1.35)'%3E%3Cpath d='M143.9 18.77L150.1 18.77L150.1 46.29L130.1 46.29L130.1 63.81L140.1 63.81L140.1 91.33L112.6 91.33L112.6 82.58L97.59 82.58L97.59 110.1L75.07 110.1L75.07 97.59L56.3 97.59L56.3 77.57L45.04 77.57L45.04 70.06L37.53 70.06L37.53 82.58L15.01 82.58L15.01 70.06L0 70.06L0 42.54L15.01 42.54L15.01 28.78L2.502 28.78L2.502 1.252L30.03 1.252L30.03 18.77L37.53 18.77L37.53 27.53L45.04 27.53L45.04 22.52L60.05 22.52L60.05 18.77L78.82 18.77L78.82 1.252L101.3 1.252L101.3 13.76L116.4 13.76L116.4 0L143.9 0Z' fill='white'/%3E%3Crect x='0' y='99.09' width='15.01' height='11.01' fill='white'/%3E%3Crect x='30.03' y='11.01' width='15.01' height='11.01' fill='white'/%3E%3Crect x='60.05' y='0' width='15.01' height='11.01' fill='white'/%3E%3Crect x='135.1' y='55.05' width='15.01' height='11.01' fill='white'/%3E%3Crect x='135.1' y='77.07' width='15.01' height='11.01' fill='white'/%3E%3Crect x='135.1' y='99.09' width='15.01' height='11.01' fill='white'/%3E%3Crect x='15.01' y='33.03' width='15.01' height='11.01' fill='black'/%3E%3C/g%3E%3C/mask%3E%3Crect width='152.84' height='112.8' fill='white' mask='url(%23c13)'/%3E%3C/svg%3E");
+  --cut-14: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 152.84 112.8' preserveAspectRatio='none'%3E%3Cmask id='c14'%3E%3Crect width='152.84' height='112.8' fill='black'/%3E%3Cg transform='translate(1.35 1.35)'%3E%3Cpath d='M143.9 18.77L150.1 18.77L150.1 46.29L130.1 46.29L130.1 63.81L140.1 63.81L140.1 91.33L112.6 91.33L112.6 82.58L97.59 82.58L97.59 110.1L75.07 110.1L75.07 97.59L56.3 97.59L56.3 77.57L45.04 77.57L45.04 70.06L37.53 70.06L37.53 82.58L15.01 82.58L15.01 70.06L0 70.06L0 42.54L15.01 42.54L15.01 28.78L2.502 28.78L2.502 1.252L30.03 1.252L30.03 18.77L37.53 18.77L37.53 27.53L45.04 27.53L45.04 22.52L60.05 22.52L60.05 18.77L78.82 18.77L78.82 1.252L101.3 1.252L101.3 13.76L116.4 13.76L116.4 0L143.9 0Z' fill='white'/%3E%3Crect x='30.03' y='11.01' width='15.01' height='11.01' fill='white'/%3E%3Crect x='60.05' y='0' width='15.01' height='11.01' fill='white'/%3E%3Crect x='135.1' y='55.05' width='15.01' height='11.01' fill='white'/%3E%3Crect x='135.1' y='77.07' width='15.01' height='11.01' fill='white'/%3E%3Crect x='135.1' y='99.09' width='15.01' height='11.01' fill='white'/%3E%3Crect x='15.01' y='33.03' width='15.01' height='11.01' fill='black'/%3E%3C/g%3E%3C/mask%3E%3Crect width='152.84' height='112.8' fill='white' mask='url(%23c14)'/%3E%3C/svg%3E");
+  --cut-15: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 152.84 112.8' preserveAspectRatio='none'%3E%3Cmask id='c15'%3E%3Crect width='152.84' height='112.8' fill='black'/%3E%3Cg transform='translate(1.35 1.35)'%3E%3Cpath d='M143.9 18.77L150.1 18.77L150.1 46.29L130.1 46.29L130.1 63.81L140.1 63.81L140.1 91.33L112.6 91.33L112.6 82.58L97.59 82.58L97.59 110.1L75.07 110.1L75.07 97.59L56.3 97.59L56.3 77.57L45.04 77.57L45.04 70.06L37.53 70.06L37.53 82.58L15.01 82.58L15.01 70.06L0 70.06L0 42.54L15.01 42.54L15.01 28.78L2.502 28.78L2.502 1.252L30.03 1.252L30.03 18.77L37.53 18.77L37.53 27.53L45.04 27.53L45.04 22.52L60.05 22.52L60.05 18.77L78.82 18.77L78.82 1.252L101.3 1.252L101.3 13.76L116.4 13.76L116.4 0L143.9 0Z' fill='white'/%3E%3Crect x='30.03' y='11.01' width='15.01' height='11.01' fill='white'/%3E%3Crect x='60.05' y='0' width='15.01' height='11.01' fill='white'/%3E%3Crect x='135.1' y='55.05' width='15.01' height='11.01' fill='white'/%3E%3Crect x='135.1' y='99.09' width='15.01' height='11.01' fill='white'/%3E%3Crect x='15.01' y='33.03' width='15.01' height='11.01' fill='black'/%3E%3C/g%3E%3C/mask%3E%3Crect width='152.84' height='112.8' fill='white' mask='url(%23c15)'/%3E%3C/svg%3E");
+  --cut-16: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 152.84 112.8' preserveAspectRatio='none'%3E%3Cmask id='c16'%3E%3Crect width='152.84' height='112.8' fill='black'/%3E%3Cg transform='translate(1.35 1.35)'%3E%3Cpath d='M143.9 18.77L150.1 18.77L150.1 46.29L130.1 46.29L130.1 63.81L140.1 63.81L140.1 91.33L112.6 91.33L112.6 82.58L97.59 82.58L97.59 110.1L75.07 110.1L75.07 97.59L56.3 97.59L56.3 77.57L45.04 77.57L45.04 70.06L37.53 70.06L37.53 82.58L15.01 82.58L15.01 70.06L0 70.06L0 42.54L15.01 42.54L15.01 28.78L2.502 28.78L2.502 1.252L30.03 1.252L30.03 18.77L37.53 18.77L37.53 27.53L45.04 27.53L45.04 22.52L60.05 22.52L60.05 18.77L78.82 18.77L78.82 1.252L101.3 1.252L101.3 13.76L116.4 13.76L116.4 0L143.9 0Z' fill='white'/%3E%3Crect x='30.03' y='11.01' width='15.01' height='11.01' fill='white'/%3E%3Crect x='60.05' y='0' width='15.01' height='11.01' fill='white'/%3E%3Crect x='135.1' y='55.05' width='15.01' height='11.01' fill='white'/%3E%3Crect x='135.1' y='99.09' width='15.01' height='11.01' fill='white'/%3E%3C/g%3E%3C/mask%3E%3Crect width='152.84' height='112.8' fill='white' mask='url(%23c16)'/%3E%3C/svg%3E");
+  --cut-17: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 152.84 112.8' preserveAspectRatio='none'%3E%3Cmask id='c17'%3E%3Crect width='152.84' height='112.8' fill='black'/%3E%3Cg transform='translate(1.35 1.35)'%3E%3Cpath d='M143.9 18.77L150.1 18.77L150.1 46.29L130.1 46.29L130.1 63.81L140.1 63.81L140.1 91.33L112.6 91.33L112.6 82.58L97.59 82.58L97.59 110.1L75.07 110.1L75.07 97.59L56.3 97.59L56.3 77.57L45.04 77.57L45.04 70.06L37.53 70.06L37.53 82.58L15.01 82.58L15.01 70.06L0 70.06L0 42.54L15.01 42.54L15.01 28.78L2.502 28.78L2.502 1.252L30.03 1.252L30.03 18.77L37.53 18.77L37.53 27.53L45.04 27.53L45.04 22.52L60.05 22.52L60.05 18.77L78.82 18.77L78.82 1.252L101.3 1.252L101.3 13.76L116.4 13.76L116.4 0L143.9 0Z' fill='white'/%3E%3Crect x='0' y='88.08' width='15.01' height='11.01' fill='white'/%3E%3Crect x='30.03' y='11.01' width='15.01' height='11.01' fill='white'/%3E%3Crect x='60.05' y='0' width='15.01' height='11.01' fill='white'/%3E%3Crect x='135.1' y='55.05' width='15.01' height='11.01' fill='white'/%3E%3Crect x='135.1' y='99.09' width='15.01' height='11.01' fill='white'/%3E%3C/g%3E%3C/mask%3E%3Crect width='152.84' height='112.8' fill='white' mask='url(%23c17)'/%3E%3C/svg%3E");
+  --cut-18: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 152.84 112.8' preserveAspectRatio='none'%3E%3Cmask id='c18'%3E%3Crect width='152.84' height='112.8' fill='black'/%3E%3Cg transform='translate(1.35 1.35)'%3E%3Cpath d='M143.9 18.77L150.1 18.77L150.1 46.29L130.1 46.29L130.1 63.81L140.1 63.81L140.1 91.33L112.6 91.33L112.6 82.58L97.59 82.58L97.59 110.1L75.07 110.1L75.07 97.59L56.3 97.59L56.3 77.57L45.04 77.57L45.04 70.06L37.53 70.06L37.53 82.58L15.01 82.58L15.01 70.06L0 70.06L0 42.54L15.01 42.54L15.01 28.78L2.502 28.78L2.502 1.252L30.03 1.252L30.03 18.77L37.53 18.77L37.53 27.53L45.04 27.53L45.04 22.52L60.05 22.52L60.05 18.77L78.82 18.77L78.82 1.252L101.3 1.252L101.3 13.76L116.4 13.76L116.4 0L143.9 0Z' fill='white'/%3E%3Crect x='0' y='88.08' width='15.01' height='11.01' fill='white'/%3E%3Crect x='60.05' y='0' width='15.01' height='11.01' fill='white'/%3E%3Crect x='135.1' y='55.05' width='15.01' height='11.01' fill='white'/%3E%3Crect x='135.1' y='99.09' width='15.01' height='11.01' fill='white'/%3E%3C/g%3E%3C/mask%3E%3Crect width='152.84' height='112.8' fill='white' mask='url(%23c18)'/%3E%3C/svg%3E");
+  --cut-19: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 152.84 112.8' preserveAspectRatio='none'%3E%3Cmask id='c19'%3E%3Crect width='152.84' height='112.8' fill='black'/%3E%3Cg transform='translate(1.35 1.35)'%3E%3Cpath d='M143.9 18.77L150.1 18.77L150.1 46.29L130.1 46.29L130.1 63.81L140.1 63.81L140.1 91.33L112.6 91.33L112.6 82.58L97.59 82.58L97.59 110.1L75.07 110.1L75.07 97.59L56.3 97.59L56.3 77.57L45.04 77.57L45.04 70.06L37.53 70.06L37.53 82.58L15.01 82.58L15.01 70.06L0 70.06L0 42.54L15.01 42.54L15.01 28.78L2.502 28.78L2.502 1.252L30.03 1.252L30.03 18.77L37.53 18.77L37.53 27.53L45.04 27.53L45.04 22.52L60.05 22.52L60.05 18.77L78.82 18.77L78.82 1.252L101.3 1.252L101.3 13.76L116.4 13.76L116.4 0L143.9 0Z' fill='white'/%3E%3Crect x='0' y='88.08' width='15.01' height='11.01' fill='white'/%3E%3Crect x='0' y='99.09' width='15.01' height='11.01' fill='white'/%3E%3Crect x='60.05' y='0' width='15.01' height='11.01' fill='white'/%3E%3Crect x='135.1' y='55.05' width='15.01' height='11.01' fill='white'/%3E%3Crect x='135.1' y='99.09' width='15.01' height='11.01' fill='white'/%3E%3C/g%3E%3C/mask%3E%3Crect width='152.84' height='112.8' fill='white' mask='url(%23c19)'/%3E%3C/svg%3E");
+  --cut-20: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 152.84 112.8' preserveAspectRatio='none'%3E%3Cmask id='c20'%3E%3Crect width='152.84' height='112.8' fill='black'/%3E%3Cg transform='translate(1.35 1.35)'%3E%3Cpath d='M143.9 18.77L150.1 18.77L150.1 46.29L130.1 46.29L130.1 63.81L140.1 63.81L140.1 91.33L112.6 91.33L112.6 82.58L97.59 82.58L97.59 110.1L75.07 110.1L75.07 97.59L56.3 97.59L56.3 77.57L45.04 77.57L45.04 70.06L37.53 70.06L37.53 82.58L15.01 82.58L15.01 70.06L0 70.06L0 42.54L15.01 42.54L15.01 28.78L2.502 28.78L2.502 1.252L30.03 1.252L30.03 18.77L37.53 18.77L37.53 27.53L45.04 27.53L45.04 22.52L60.05 22.52L60.05 18.77L78.82 18.77L78.82 1.252L101.3 1.252L101.3 13.76L116.4 13.76L116.4 0L143.9 0Z' fill='white'/%3E%3Crect x='0' y='88.08' width='15.01' height='11.01' fill='white'/%3E%3Crect x='0' y='99.09' width='15.01' height='11.01' fill='white'/%3E%3Crect x='135.1' y='55.05' width='15.01' height='11.01' fill='white'/%3E%3Crect x='135.1' y='99.09' width='15.01' height='11.01' fill='white'/%3E%3C/g%3E%3C/mask%3E%3Crect width='152.84' height='112.8' fill='white' mask='url(%23c20)'/%3E%3C/svg%3E");
+  --cut-21: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 152.84 112.8' preserveAspectRatio='none'%3E%3Cmask id='c21'%3E%3Crect width='152.84' height='112.8' fill='black'/%3E%3Cg transform='translate(1.35 1.35)'%3E%3Cpath d='M143.9 18.77L150.1 18.77L150.1 46.29L130.1 46.29L130.1 63.81L140.1 63.81L140.1 91.33L112.6 91.33L112.6 82.58L97.59 82.58L97.59 110.1L75.07 110.1L75.07 97.59L56.3 97.59L56.3 77.57L45.04 77.57L45.04 70.06L37.53 70.06L37.53 82.58L15.01 82.58L15.01 70.06L0 70.06L0 42.54L15.01 42.54L15.01 28.78L2.502 28.78L2.502 1.252L30.03 1.252L30.03 18.77L37.53 18.77L37.53 27.53L45.04 27.53L45.04 22.52L60.05 22.52L60.05 18.77L78.82 18.77L78.82 1.252L101.3 1.252L101.3 13.76L116.4 13.76L116.4 0L143.9 0Z' fill='white'/%3E%3Crect x='0' y='88.08' width='15.01' height='11.01' fill='white'/%3E%3Crect x='0' y='99.09' width='15.01' height='11.01' fill='white'/%3E%3Crect x='135.1' y='55.05' width='15.01' height='11.01' fill='white'/%3E%3C/g%3E%3C/mask%3E%3Crect width='152.84' height='112.8' fill='white' mask='url(%23c21)'/%3E%3C/svg%3E");
+  --cut-22: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 152.84 112.8' preserveAspectRatio='none'%3E%3Cmask id='c22'%3E%3Crect width='152.84' height='112.8' fill='black'/%3E%3Cg transform='translate(1.35 1.35)'%3E%3Cpath d='M143.9 18.77L150.1 18.77L150.1 46.29L130.1 46.29L130.1 63.81L140.1 63.81L140.1 91.33L112.6 91.33L112.6 82.58L97.59 82.58L97.59 110.1L75.07 110.1L75.07 97.59L56.3 97.59L56.3 77.57L45.04 77.57L45.04 70.06L37.53 70.06L37.53 82.58L15.01 82.58L15.01 70.06L0 70.06L0 42.54L15.01 42.54L15.01 28.78L2.502 28.78L2.502 1.252L30.03 1.252L30.03 18.77L37.53 18.77L37.53 27.53L45.04 27.53L45.04 22.52L60.05 22.52L60.05 18.77L78.82 18.77L78.82 1.252L101.3 1.252L101.3 13.76L116.4 13.76L116.4 0L143.9 0Z' fill='white'/%3E%3Crect x='0' y='88.08' width='15.01' height='11.01' fill='white'/%3E%3Crect x='0' y='99.09' width='15.01' height='11.01' fill='white'/%3E%3Crect x='135.1' y='55.05' width='15.01' height='11.01' fill='white'/%3E%3Crect x='105.1' y='11.01' width='15.01' height='11.01' fill='black'/%3E%3C/g%3E%3C/mask%3E%3Crect width='152.84' height='112.8' fill='white' mask='url(%23c22)'/%3E%3C/svg%3E");
+  --cut-23: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 152.84 112.8' preserveAspectRatio='none'%3E%3Cmask id='c23'%3E%3Crect width='152.84' height='112.8' fill='black'/%3E%3Cg transform='translate(1.35 1.35)'%3E%3Cpath d='M143.9 18.77L150.1 18.77L150.1 46.29L130.1 46.29L130.1 63.81L140.1 63.81L140.1 91.33L112.6 91.33L112.6 82.58L97.59 82.58L97.59 110.1L75.07 110.1L75.07 97.59L56.3 97.59L56.3 77.57L45.04 77.57L45.04 70.06L37.53 70.06L37.53 82.58L15.01 82.58L15.01 70.06L0 70.06L0 42.54L15.01 42.54L15.01 28.78L2.502 28.78L2.502 1.252L30.03 1.252L30.03 18.77L37.53 18.77L37.53 27.53L45.04 27.53L45.04 22.52L60.05 22.52L60.05 18.77L78.82 18.77L78.82 1.252L101.3 1.252L101.3 13.76L116.4 13.76L116.4 0L143.9 0Z' fill='white'/%3E%3Crect x='0' y='88.08' width='15.01' height='11.01' fill='white'/%3E%3Crect x='0' y='99.09' width='15.01' height='11.01' fill='white'/%3E%3Crect x='105.1' y='11.01' width='15.01' height='11.01' fill='black'/%3E%3C/g%3E%3C/mask%3E%3Crect width='152.84' height='112.8' fill='white' mask='url(%23c23)'/%3E%3C/svg%3E");
+  --cut-24: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 152.84 112.8' preserveAspectRatio='none'%3E%3Cmask id='c24'%3E%3Crect width='152.84' height='112.8' fill='black'/%3E%3Cg transform='translate(1.35 1.35)'%3E%3Cpath d='M143.9 18.77L150.1 18.77L150.1 46.29L130.1 46.29L130.1 63.81L140.1 63.81L140.1 91.33L112.6 91.33L112.6 82.58L97.59 82.58L97.59 110.1L75.07 110.1L75.07 97.59L56.3 97.59L56.3 77.57L45.04 77.57L45.04 70.06L37.53 70.06L37.53 82.58L15.01 82.58L15.01 70.06L0 70.06L0 42.54L15.01 42.54L15.01 28.78L2.502 28.78L2.502 1.252L30.03 1.252L30.03 18.77L37.53 18.77L37.53 27.53L45.04 27.53L45.04 22.52L60.05 22.52L60.05 18.77L78.82 18.77L78.82 1.252L101.3 1.252L101.3 13.76L116.4 13.76L116.4 0L143.9 0Z' fill='white'/%3E%3Crect x='0' y='88.08' width='15.01' height='11.01' fill='white'/%3E%3Crect x='0' y='99.09' width='15.01' height='11.01' fill='white'/%3E%3Crect x='90.08' y='88.08' width='15.01' height='11.01' fill='black'/%3E%3Crect x='105.1' y='11.01' width='15.01' height='11.01' fill='black'/%3E%3C/g%3E%3C/mask%3E%3Crect width='152.84' height='112.8' fill='white' mask='url(%23c24)'/%3E%3C/svg%3E");
+  --cut-25: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 152.84 112.8' preserveAspectRatio='none'%3E%3Cmask id='c25'%3E%3Crect width='152.84' height='112.8' fill='black'/%3E%3Cg transform='translate(1.35 1.35)'%3E%3Cpath d='M143.9 18.77L150.1 18.77L150.1 46.29L130.1 46.29L130.1 63.81L140.1 63.81L140.1 91.33L112.6 91.33L112.6 82.58L97.59 82.58L97.59 110.1L75.07 110.1L75.07 97.59L56.3 97.59L56.3 77.57L45.04 77.57L45.04 70.06L37.53 70.06L37.53 82.58L15.01 82.58L15.01 70.06L0 70.06L0 42.54L15.01 42.54L15.01 28.78L2.502 28.78L2.502 1.252L30.03 1.252L30.03 18.77L37.53 18.77L37.53 27.53L45.04 27.53L45.04 22.52L60.05 22.52L60.05 18.77L78.82 18.77L78.82 1.252L101.3 1.252L101.3 13.76L116.4 13.76L116.4 0L143.9 0Z' fill='white'/%3E%3Crect x='0' y='88.08' width='15.01' height='11.01' fill='white'/%3E%3Crect x='0' y='99.09' width='15.01' height='11.01' fill='white'/%3E%3Crect x='90.08' y='88.08' width='15.01' height='11.01' fill='black'/%3E%3C/g%3E%3C/mask%3E%3Crect width='152.84' height='112.8' fill='white' mask='url(%23c25)'/%3E%3C/svg%3E");
+  --boil: 6680ms;
+}
+
+/* The picture, masked to the silhouette. It fills its parent exactly; the
+   parent is now just the positioned box that gives it its size and ratio. */
+.blog-cut__plate {
+  position: absolute;
+  inset: 0;
+  mask-size: 100% 100%;
+  mask-repeat: no-repeat;
+  /* steps(1), so each step is HELD and then replaced. Anything that tweens
+     turns 26 cut states back into one shape sliding about. The uneven keyframe
+     stops below are where the irregular timing lives — the animation itself
+     runs at a constant rate. */
+  animation-duration: var(--boil);
+  animation-timing-function: steps(1);
+  animation-iteration-count: infinite;
+  animation-delay: var(--boil-offset, 0ms);
+}
+
+.blog-cut__plate {
+  mask-image: var(--cut-0);
+  animation-name: blog-cut-boil;
+}
+
+@keyframes blog-cut-boil {
+  0.0% {
+    mask-image: var(--cut-0);
+  }
+  2.994% {
+    mask-image: var(--cut-1);
+  }
+  4.79% {
+    mask-image: var(--cut-2);
+  }
+  8.383% {
+    mask-image: var(--cut-3);
+  }
+  14.371% {
+    mask-image: var(--cut-4);
+  }
+  15.569% {
+    mask-image: var(--cut-5);
+  }
+  17.365% {
+    mask-image: var(--cut-6);
+  }
+  32.934% {
+    mask-image: var(--cut-7);
+  }
+  37.126% {
+    mask-image: var(--cut-8);
+  }
+  38.922% {
+    mask-image: var(--cut-9);
+  }
+  41.916% {
+    mask-image: var(--cut-10);
+  }
+  46.707% {
+    mask-image: var(--cut-11);
+  }
+  47.904% {
+    mask-image: var(--cut-12);
+  }
+  52.096% {
+    mask-image: var(--cut-13);
+  }
+  54.491% {
+    mask-image: var(--cut-14);
+  }
+  55.689% {
+    mask-image: var(--cut-15);
+  }
+  57.485% {
+    mask-image: var(--cut-16);
+  }
+  61.078% {
+    mask-image: var(--cut-17);
+  }
+  64.671% {
+    mask-image: var(--cut-18);
+  }
+  66.467% {
+    mask-image: var(--cut-19);
+  }
+  68.862% {
+    mask-image: var(--cut-20);
+  }
+  70.659% {
+    mask-image: var(--cut-21);
+  }
+  74.85% {
+    mask-image: var(--cut-22);
+  }
+  78.443% {
+    mask-image: var(--cut-23);
+  }
+  79.641% {
+    mask-image: var(--cut-24);
+  }
+  95.21% {
+    mask-image: var(--cut-25);
+  }
+}
+
+/* A boil is decoration, and a blinking silhouette is exactly the kind of
+   peripheral flicker this setting exists to switch off. The shape stays — it is
+   the design's own outline — it just stops moving. */
+@media (prefers-reduced-motion: reduce) {
+  .blog-cut__plate {
+    animation: none;
+  }
+}
+
+.blog-card {
+  container-type: inline-size;
+}
+.blog-card .type-readout {
+  font-size: clamp(10px, 4.89cqw, 12.4px);
+}
+.blog-card .type-subheading-sm {
+  font-size: clamp(17px, 9.78cqw, 23px);
+}
+
+/* ==========================================================================
+   CASE FIGURE · SCROLL STRIP
+   A tall screenshot pulled through a short frame (see ScrollStrip.tsx). The
+   component solves the three distances from the artwork's ratio and passes
+   them in as --strip-*; this file only supplies the motion.
+
+   The holds matter more than the travel. Six percent parked at each end is
+   what makes it read as a document someone is scrolling rather than a loop —
+   without them the sheet turns around the instant it lands and the whole
+   thing feels mechanical.
+
+   `ease-in-out` applies PER SEGMENT, so the plateaus get an easing boundary
+   at both ends and the sheet settles into each stop instead of stopping dead.
+   ========================================================================== */
+
+.strip__sheet,
+.strip__thumb,
+.strip__lens {
+  animation-duration: var(--strip-dur, 24s);
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+  /* Held until the figure arrives — GrowOnView latches `.is-grown` at 35%
+     visibility, so you catch the scroll from the top rather than joining it
+     halfway down. */
+  animation-play-state: paused;
+  will-change: transform;
+}
+
+.case-figure.is-grown .strip__sheet,
+.case-figure.is-grown .strip__thumb,
+.case-figure.is-grown .strip__lens {
+  animation-play-state: running;
+}
+
+.strip__sheet {
+  animation-name: strip-scroll;
+}
+.strip__thumb {
+  animation-name: strip-thumb;
+}
+.strip__lens {
+  animation-name: strip-camera;
+  transform-origin: 50% 50%;
+}
+
+@keyframes strip-scroll {
+  0%,
+  6% {
+    transform: translateY(0);
+  }
+  46%,
+  54% {
+    transform: translateY(calc(var(--strip-travel) * -1));
+  }
+  94%,
+  100% {
+    transform: translateY(0);
+  }
+}
+
+@keyframes strip-thumb {
+  0%,
+  6% {
+    transform: translateY(0);
+  }
+  46%,
+  54% {
+    transform: translateY(var(--strip-thumb-travel));
+  }
+  94%,
+  100% {
+    transform: translateY(0);
+  }
+}
+
+/* The camera. A separate layer from the sheet so the scroll's arithmetic is
+   untouched — see ScrollStrip.tsx.
+
+   TWO RULES, and the thing breaks if either is bent:
+
+   1. Scale is EXACTLY 1 at both holds. The sheet lands flush at the bottom of
+      its travel to within 0.06px, and that is only true unscaled; a zoom still
+      running at the turn would open a sliver of blank below the artwork. The
+      46%-54% hold sits inside a rest span here, so this holds by construction.
+
+   2. Pan is a PERCENTAGE, never px. Scaling by s leaves (s-1)/2 of the width
+      free on each side, which as a percentage is constant — but as pixels it
+      shrinks with the frame. Measured: at 880 wide the budget at 1.065 is
+      28.6px, and at 375 wide it is 10.9px. A fixed 20px offset would sit
+      comfortably inside the first and hang ~9px past the second, so it would
+      show a bare edge on every phone and nowhere else. Budgets used below:
+      3.25% at 1.065, 2.75% at 1.055, 2.50% at 1.05.
+
+   Beats sit on sections rather than on a metronome, and the timings are solved
+   THROUGH the easing rather than off the clock. The sheet travels 6%-46% with
+   `ease-in-out`, so a section is not centred at the moment its progress would
+   suggest: time u through the segment gives position (1-cos(pi*u))/2, and the
+   middle of the scroll therefore passes far quicker than the ends. Inverting
+   that — u = acos(1-2p)/pi — is what puts each peak on its section:
+
+     13.9%  the settings block, its rows of toggles      (strip 19.5%, p=0.09)
+     31.6%  the payoff chart                             (strip 66.0%, p=0.71)
+     79.0%  the templates grid, on the way back, and a
+            section the descent deliberately did not
+            stop at, so the return reads as a second
+            pass rather than a rewind                    (strip 35.6%, p=0.31)
+
+   Three beats, each with 7.5% (1.8s) to ease in and out and clear air between
+   them. Sections in the middle of the document cluster into ~4s of timeline
+   because that is where the scroll is fastest, so picking neighbours there
+   would have forced hurried ramps — and a hurried 6% zoom reads as a flinch. */
+@keyframes strip-camera {
+  0%,
+  6.4% {
+    transform: translateX(0) scale(1);
+  }
+  13.9% {
+    transform: translateX(-2.2%) scale(1.065);
+  }
+  21.4%,
+  24.1% {
+    transform: translateX(0) scale(1);
+  }
+  31.6% {
+    transform: translateX(1.8%) scale(1.055);
+  }
+  39.1%,
+  71.5% {
+    transform: translateX(0) scale(1);
+  }
+  79% {
+    transform: translateX(-1.5%) scale(1.05);
+  }
+  86.5%,
+  100% {
+    transform: translateX(0) scale(1);
+  }
+}
+
+/* The grip. Deliberately understated — it is a reading of the picture, not a
+   control, and a real-looking scrollbar would invite a drag that goes
+   nowhere. */
+.strip__track {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  bottom: 10px;
+  width: 3px;
+  border-radius: 999px;
+  background: rgb(23 23 23 / 0.06);
+}
+.strip__thumb {
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+  display: block;
+  border-radius: 999px;
+  background: rgb(23 23 23 / 0.28);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .strip__sheet,
+  .strip__thumb,
+  .strip__lens {
+    animation: none;
+    transform: none;
+  }
+}
+
+/* ==========================================================================
+   CASE FIGURE · ZENXO BUILDER WALKTHROUGH
+   Two real states of the product (see ZenxoBoard.tsx / ZenxoStep5Pane.tsx)
+   cross-faded in place, with a pointer driving it and a camera over the top.
+
+   Both states are stacked in the same slots rather than swapped, because the
+   whole point of the figure is that the form and the diagram are the same fact
+   twice — you only read that if the two halves sit in one frame and change
+   together.
+
+   Nothing here happens on its own. Every change is caused by the pointer: the
+   name is typed, the dropdowns are clicked, and the rail step is clicked. A
+   walkthrough where fields fill themselves reads as a screensaver; the whole
+   claim of the figure is that a person is doing this.
+
+   Every track shares one clock and bakes its moment into its own keyframes. A
+   positive animation-delay shifts the RESET by the same amount, so an element
+   told to "arrive at 50%" with a delay spends most of the loop already
+   arrived — delay cannot schedule anything on a loop, only percentages can.
+
+   THE CANVAS RE-FIT
+   When the leg lands, the graph outgrows the canvas and the app auto-zooms to
+   refit it. That is reproduced rather than invented: solving two measured
+   points (the leg node and the Add Leg ghost, live at 1470 against the same
+   nodes in the capture) gives scale 0.8411 with a translate of (-34.07, 41.76),
+   and that transform then predicts the strategy card's title to within 0.03px.
+   It also predicts the zoom readout: 103 x 0.8411 = 86.6, and the live app
+   shows 87%. So the readout changes with it.
+   ========================================================================== */
+
+.zx {
+  --zx-dur: 18s;
+}
+
+.zx__lens,
+.zx-pane,
+.zx-eyebrow,
+.zx-railitem,
+.zx-railitem--boff,
+.zx-railbar,
+.zx-row,
+.zx-spine,
+.zx-junction,
+.zx-leg,
+.zx-ghost,
+.zx-graph,
+.zx-zoom,
+.zx-type,
+.zx-cursor,
+.zx-click {
+  animation-duration: var(--zx-dur);
+  animation-iteration-count: infinite;
+  animation-fill-mode: both;
+  animation-timing-function: ease-in-out;
+  /* Held until the figure arrives, the same gate the other case figures use,
+     so the loop starts at the top instead of halfway through a pane swap. */
+  animation-play-state: paused;
+}
+
+.case-figure.is-grown .zx__lens,
+.case-figure.is-grown .zx-pane,
+.case-figure.is-grown .zx-eyebrow,
+.case-figure.is-grown .zx-railitem,
+.case-figure.is-grown .zx-railitem--boff,
+.case-figure.is-grown .zx-railbar,
+.case-figure.is-grown .zx-row,
+.case-figure.is-grown .zx-spine,
+.case-figure.is-grown .zx-junction,
+.case-figure.is-grown .zx-leg,
+.case-figure.is-grown .zx-ghost,
+.case-figure.is-grown .zx-graph,
+.case-figure.is-grown .zx-zoom,
+.case-figure.is-grown .zx-type,
+.case-figure.is-grown .zx-cursor,
+.case-figure.is-grown .zx-click {
+  animation-play-state: running;
+}
+
+/* ---- camera --------------------------------------------------------------
+   For a target centred at (cx, cy) at scale s the transform is
+   translate((0.5 − cx)·s·100%, (0.5 − cy)·s·100%) scale(s), with the centre
+   clamped to [0.5/s, 1 − 0.5/s] or the window runs off the board and paints
+   bare stage. At s = 1.28 that clamp is [0.391, 0.609].
+
+   The first stop is deliberately NOT centred on the form pane. The pointer has
+   to click the rail at x=116 and the form at x=405, so the window has to hold
+   both; riding the clamp at 0.391 spans 0-1148 and covers the pair. Framing
+   the pane alone would have the rail click happen off-camera.                */
+.zx__lens {
+  animation-name: zx-camera;
+  animation-timing-function: cubic-bezier(0.83, 0, 0.17, 1);
+  will-change: transform;
+}
+
+@keyframes zx-camera {
+  0%, 2% { transform: translate(0, 0) scale(1); }
+  9%, 47% { transform: translate(14%, -1.68%) scale(1.28); }
+  57%, 80% { transform: translate(-14%, -1.68%) scale(1.28); }
+  88%, 100% { transform: translate(0, 0) scale(1); }
+}
+
+/* ---- the pointer ---------------------------------------------------------
+   Board coordinates, so the targets are the same numbers the layout uses:
+   the name field at (405,214), Exchange at (405,303), Symbol at (405,391) and
+   the Strategy Legs rail row at (116,447). It rides inside the camera, so it
+   scales on the push the way a cursor does in a zoomed screen recording.     */
+.zx-cursor {
+  animation-name: zx-cursor;
+  will-change: transform;
+  filter: drop-shadow(0 1px 2px rgba(20, 20, 25, 0.3));
+}
+
+@keyframes zx-cursor {
+  0%, 3% { transform: translate(520px, 300px); opacity: 0; }
+  4% { transform: translate(516px, 292px); opacity: 1; }
+  9%, 19% { transform: translate(445px, 236px); opacity: 1; }
+  23% { transform: translate(470px, 325px); opacity: 1; }
+  31% { transform: translate(470px, 413px); opacity: 1; }
+  40%, 44% { transform: translate(185px, 466px); opacity: 1; }
+  58%, 80% { transform: translate(1150px, 470px); opacity: 1; }
+  88%, 100% { transform: translate(1150px, 470px); opacity: 0; }
+}
+
+/* One ring, pulsed four times — once per click. Written as four bursts in a
+   single track rather than four elements, so the clicks cannot drift apart. */
+.zx-click {
+  animation-name: zx-click;
+  animation-timing-function: ease-out;
+}
+
+@keyframes zx-click {
+  0%, 8.4% { opacity: 0; transform: scale(0.35); }
+  9% { opacity: 0.5; transform: scale(0.45); }
+  11.5% { opacity: 0; transform: scale(1.5); }
+  22.4% { opacity: 0; transform: scale(0.35); }
+  23% { opacity: 0.5; transform: scale(0.45); }
+  25.5% { opacity: 0; transform: scale(1.5); }
+  30.4% { opacity: 0; transform: scale(0.35); }
+  31% { opacity: 0.5; transform: scale(0.45); }
+  33.5% { opacity: 0; transform: scale(1.5); }
+  39.4% { opacity: 0; transform: scale(0.35); }
+  40% { opacity: 0.5; transform: scale(0.45); }
+  42.5%, 100% { opacity: 0; transform: scale(1.5); }
+}
+
+/* ---- typing --------------------------------------------------------------
+   The field is clipped to a growing width in eleven steps, one per character
+   of "My_Strategy". The right border doubles as the caret: because it sits on
+   the clipping edge it travels with the text for free, and it costs nothing to
+   put out afterwards.                                                        */
+.zx-type {
+  overflow: hidden;
+  border-right: 1.4px solid transparent;
+  animation-name: zx-type;
+  animation-timing-function: steps(11, end);
+}
+
+/* Every <p> in the board is one line of a positioned-text export. Figma sizes
+   each box to the exact width it measured the string at — often via left+right
+   insets with nothing to spare — so a hair's difference in metrics tips the
+   string onto a second line and the label breaks mid-word ("LOT / S"). Genuine
+   multi-line copy is already split by the exporter into one <p> per line, so
+   forbidding wrapping outright is what the export actually means. */
+.zx p {
+  white-space: nowrap;
+}
+
+/* The one exception. At 1470 the canvas strip is 475 wide, giving 461 for the
+   caption, and by Figma's own measurement the step-5 string needs 482.6 — it
+   cannot sit on one line in the real app either. The strip is 31.5 tall, which
+   holds two 13px lines, so it wraps rather than losing a word to the clip. */
+.zx-caption--wrap p {
+  white-space: normal;
+}
+
+@keyframes zx-type {
+  0%, 10% { width: 0; border-right-color: #1b1a17; }
+  19% { width: 79.142px; border-right-color: #1b1a17; }
+  20%, 88% { width: 79.142px; border-right-color: transparent; }
+  89%, 100% { width: 0; border-right-color: transparent; }
+}
+
+/* ---- the step swap ------------------------------------------------------ */
+.zx-pane--a { animation-name: zx-fade-out; }
+.zx-pane--b { animation-name: zx-fade-in; }
+.zx-eyebrow--a { animation-name: zx-fade-out; }
+.zx-eyebrow--b { animation-name: zx-fade-in; }
+.zx-railitem--a { animation-name: zx-fade-out; }
+.zx-railitem--b { animation-name: zx-fade-in; }
+/* The two rows that trade places under the active decoration. They live at the
+   rail's resting opacity, not at 1. */
+.zx-railitem--aoff { animation-name: zx-fade-in-35; }
+.zx-railitem--boff { animation-name: zx-fade-out-35; }
+
+@keyframes zx-fade-out {
+  0%, 40% { opacity: 1; }
+  45%, 90% { opacity: 0; }
+  95%, 100% { opacity: 1; }
+}
+@keyframes zx-fade-in {
+  0%, 40% { opacity: 0; }
+  45%, 90% { opacity: 1; }
+  95%, 100% { opacity: 0; }
+}
+@keyframes zx-fade-out-35 {
+  0%, 40% { opacity: 0.35; }
+  45%, 90% { opacity: 0; }
+  95%, 100% { opacity: 0.35; }
+}
+@keyframes zx-fade-in-35 {
+  0%, 40% { opacity: 0; }
+  45%, 90% { opacity: 0.35; }
+  95%, 100% { opacity: 0; }
+}
+
+/* The indicator slides between slot centres: slot 1 centres at 147.0 and the
+   step-5 slot at 402.0, so a 34-tall bar sitting at top 130 travels 255. */
+.zx-railbar {
+  animation-name: zx-railbar;
+  animation-timing-function: cubic-bezier(0.83, 0, 0.17, 1);
+}
+@keyframes zx-railbar {
+  0%, 40% { transform: translateY(0); }
+  47%, 90% { transform: translateY(255px); }
+  97%, 100% { transform: translateY(0); }
+}
+
+/* ---- the canvas answering the form --------------------------------------
+   Each row lands just after the click that sets it. Addressed by node id
+   because the six are interleaved with the card's other children, so
+   nth-child would be counting the wrong things.                             */
+[data-node-id="684:2348"],
+[data-node-id="684:2349"] { animation-name: zx-row-a; }
+[data-node-id="684:2350"],
+[data-node-id="684:2351"] { animation-name: zx-row-b; }
+[data-node-id="684:2352"],
+[data-node-id="684:2353"] { animation-name: zx-row-c; }
+
+@keyframes zx-row-a {
+  0%, 23% { opacity: 0; transform: translateY(4px); }
+  28%, 92% { opacity: 1; transform: translateY(0); }
+  97%, 100% { opacity: 0; transform: translateY(4px); }
+}
+@keyframes zx-row-b {
+  0%, 26% { opacity: 0; transform: translateY(4px); }
+  31%, 92% { opacity: 1; transform: translateY(0); }
+  97%, 100% { opacity: 0; transform: translateY(4px); }
+}
+@keyframes zx-row-c {
+  0%, 31% { opacity: 0; transform: translateY(4px); }
+  36%, 92% { opacity: 1; transform: translateY(0); }
+  97%, 100% { opacity: 0; transform: translateY(4px); }
+}
+
+/* ---- the graph assembling, then the canvas refitting around it ---------- */
+.zx-graph {
+  animation-name: zx-graph;
+  animation-timing-function: cubic-bezier(0.83, 0, 0.17, 1);
+}
+@keyframes zx-graph {
+  0%, 45% { transform: translate(0, 0) scale(1); }
+  56%, 92% { transform: translate(-34.07px, 41.76px) scale(0.8411); }
+  97%, 100% { transform: translate(0, 0) scale(1); }
+}
+
+.zx-zoom--a { animation-name: zx-zoom-a; }
+.zx-zoom--b { animation-name: zx-zoom-b; }
+@keyframes zx-zoom-a {
+  0%, 47% { opacity: 1; }
+  53%, 92% { opacity: 0; }
+  97%, 100% { opacity: 1; }
+}
+@keyframes zx-zoom-b {
+  0%, 47% { opacity: 0; }
+  53%, 92% { opacity: 1; }
+  97%, 100% { opacity: 0; }
+}
+
+/* Structure before the thing it holds: spine, then junction, then the node. */
+.zx-spine { animation-name: zx-spine; }
+.zx-junction { animation-name: zx-junction; }
+.zx-leg { animation-name: zx-leg; }
+.zx-ghost { animation-name: zx-ghost; }
+
+@keyframes zx-spine {
+  0%, 46% { opacity: 0; }
+  54%, 92% { opacity: 1; }
+  97%, 100% { opacity: 0; }
+}
+@keyframes zx-junction {
+  0%, 51% { opacity: 0; }
+  57%, 92% { opacity: 1; }
+  97%, 100% { opacity: 0; }
+}
+/* Do NOT re-state the centring translate here. Tailwind v4 compiles
+   -translate-x-1/2 to the standalone `translate` property, not into
+   `transform` — the two are separate and both apply, so a keyframe that also
+   says translate(-50%, -50%) centres the node twice and drops it half its own
+   size up and left. `translate` does the centring; `transform` only carries
+   the entrance offset and scale.
+
+   It arrives selected, because it is the block the form on the left is
+   editing: the app rings it in #ec5e1a over a #fbeed8 halo. */
+@keyframes zx-leg {
+  0%, 52% {
+    opacity: 0;
+    transform: translateY(8px) scale(0.97);
+    border-color: #deddd8;
+    box-shadow: 0 1px 2px 0 rgba(20, 20, 25, 0.06);
+  }
+  62%, 92% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    border-color: #ec5e1a;
+    box-shadow: 0 0 0 2px #fbeed8, 0 9px 24px -12px rgba(20, 20, 25, 0.32);
+  }
+  97%, 100% {
+    opacity: 0;
+    transform: translateY(8px) scale(0.97);
+    border-color: #deddd8;
+    box-shadow: 0 1px 2px 0 rgba(20, 20, 25, 0.06);
+  }
+}
+@keyframes zx-ghost {
+  0%, 55% { opacity: 0; }
+  64%, 92% { opacity: 1; }
+  97%, 100% { opacity: 0; }
+}
+
+/* Reduced motion gets a real frame of the product rather than a frozen
+   transition: step 1, the card fully mirrored, the leg on the board, and no
+   pointer — there is no one driving it if nothing is moving. */
+@media (prefers-reduced-motion: reduce) {
+  .zx__lens,
+  .zx-pane,
+  .zx-eyebrow,
+  .zx-railitem,
+  .zx-railitem--boff,
+  .zx-railbar,
+  .zx-row,
+  .zx-spine,
+  .zx-junction,
+  .zx-leg,
+  .zx-ghost,
+  .zx-graph,
+  .zx-zoom,
+  .zx-type,
+  .zx-cursor,
+  .zx-click,
+  .case-figure.is-grown .zx__lens,
+  .case-figure.is-grown .zx-pane,
+  .case-figure.is-grown .zx-eyebrow,
+  .case-figure.is-grown .zx-railitem,
+  .case-figure.is-grown .zx-railitem--boff,
+  .case-figure.is-grown .zx-railbar,
+  .case-figure.is-grown .zx-row,
+  .case-figure.is-grown .zx-spine,
+  .case-figure.is-grown .zx-junction,
+  .case-figure.is-grown .zx-leg,
+  .case-figure.is-grown .zx-ghost,
+  .case-figure.is-grown .zx-graph,
+  .case-figure.is-grown .zx-zoom,
+  .case-figure.is-grown .zx-type,
+  .case-figure.is-grown .zx-cursor,
+  .case-figure.is-grown .zx-click {
+    animation: none;
+  }
+  .zx__lens,
+  .zx-graph { transform: none; }
+  .zx-pane--a,
+  .zx-eyebrow--a,
+  .zx-railitem--a,
+  .zx-zoom--a,
+  .zx-row,
+  .zx-spine,
+  .zx-junction { opacity: 1; }
+  .zx-pane--b,
+  .zx-eyebrow--b,
+  .zx-railitem--b,
+  .zx-railitem--aoff,
+  .zx-zoom--b,
+  .zx-ghost,
+  .zx-cursor,
+  .zx-click { opacity: 0; }
+  .zx-leg { opacity: 1; transform: none; }
+  .zx-railbar { transform: none; }
+  .zx-type { width: 79.142px; border-right-color: transparent; }
+}
+
+/* ==========================================================================
+   CASE FIGURE · ZENXO LEG SLOT
+   One click fills a leg's exit slot; the leg beside it keeps its empty one.
+   Geometry and rationale in ZenxoLegSlot.tsx.
+
+   The figure has one job, so the motion has one beat: a click on Leg 2's
+   + Exit, the branch drawing down, the Stop loss card landing. Nothing else
+   moves. Leg 1's slot deliberately stays exactly as it started — the contrast
+   between the two legs at rest is the argument, and animating Leg 1 would
+   dilute it.
+
+   Same rule as the walkthrough: the moment lives in each keyframe block, not
+   in an animation-delay, because a delay shifts the reset by the same amount
+   and cannot express "arrive at 40% of every loop".
+   ========================================================================== */
+
+.zl-wire,
+.zl-dot,
+.zl-card,
+.zl-cursor,
+.zl-click {
+  animation-duration: var(--zl-dur, 12s);
+  animation-iteration-count: infinite;
+  animation-fill-mode: both;
+  animation-timing-function: ease-in-out;
+  animation-play-state: paused;
+}
+
+.case-figure.is-grown .zl-wire,
+.case-figure.is-grown .zl-dot,
+.case-figure.is-grown .zl-card,
+.case-figure.is-grown .zl-cursor,
+.case-figure.is-grown .zl-click {
+  animation-play-state: running;
+}
+
+/* Every <p> here is one line of a positioned-text export, same as the
+   walkthrough — the boxes are sized to the exact measured string. */
+.zl p {
+  white-space: nowrap;
+}
+
+/* The pointer works in artboard coordinates, so the target is the same number
+   the layout uses: Leg 2's + Exit button centres at (629.86, 231.7). */
+.zl-cursor {
+  animation-name: zl-cursor;
+  filter: drop-shadow(0 1px 2px rgba(20, 20, 25, 0.3));
+}
+
+@keyframes zl-cursor {
+  0%, 6% { transform: translate(700px, 330px); opacity: 0; }
+  10% { transform: translate(688px, 312px); opacity: 1; }
+  22%, 34% { transform: translate(630px, 232px); opacity: 1; }
+  58%, 88% { transform: translate(700px, 330px); opacity: 1; }
+  94%, 100% { transform: translate(700px, 330px); opacity: 0; }
+}
+
+.zl-click {
+  animation-name: zl-click;
+  animation-timing-function: ease-out;
+}
+
+@keyframes zl-click {
+  0%, 21.4% { opacity: 0; transform: scale(0.35); }
+  22% { opacity: 0.5; transform: scale(0.45); }
+  25%, 100% { opacity: 0; transform: scale(1.5); }
+}
+
+/* pathLength="1" normalises the branch, so the dash pair is just 1 and the
+   offset runs 1 -> 0 whatever the real length is. */
+.zl-wire {
+  animation-name: zl-wire;
+  stroke-dasharray: 1;
+}
+
+@keyframes zl-wire {
+  0%, 24% { stroke-dashoffset: 1; }
+  33%, 90% { stroke-dashoffset: 0; }
+  96%, 100% { stroke-dashoffset: 1; }
+}
+
+/* The dots cap each end of the branch, so they arrive with the end they sit on:
+   the top one as it leaves the leg, the bottom one as it reaches the card. */
+.zl-dot--a { animation-name: zl-dot-a; }
+.zl-dot--b { animation-name: zl-dot-b; }
+
+@keyframes zl-dot-a {
+  0%, 24% { opacity: 0; }
+  29%, 90% { opacity: 1; }
+  96%, 100% { opacity: 0; }
+}
+@keyframes zl-dot-b {
+  0%, 33% { opacity: 0; }
+  38%, 90% { opacity: 1; }
+  96%, 100% { opacity: 0; }
+}
+
+/* The card lands under the branch it just grew from, so it rises the last few
+   pixels rather than fading in place. */
+.zl-card {
+  animation-name: zl-card;
+  transform-origin: 50% 0;
+}
+
+@keyframes zl-card {
+  0%, 34% { opacity: 0; transform: translateY(10px) scale(0.98); }
+  44%, 90% { opacity: 1; transform: translateY(0) scale(1); }
+  96%, 100% { opacity: 0; transform: translateY(10px) scale(0.98); }
+}
+
+/* Reduced motion keeps the finished state: both legs visible, one filled and
+   one not, which is the comparison the caption asks the reader to make. */
+@media (prefers-reduced-motion: reduce) {
+  .zl-wire,
+  .zl-dot,
+  .zl-card,
+  .zl-cursor,
+  .zl-click,
+  .case-figure.is-grown .zl-wire,
+  .case-figure.is-grown .zl-dot,
+  .case-figure.is-grown .zl-card,
+  .case-figure.is-grown .zl-cursor,
+  .case-figure.is-grown .zl-click {
+    animation: none;
+  }
+  .zl-wire { stroke-dashoffset: 0; }
+  .zl-dot,
+  .zl-card { opacity: 1; }
+  .zl-card { transform: none; }
+  .zl-cursor,
+  .zl-click { opacity: 0; }
+}
+
+/* ============================================================================
+   CASE FIGURE · ZENXO RESULTS PAN
+   A camera reading the old results page, one clause of the caption at a time:
+   the whole page, the win rate that leads it, the total net P&L small in the
+   corner, Sharpe sitting at max loss's size, then the curve below the fold.
+
+   Every stop is `translate(tx%, ty%) scale(k)` against `transform-origin: 0 0`
+   on an image sized to exactly fill its frame, so both percentages are in
+   frame units and a point at normalised (u, v) centres at
+   tx = 50 - 100k*u, ty = 50 - 100k*v. Any stop whose value falls outside
+   [-(100k - 100), 0] is clamped to that edge instead — see
+   ZenxoResultsPan.tsx.
+
+   The zoom levels are deliberately shallow, 1.5x to 2.1x. Pushed harder the
+   numbers are certainly legible, but a figure that fills with two tiles reads
+   as a crop of a screenshot rather than as a page being looked through; you
+   lose the thing the caption is arguing, which is that all of these sat at
+   one weight TOGETHER.
+
+   The holds are as long as the moves. A camera that never rests reads as a
+   screensaver; one that arrives, settles, and lets you actually look is the
+   difference between motion and being shown something.
+   ========================================================================== */
+.zr-shot {
+  transform-origin: 0 0;
+  will-change: transform;
+  animation: zr-pan var(--zr-dur, 24s) cubic-bezier(0.65, 0, 0.35, 1) infinite;
+}
+
+@keyframes zr-pan {
+  /* the whole page */
+  0%,
+  7% {
+    transform: translate(0%, 0%) scale(1);
+  }
+  /* win rate — the panel that leads, at 1.55x */
+  15%,
+  26% {
+    transform: translate(-1.02%, -5.82%) scale(1.55);
+  }
+  /* total net P&L, small in the top-right corner, at 2.1x. Both axes clamp
+     here — the subject is in a corner, so the frame parks flush against the
+     image's own top and right edges rather than overshooting them. */
+  34%,
+  45% {
+    transform: translate(-110%, 0%) scale(2.1);
+  }
+  /* Sharpe and max loss, the same size as each other, at 1.8x */
+  53%,
+  64% {
+    transform: translate(-41.13%, -49.72%) scale(1.8);
+  }
+  /* the cumulative curve, below the fold, at 1.5x. ty clamped from -131.58 to
+     the image's bottom edge. */
+  72%,
+  86% {
+    transform: translate(-19.53%, -50%) scale(1.5);
+  }
+  96%,
+  100% {
+    transform: translate(0%, 0%) scale(1);
+  }
+}
+
+/* The pan is the figure's entire content, so stopping it has to leave the
+   establishing shot rather than whatever frame it happened to be on. */
+@media (prefers-reduced-motion: reduce) {
+  .zr-shot {
+    animation: none;
+    transform: none;
+  }
+}
+
+/* ============================================================================
+   CASE FIGURE · ZENXO STRATEGY CARDS
+   The two dashboard cards, and the new one's curve arriving.
+
+   The shadow is CSS rather than baked into the exports because the two files
+   were cut with different amounts of room around them — 16px for the old
+   card, none for the new — so shipping their own shadows made one look matted
+   and the other flush.
+
+   It is cast by an empty box sitting behind each card rather than by a filter
+   on the card image. `drop-shadow` would follow the image's alpha, and that
+   alpha is the rasterised SVG at whatever size the figure lands at, so the
+   shadow inherits the raster's stepped edge and blurs it with a cheap
+   approximation — grit rather than light. A box whose corner radius is known
+   exactly gets an analytically drawn shadow instead.
+
+   Four layers, not two: contact, near, mid, wide. Each one's alpha is low and
+   they overlap, so the falloff is continuous. Two layers leave a visible
+   shoulder where the near one stops and the far one has not yet arrived,
+   which is what banding at this scale actually is.
+   ========================================================================== */
+.zc-shadow {
+  box-shadow:
+    0 1px 2px rgba(23, 23, 23, 0.05),
+    0 4px 10px rgba(23, 23, 23, 0.045),
+    0 12px 26px rgba(23, 23, 23, 0.05),
+    0 28px 56px rgba(23, 23, 23, 0.055);
+}
+
+/* The curve draws itself, holds long enough to be read as a shape, then fades
+   out so the reset is never seen. The reset itself is free: at dashoffset 1
+   the whole stroke sits in the gap, so the line is already invisible when the
+   opacity comes back up. */
+.zc-curve {
+  stroke-dasharray: 1;
+  animation:
+    zc-draw 10s cubic-bezier(0.4, 0, 0.2, 1) infinite,
+    zc-curve-fade 10s linear infinite;
+}
+
+@keyframes zc-draw {
+  0% {
+    stroke-dashoffset: 1;
+  }
+  26%,
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes zc-curve-fade {
+  0%,
+  88% {
+    opacity: 1;
+  }
+  97%,
+  100% {
+    opacity: 0;
+  }
+}
+
+/* A curve that never finishes arriving is worse than one that is simply
+   there, so reduced motion leaves it fully drawn. */
+@media (prefers-reduced-motion: reduce) {
+  .zc-curve {
+    animation: none;
+    stroke-dasharray: none;
+  }
+}
+
+/* ============================================================================
+   CASE FIGURE · ZENXO THEME DISSOLVE
+   The dark capture fades in over the light one and back out. Both are the
+   same screen at the same moment, so the layout underneath never moves and
+   the only thing that changes is the theme.
+
+   Only the top layer animates. Cross-fading BOTH would take them through a
+   window where each is half-opaque and the page shows through, which reads as
+   a flicker rather than as one thing becoming another.
+   ========================================================================== */
+.zt-dark {
+  opacity: 0;
+  animation: zt-swap 12s ease-in-out infinite;
+}
+
+@keyframes zt-swap {
+  0%,
+  40% {
+    opacity: 0;
+  }
+  50%,
+  90% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+/* Dark is the state the caption argues for, so that is the one left showing. */
+@media (prefers-reduced-motion: reduce) {
+  .zt-dark {
+    animation: none;
+    opacity: 1;
+  }
+}
+
+/* ============================================================================
+   CASE FIGURE · FRAME SHADOW
+   Every figure sits on the page's own white, so without a shadow its edge just
+   stops — the artwork reads as cut out rather than as resting on anything.
+
+   Four layers, the same ramp the strategy cards use: contact, near, mid, wide.
+   Each alpha is low and they overlap, so the falloff is continuous. Two layers
+   leave a visible shoulder where the near one ends and the far one has not
+   arrived, which is what looks like a hard edge at this size.
+
+   Weaker than the cards' own shadow on purpose. These are large surfaces —
+   up to 1100px across — and a shadow scaled for a 430px card reads as a lift
+   off the page rather than as a figure printed on it.
+   ========================================================================== */
+.case-frame {
+  box-shadow:
+    0 1px 2px rgba(23, 23, 23, 0.04),
+    0 3px 8px rgba(23, 23, 23, 0.035),
+    0 10px 22px rgba(23, 23, 23, 0.04),
+    0 24px 48px rgba(23, 23, 23, 0.045);
+}
+
+/* ============================================================
+   CASE FIGURE · ZENXO ORBIT
+   ------------------------------------------------------------
+   Three dots going round three rings — see <ZenxoOrbit>. Each dot is a <g>
+   turning about the rings' shared centre; `transform-box: view-box` is what
+   makes that centre resolve in viewBox units instead of against the dot's own
+   5px bounding box, which would spin it on the spot.
+
+   The duration is set per dot inline, because the three periods are the
+   point: one shared period reads as a single rigid wheel rather than as three
+   things happening at once.
+   ============================================================ */
+
+.zo-dot {
+  transform-box: view-box;
+  animation-name: zo-spin;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  will-change: transform;
+}
+
+/* The stall. Same lap, but it arrives in the first 62% and then holds dead
+   still for the rest — "if nothing is happening, nothing moves", which is
+   easier to believe from a graphic that stops than from a caption that says
+   so. The ease-out into the hold is deliberate: a run that is winding down
+   and a run that has been cut look different, and this is the first. */
+.zo-dot--stall {
+  animation-name: zo-spin-stall;
+  animation-timing-function: cubic-bezier(0.33, 0, 0.15, 1);
+}
+
+@keyframes zo-spin {
+  to {
+    rotate: 360deg;
+  }
+}
+
+@keyframes zo-spin-stall {
+  0% {
+    rotate: 0deg;
+  }
+  62%,
+  100% {
+    rotate: 300deg;
+  }
+}
+
+/* ============================================================
+   CASE FIGURE · ZENXO RUNNING CARD
+   ------------------------------------------------------------
+   Six stages reporting in order — see <ZenxoRunningCard>. Every rule here is
+   one keyframe set offset by the row's own `--i`, so adding or removing a
+   stage is a change in the component and not in this file.
+
+   `--zx-dur` is the whole loop and `--zx-step` one stage's share of it. The
+   percentages below are therefore fractions of six stages plus the hold, not
+   round numbers: 6 x 2s of work and 2s of finished card is 14s, so one stage
+   is 100/7 % of the loop.
+   ============================================================ */
+
+.zx-run {
+  --zx-step: calc(var(--zx-dur) / 7);
+}
+
+/* The bar and the number share one clock and both glide, while the stage list
+   below steps. That split is the honest one: a stage is discrete — it is done
+   or it is not — but progress within a stage is real and continuous, and a bar
+   that jumped in sixths read as broken rather than as precise. The keyframes
+   are the same six values either way; only the interpolation differs, so the
+   bar still passes each sixth at the exact instant its marker lands. */
+.zx-bar {
+  transform-origin: 0 50%;
+  animation: zx-fill var(--zx-dur) linear infinite;
+  will-change: transform;
+}
+
+@keyframes zx-fill {
+  0% {
+    transform: scaleX(0.0001);
+  }
+  14.286% {
+    transform: scaleX(0.1667);
+  }
+  28.571% {
+    transform: scaleX(0.3333);
+  }
+  42.857% {
+    transform: scaleX(0.5);
+  }
+  57.143% {
+    transform: scaleX(0.6667);
+  }
+  71.429% {
+    transform: scaleX(0.8333);
+  }
+  85.714%,
+  100% {
+    transform: scaleX(1);
+  }
+}
+
+/* The digits. `--zx-pct` is registered so it can interpolate at all — an
+   unregistered custom property animates as a discrete swap between strings.
+   The counter reads whatever it holds, which is why an engine without
+   @property still renders the design's own 67% instead of nothing. */
+@property --zx-pct {
+  syntax: "<integer>";
+  initial-value: 67;
+  inherits: false;
+}
+
+.zx-pct {
+  counter-reset: zxpct var(--zx-pct);
+  animation: zx-count var(--zx-dur) linear infinite;
+}
+
+.zx-pct::after {
+  content: counter(zxpct) "%";
+}
+
+@keyframes zx-count {
+  0% {
+    --zx-pct: 0;
+  }
+  14.286% {
+    --zx-pct: 17;
+  }
+  28.571% {
+    --zx-pct: 33;
+  }
+  42.857% {
+    --zx-pct: 50;
+  }
+  57.143% {
+    --zx-pct: 67;
+  }
+  71.429% {
+    --zx-pct: 83;
+  }
+  85.714%,
+  100% {
+    --zx-pct: 100;
+  }
+}
+
+/* THE STAGE LIST · two clips, six rows.
+   
+   Row boundaries are the card's own: each row occupies its marker's 38px slot
+   (top - 4 to top + 34) on an 867-tall card, so the wipe boundary after row i
+   is the bottom of band i expressed as a percentage from the card's foot.
+   
+     row   band (px)     wipe stops at
+      0     396-434         49.942%
+      1     451-489         43.599%
+      2     506-544         37.255%
+      3     561-599         30.912%
+      4     611-649         25.144%
+      5     661-699         19.377%
+   
+   steps(1, end) rather than a glide: a stage is done or it is not, and a
+   marker easing itself into existence would be the reassuring animation this
+   card was built to avoid. */
+
+.zx-done,
+.zx-latest {
+  animation-duration: var(--zx-dur);
+  animation-timing-function: steps(1, end);
+  animation-iteration-count: infinite;
+  will-change: clip-path;
+}
+
+.zx-done {
+  animation-name: zx-wipe;
+  clip-path: inset(0 0 100% 0);
+}
+
+.zx-latest {
+  animation-name: zx-window;
+  clip-path: inset(100% 0 0 0);
+}
+
+@keyframes zx-wipe {
+  0% {
+    clip-path: inset(0 0 100% 0);
+  }
+  14.286% {
+    clip-path: inset(0 0 49.942% 0);
+  }
+  28.571% {
+    clip-path: inset(0 0 43.599% 0);
+  }
+  42.857% {
+    clip-path: inset(0 0 37.255% 0);
+  }
+  57.143% {
+    clip-path: inset(0 0 30.912% 0);
+  }
+  71.429% {
+    clip-path: inset(0 0 25.144% 0);
+  }
+  85.714%,
+  100% {
+    clip-path: inset(0 0 19.377% 0);
+  }
+}
+
+/* The same boundaries, one row wide — the emphasis marks the most recent
+   completion rather than a separate "current" state, which is what the
+   captured frame shows: four rows struck through and the fourth still dark. */
+@keyframes zx-window {
+  0% {
+    clip-path: inset(100% 0 0 0);
+  }
+  14.286% {
+    clip-path: inset(45.675% 0 49.942% 0);
+  }
+  28.571% {
+    clip-path: inset(52.019% 0 43.599% 0);
+  }
+  42.857% {
+    clip-path: inset(58.362% 0 37.255% 0);
+  }
+  57.143% {
+    clip-path: inset(64.706% 0 30.912% 0);
+  }
+  71.429% {
+    clip-path: inset(70.473% 0 25.144% 0);
+  }
+  85.714%,
+  100% {
+    clip-path: inset(76.24% 0 19.377% 0);
+  }
+}
+
+/* The heading that names the current stage: six labels in one place, each up
+   for its own beat only. */
+.zx-now {
+  opacity: 0;
+  animation: zx-now var(--zx-dur) steps(1, end) infinite;
+  animation-delay: calc(var(--i) * var(--zx-step));
+}
+
+@keyframes zx-now {
+  0%,
+  14.285% {
+    opacity: 1;
+  }
+  14.286%,
+  100% {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* Everything holds at the design's own frame — four stages struck through,
+     the fifth running, the bar and the number at 67 — rather than at a blank
+     one. That is done by pausing each animation at a negative delay instead of
+     by restating six states as static rules: local time 4.001 steps in is the
+     moment the Figma frame captures — four stages struck through, the bar and
+     the count at exactly two thirds — so `-4.001 * step` on the shared clock
+     and `(i - 4.001) * step` on the per-row ones lands every element there at
+     once, and it stays correct if the stage list changes length.
+
+     The thousandth is not a fudge: the wipe steps ON the four-stage boundary,
+     so freezing exactly there is a coin toss between two keyframes. A hair
+     past it is unambiguous, and the gliding bar has moved 0.02% by then.
+
+     The dots simply pause at zero, which is the position the export drew them
+     in, so the orbit reduces to exactly the artwork it came from. */
+  .zo-dot {
+    animation-play-state: paused;
+  }
+
+  .zx-bar,
+  .zx-pct,
+  .zx-done,
+  .zx-latest,
+  .zx-now {
+    animation-play-state: paused;
+    animation-delay: calc((var(--i, 0) - 4.001) * var(--zx-step));
   }
 }

@@ -48,7 +48,7 @@ export default function TitanCaseStudy() {
         dek="Rebuilding a legacy name as performance eyewear."
         frameLabel="Goggles catching the ember"
         image={{ src: "/case/titan/hero-bg.webp" }}
-        lockup={{ src: "/case/titan/hero-lockup.png", width: 684, height: 280 }}
+        lockup={{ src: "/case/titan/hero-lockup.png", width: 684, height: 280, artboard: 1686 }}
       />
 
       <div className="page-container flex flex-col gap-24 pt-24 sm:gap-32 sm:pt-32">

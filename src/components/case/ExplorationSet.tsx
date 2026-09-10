@@ -10,17 +10,22 @@ export type Exploration = {
   label: string;
   /** What the option was. Omit when there is nothing honest to say yet. */
   body?: ReactNode;
-  /** Why it won or lost. Rendered after a bold "Verdict." lead-in. */
+  /** Why it won or lost. Runs on from `body` as part of the same caption. */
   verdict?: ReactNode;
-  /** The direction that shipped. Exactly one per set. */
-  chosen?: boolean;
   /** Real artwork. Omit and the option keeps its Placeholder. */
   visual?: ReactNode;
+  /** Give this option the full width of the set instead of one column. */
+  wide?: boolean;
+  /** This option's own frame ratio, when the set's shared one would crop or
+   *  letterbox it. Two artefacts of genuinely different proportions are
+   *  comparable at a shared WIDTH, not a shared box. */
+  ratio?: number;
+  /** Drop the frame's shadow — for artwork that casts its own. */
+  flat?: boolean;
 };
 
 /**
- * The options behind one decision, laid out side by side with the chosen one
- * marked.
+ * The options behind one decision, laid out side by side.
  *
  * A rejected direction is only evidence if the reader can see what was
  * rejected AND why, so `verdict` is a first-class field rather than something
@@ -28,9 +33,15 @@ export type Exploration = {
  * question, and it makes a set with no verdict obviously incomplete instead of
  * quietly vague.
  *
- * The chosen option carries a chip and a solid border; the others stay on the
- * page at equal size. Shrinking the rejects would make the comparison
- * decorative, which is the opposite of the point.
+ * No option carries a win/lose badge of its own: the verdict copy already says
+ * which way each one went, and a chip was restating it in a louder voice.
+ *
+ * `wide` is the one exception, and it is a LAYOUT decision rather than a label.
+ * An option that spans the set reads as the conclusion the two above it lead
+ * to, and it earns the room honestly — the shipped direction is usually the
+ * one with the most going on in the frame, so the column that fits a rejected
+ * sketch starves it. Its caption is still held to one column's measure, so the
+ * figure grows and the reading line does not.
  */
 export default function ExplorationSet({
   kicker,
@@ -50,16 +61,16 @@ export default function ExplorationSet({
       ) : null}
 
       <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 sm:gap-10">
-        {options.map(({ label, body, verdict, chosen, visual }) => (
-          <div key={label} className="flex flex-col">
+        {options.map(({ label, body, verdict, visual, wide, ratio: own, flat }) => (
+          <div key={label} className={`flex flex-col${wide ? " sm:col-span-2" : ""}`}>
             <GrowOnView className="case-figure relative block">
-              <Framed>
+              <Framed shadow={!flat}>
                 {visual ? (
-                  <div style={{ aspectRatio: String(ratio) }} className="relative w-full">
+                  <div style={{ aspectRatio: String(own ?? ratio) }} className="relative w-full">
                     {visual}
                   </div>
                 ) : (
-                  <Placeholder label={label} ratio={ratio} className={R} />
+                  <Placeholder label={label} ratio={own ?? ratio} className={R} />
                 )}
               </Framed>
               <CropMarks />
@@ -71,37 +82,37 @@ export default function ExplorationSet({
                 so it takes the caption size and uppercase tracking <ComparePair>
                 already uses to label two compared things — a 21px heading here
                 competed with the page's real headings. */}
-            <div className="mt-5">
-              <div className="flex min-h-[26px] flex-wrap items-center gap-x-3 gap-y-2">
-                <h3
-                  className="type-caption uppercase tracking-[0.14em]"
-                  style={{ color: "var(--color-ink)" }}
-                >
-                  {label}
-                </h3>
-                {chosen ? (
-                  <span className="type-caption text-chip-text bg-tag/40 px-2 py-[3px] uppercase tracking-[0.14em]">
-                    Chosen
-                  </span>
-                ) : null}
-              </div>
+            <div className={`mt-5${wide ? " sm:max-w-[calc(50%-1.25rem)]" : ""}`}>
+              <h3
+                className="type-caption uppercase tracking-[0.14em]"
+                style={{ color: "var(--color-ink)" }}
+              >
+                {label}
+              </h3>
 
-              {body ? (
-                <p className="type-lead text-pretty mt-3" style={{ fontWeight: 300 }}>
-                  {body}
-                </p>
-              ) : null}
-
-              {/* "Verdict." carries weight and ink, not uppercase tracking. The
-                  whole paragraph is already ink against the muted body above
-                  it, so a tracked-caps lead-in was a third heading level
-                  fighting the label. */}
-              {verdict ? (
+              {/* One caption, not a caption and a ruling. The verdict used to
+                  be its own paragraph behind a bold "Verdict." lead-in, which
+                  made every option carry a little masthead of its own and set
+                  up a third heading level under the label. Run into the same
+                  sentence flow it just reads as the rest of the thought — and
+                  the copy already says which way each option went, so nothing
+                  is lost by not announcing it. */}
+              {body || verdict ? (
                 <p
-                  className="type-lead text-pretty mt-2"
-                  style={{ fontWeight: 300, color: "var(--color-ink)" }}
+                  className="type-lead text-pretty mt-3"
+                  /* fontSize inline, not a text-* class: .type-lead is declared
+                     after Tailwind's utilities in globals.css, so it wins the
+                     cascade at equal specificity and a class here would
+                     silently do nothing — the same trap the file records for
+                     its colour. 14px flat rather than the lead tier's 15-17px
+                     clamp: these are specimen captions under a figure, not
+                     running prose, and they should sit below the body copy
+                     they follow. */
+                  style={{ fontWeight: 300, fontSize: "0.875rem", lineHeight: 1.55 }}
                 >
-                  <span style={{ fontWeight: 500 }}>Verdict.</span> {verdict}
+                  {body}
+                  {body && verdict ? " " : null}
+                  {verdict}
                 </p>
               ) : null}
             </div>

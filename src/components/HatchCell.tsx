@@ -21,6 +21,11 @@ import type { CSSProperties } from "react";
  *
  * Layout is the caller's job: pass `className` (e.g. `absolute hidden lg:block`
  * or `relative h-[58px] w-[46px]`) and, when absolutely positioned, `style`.
+ * Whichever you choose, THE CLASS MUST POSITION THE CELL — `absolute` or
+ * `relative`, never static. The box, the hatch and the four dots below are all
+ * `absolute inset-0`, so a static cell hands them off to whatever positioned
+ * ancestor happens to be up the tree and they paint across that instead, at
+ * full size and over everything in between.
  */
 
 const HATCH = `repeating-linear-gradient(45deg, #a1a1a1 0, #a1a1a1 0.75px, transparent 0.75px, transparent 6px)`;

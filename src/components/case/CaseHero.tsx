@@ -2,23 +2,41 @@ import type { CSSProperties } from "react";
 import Image from "next/image";
 import GrowOnView from "../GrowOnView";
 import Placeholder from "../Placeholder";
-import { TiltCard } from "../ui/tilt-card";
+import { TiltCard, TiltParallax } from "../ui/tilt-card";
 import CropMarks from "./CropMarks";
 
 /** Depth of the lockup layer, in px, inside TiltCard's 1600px perspective.
  *  `translateZ` alone would also magnify the layer by P/(P−Z) — 3.9% here — so
  *  it's paired with the exact inverse scale (1 − Z/P). Net effect at rest:
  *  nothing moves. Under tilt: the lockup swings wider than the plate behind it,
- *  which is the whole point. */
+ *  which is the whole point.
+ *
+ *  This is the DEFAULT path and it is the good one: the layer is a real child
+ *  of the card's 3D context, so the compositor projects it as part of the
+ *  card's own transform. It cannot drift out of sync, because it is not a
+ *  second animation — it is the same one. Titan's wordmark uses it. */
 const LOCKUP_Z = 120;
 const LOCKUP_PERSPECTIVE = 1600;
 const LOCKUP_TRANSFORM = `translateZ(${LOCKUP_Z}px) scale(${1 - LOCKUP_Z / LOCKUP_PERSPECTIVE})`;
 
-/** The lockup was exported from the same artboard as the plate — 684px against
- *  1686px — so holding it at that fraction keeps the proportion the artwork was
- *  drawn at instead of a size picked by eye. The 16:9 crop is vertical only, so
- *  the width relationship survives it. */
-const LOCKUP_WIDTH = `${((684 / 1686) * 100).toFixed(2)}%`;
+/** The edge-to-edge path, and it exists under protest.
+ *
+ *  A layer that fills the frame has to be CLIPPED to it — its bleed would
+ *  otherwise hang off the card onto the page — and a clip is fatal to 3D:
+ *  `overflow`, `clip-path` and `mask-*` all force `transform-style: flat` on
+ *  the subtree they apply to, which would take the layer out of the card's
+ *  perspective and kill the parallax outright. So this layer stays flat and
+ *  slides by the distance a layer at LOCKUP_Z *would* slide, which is what
+ *  `TiltParallax` does — see the note there for why the offset is computed in
+ *  JS rather than left to the stylesheet. */
+const TILT_LIMIT_DEG = 4;
+
+/** A lockup is held at `width / artboard` of the plate, so it keeps the exact
+ *  proportion it was drawn at instead of a size picked by eye — Titan's is a
+ *  wordmark cut out of a larger artboard, 684 against 1686. Edge-to-edge
+ *  layers bypass this and simply take the full width. */
+const lockupWidth = (width: number, artboard: number) =>
+  `${((width / artboard) * 100).toFixed(2)}%`;
 
 const PURPLE = "#8581ff";
 
@@ -62,8 +80,27 @@ export default function CaseHero({
   image?: { src?: string; ratio?: number; objectPosition?: string };
   /** Optional second layer, floated toward the viewer so it swings wider than
    *  the plate under tilt. Omit on a hero whose plate already carries its own
-   *  lockup — a second one would just repeat the title. */
-  lockup?: { src: string; width: number; height: number };
+   *  lockup — a second one would just repeat the title.
+   *
+   *  `artboard` is the width of the canvas the layer was exported against; it
+   *  is what sizes the layer against the plate. A full-frame layer passes its
+   *  own width and lands at 100%.
+   *
+   *  `edgeToEdge` is for exactly that full-frame case, and it changes how the
+   *  layer registers: by WIDTH and TOP rather than by centring. Any height the
+   *  file carries beyond the plate's own ratio is therefore BLEED — hidden
+   *  below the frame at rest, slid into view as the parallax lifts the layer,
+   *  so a swing never opens a gap along the bottom edge. Zenxo's monitor
+   *  export carries 80px of it. Titan's lockup is a wordmark at 40% width with
+   *  three hundred pixels of margin on every side, so it neither needs this
+   *  nor wants it. */
+  lockup?: {
+    src: string;
+    width: number;
+    height: number;
+    artboard: number;
+    edgeToEdge?: boolean;
+  };
   /** The white bottom gradient. It dissolves a dark, full-bleed photograph
    *  into the page, which is what Titan's hero needs. Turn it OFF for flat
    *  artwork on a light ground: there is no edge to dissolve, and the ramp
@@ -108,8 +145,8 @@ export default function CaseHero({
           <GrowOnView className="case-figure relative mx-auto block w-full max-w-[1100px]">
             <TiltCard
               effect="evade"
-              tiltLimit={4}
               scale={1.01}
+              tiltLimit={TILT_LIMIT_DEG}
               perspective={LOCKUP_PERSPECTIVE}
               glare={0.06}
               className="overflow-visible"
@@ -142,23 +179,59 @@ export default function CaseHero({
                 />
               )}
 
-              {/* The lockup, floated toward the viewer. Centred on the plate,
-                  so it lands over the ember lens. */}
+              {/* Two different layers with two different problems.
+
+                  A wordmark is small, centred, and surrounded by its own
+                  transparent margin, so nothing has to hold it in: it floats
+                  in the card's 3D context and the compositor does the rest.
+
+                  A full-frame layer fills the plate, so a swing would drag its
+                  edge off the card and onto the page. It has to be clipped,
+                  and clipping is what rules 3D out for it — hence the flat
+                  slide. Wrapper clips, child moves: one element cannot do
+                  both, since the clip would flatten its own transform. */}
               {lockup ? (
-                <div
-                  aria-hidden
-                  className="pointer-events-none absolute inset-0 grid place-items-center"
-                  style={{ transform: LOCKUP_TRANSFORM }}
-                >
-                  <Image
-                    src={lockup.src}
-                    alt=""
-                    width={lockup.width}
-                    height={lockup.height}
-                    priority
-                    style={{ width: LOCKUP_WIDTH, height: "auto" }}
-                  />
-                </div>
+                lockup.edgeToEdge ? (
+                  <div
+                    aria-hidden
+                    className="pointer-events-none absolute inset-0 overflow-hidden rounded-[3px]"
+                  >
+                    <TiltParallax depth={LOCKUP_Z} className="absolute inset-0">
+                      <Image
+                        src={lockup.src}
+                        alt=""
+                        width={lockup.width}
+                        height={lockup.height}
+                        priority
+                        // Width only, so the layer keeps its own ratio and
+                        // never stretches; the bleed hangs past the bottom of
+                        // the clip.
+                        style={{ width: "100%", height: "auto" }}
+                      />
+                    </TiltParallax>
+                  </div>
+                ) : (
+                  <div
+                    aria-hidden
+                    className="pointer-events-none absolute inset-0 grid place-items-center"
+                    style={{ transform: LOCKUP_TRANSFORM }}
+                  >
+                    <Image
+                      src={lockup.src}
+                      alt=""
+                      width={lockup.width}
+                      height={lockup.height}
+                      priority
+                      // The fraction of its own artboard the layer was drawn
+                      // at, so it keeps that proportion rather than a size
+                      // picked by eye.
+                      style={{
+                        width: lockupWidth(lockup.width, lockup.artboard),
+                        height: "auto",
+                      }}
+                    />
+                  </div>
+                )
               ) : null}
               {/* Top two corners only when the fade is on — the lower pair
                   would sit inside it and only half-appear. Without the fade

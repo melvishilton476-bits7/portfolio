@@ -1,4 +1,5 @@
 import type { CSSProperties } from "react";
+import Image from "next/image";
 import Placeholder from "./Placeholder";
 import HatchCell from "./HatchCell";
 import DashRule from "./DashRule";
@@ -24,25 +25,76 @@ import RevealText from "./RevealText";
 
 const PURPLE = "#8581ff";
 
-const QUOTE =
-  "“A conceptual rebrand of Titan, India’s iconic eyewear brand, reimagined for the athletic market.”";
-
-const NAGARHOLE_QUOTE =
-  "“A concept wayfinding system for the Kabini range, where three sign families share one gold and nothing else.”";
-
-type SideProject = { title: string; quote: string; href: string };
+/**
+ * The archive proper — work that has no case study on this site.
+ *
+ * Deliberately disjoint from "Sights to See": that section carries the three
+ * projects with full write-ups here, and repeating them below turned the
+ * second showcase into a louder copy of the first rather than more work. So
+ * every card in this grid leaves the site, and "keep wandering" means what it
+ * says.
+ */
+type SideProject = {
+  title: string;
+  quote: string;
+  href: string;
+  /** Cover art. Without one the card keeps its Placeholder. */
+  thumb?: string;
+  thumbAlt?: string;
+  /** object-position for art whose subject is not in the middle. */
+  thumbPosition?: string;
+  /** Opens off-site, so the link needs a new tab and rel="noopener". */
+  external?: boolean;
+};
 
 const PROJECTS: SideProject[] = [
-  { title: "TITAN REBRAND", quote: QUOTE, href: "/work/titan-rebrand" },
-  { title: "ZENXO | UI & UX", quote: QUOTE, href: "#" },
-  { title: "NAGARHOLE | WAYFINDING", quote: NAGARHOLE_QUOTE, href: "/work/nagarhole-wayfinding" },
-  { title: "TITAN REBRAND", quote: QUOTE, href: "/work/titan-rebrand" },
+  {
+    // Covers come from each project's own Behance cover, re-cut at full
+    // resolution: the og:image tag serves 808px, but the cover URL encodes the
+    // crop it was made with (base64 "crop,W,H,x,y"), so the same region taken
+    // out of the original artboard is ~3x the detail at the same framing.
+    title: "MUMBAI EK | TRANSIT",
+    quote:
+      "“One app for every way Mumbai moves — train, metro, bus, taxi and rickshaw, against one map.”",
+    href: "https://www.behance.net/gallery/226991227/Mumbai-Ek-Mobile-App",
+    external: true,
+    thumb: "/work/mumbai-ek.webp",
+    thumbAlt:
+      "The Mumbai Ek app on a phone: a map with train, metro, bus, taxi and rickshaw filters and saved places beneath it, beside the app's orange arrow mark.",
+  },
+  {
+    // Quote is the zine's own cover line rather than anything written for this
+    // card — it is the work's argument in the work's words.
+    title: "WHERE IS GOD? | ZINE",
+    quote:
+      "“I sought God in the spectacle and tradition. Yet, the more I searched, the more elusive the divine became.”",
+    href: "https://www.behance.net/gallery/227052149/Where-is-god-Zine",
+    external: true,
+    thumb: "/work/where-is-god.webp",
+    thumbAlt:
+      "A shrink-wrapped zine on an orange ground, its cover a drawing of a tiered temple roof under the words WHERE IS GOD?, with the title set beneath it.",
+  },
+  {
+    title: "MIRZAM | PACKAGING",
+    quote:
+      "“Chocolate packaging as a vessel for storytelling — a box built like a Kashmiri houseboat, carrying the Spice Route to the lake.”",
+    href: "https://www.behance.net/gallery/247571517/Mirzam-Kashmiri-Houseboat-Chocolate-Packaging",
+    external: true,
+    thumb: "/work/mirzam.webp",
+    thumbAlt:
+      "Sage-green Mirzam chocolate bars, each carrying a stamp illustration of a houseboat on a Kashmiri lake, with a paisley-embossed bar and a tin beside them.",
+  },
 ];
 
-const ROWS: SideProject[][] = [
-  [PROJECTS[0], PROJECTS[1]],
-  [PROJECTS[2], PROJECTS[3]],
-];
+/** Two per row, derived rather than written out: the grid is a growing
+ *  archive, and a hand-listed pairing silently drops any project added past
+ *  the last line of it. An odd count leaves the final row half full, which the
+ *  Row renderer handles. */
+const ROWS: SideProject[][] = PROJECTS.reduce<SideProject[][]>((rows, p, i) => {
+  if (i % 2 === 0) rows.push([p]);
+  else rows[rows.length - 1].push(p);
+  return rows;
+}, []);
 
 /** Crop-mark + nested-dot corners at the four corners of a *card-width* title
  *  frame — the brackets sit on the project image's left/right edges (the frame
@@ -128,12 +180,28 @@ function CardHead({ p }: { p: SideProject }) {
           {p.title}
         </h3>
       </div>
-      <Placeholder
-        label={p.title}
-        ratio={388 / 216}
-        variant="dark"
-        className="border-solid border-black/15"
-      />
+      {p.thumb ? (
+        // Fixed 388:216 box with the art cropped to fill it, so all four read
+        // at one size whatever shape their source asset is — the same rule the
+        // featured card uses.
+        <div className="relative w-full overflow-hidden border border-solid border-ink" style={{ aspectRatio: "388 / 216" }}>
+          <Image
+            src={p.thumb}
+            alt={p.thumbAlt ?? p.title}
+            fill
+            sizes="(min-width: 1024px) 44vw, 92vw"
+            className="object-cover"
+            style={{ objectPosition: p.thumbPosition }}
+          />
+        </div>
+      ) : (
+        <Placeholder
+          label={p.title}
+          ratio={388 / 216}
+          variant="dark"
+          className="border-solid border-ink"
+        />
+      )}
     </div>
   );
 }
@@ -154,9 +222,12 @@ function CardFoot({ p }: { p: SideProject }) {
       </div>
       <a
         href={p.href}
+        {...(p.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
         className="relative mt-3 flex h-10 items-center justify-center bg-btn-dark text-white/90 transition-opacity hover:opacity-90"
       >
-        <span className="type-caption">View Project</span>
+        <span className="type-caption">
+          View Project{p.external ? <span className="sr-only"> (opens on Behance in a new tab)</span> : null}
+        </span>
       </a>
     </div>
   );
@@ -215,12 +286,18 @@ function Row({ pair }: { pair: SideProject[] }) {
       </article>
       {/* Gutter spacer — desktop only */}
       <div aria-hidden className="hidden lg:block" />
-      <article className="group relative z-10 flex flex-col">
-        <CardHead p={pair[1]} />
-        <div className="mt-auto pt-[clamp(28px,3vw,52px)]">
-          <CardFoot p={pair[1]} />
-        </div>
-      </article>
+      {pair[1] ? (
+        <article className="group relative z-10 flex flex-col">
+          <CardHead p={pair[1]} />
+          <div className="mt-auto pt-[clamp(28px,3vw,52px)]">
+            <CardFoot p={pair[1]} />
+          </div>
+        </article>
+      ) : (
+        // An odd project count: hold the column so the row's band decoration
+        // still spans the full grid rather than collapsing to one card's width.
+        <div aria-hidden />
+      )}
     </div>
   );
 }
