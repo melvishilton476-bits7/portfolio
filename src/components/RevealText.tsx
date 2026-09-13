@@ -34,11 +34,16 @@ export default function RevealText({
   className = "",
   baseDelay = 1200,
   step = 14,
+  threshold = 0.6,
+  rootMargin = "0px 0px -25% 0px",
 }: {
   text: string;
   className?: string;
   baseDelay?: number;
   step?: number;
+  /** IntersectionObserver trigger — see HatchCell. */
+  threshold?: number;
+  rootMargin?: string;
 }) {
   const ref = useRef<HTMLParagraphElement>(null);
   const [armed, setArmed] = useState(false);
@@ -63,14 +68,14 @@ export default function RevealText({
           baseDelay + letters * step + LETTER_MS,
         );
       },
-      { threshold: 0.6, rootMargin: "0px 0px -25% 0px" },
+      { threshold, rootMargin },
     );
     io.observe(el);
     return () => {
       io.disconnect();
       window.clearTimeout(retire);
     };
-  }, [text, baseDelay, step]);
+  }, [text, baseDelay, step, threshold, rootMargin]);
 
   const words = text.split(" ");
   let idx = 0;

@@ -22,8 +22,14 @@ const DASH_H = `repeating-linear-gradient(to right, rgba(23,23,23,0.16) 0px, rgb
 export default function DashRule({
   edge,
   style,
+  threshold = 0.35,
+  rootMargin = "0px 0px -18% 0px",
 }: {
   edge: "top" | "bottom";
+  /** IntersectionObserver trigger — see HatchCell. Pass the same values to a
+   *  band's rules and its cells so they still draw together. */
+  threshold?: number;
+  rootMargin?: string;
   /** Geometry override. The default runs the rule the full width of the
    *  viewport; a caller that has something sitting ON the rule's path (the
    *  About page's photo card) passes explicit left/right so the line stops at
@@ -42,11 +48,11 @@ export default function DashRule({
         setDrawn(true);
         io.disconnect();
       },
-      { threshold: 0.35, rootMargin: "0px 0px -18% 0px" },
+      { threshold, rootMargin },
     );
     io.observe(el);
     return () => io.disconnect();
-  }, [drawn]);
+  }, [drawn, threshold, rootMargin]);
 
   return (
     <span

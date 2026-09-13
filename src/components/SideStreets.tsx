@@ -221,6 +221,16 @@ function CardHead({ p }: { p: SideProject }) {
   );
 }
 
+/** Where the footer band starts drawing. The shared default (-18% / 35%)
+ *  suits a band that IS the thing on screen; this one sits at the foot of a
+ *  440px card row, so by the time it cleared that line the row had scrolled
+ *  most of the way up and the band drew late, high on the screen. Firing as
+ *  soon as a sliver is in view (6% up from the bottom edge) lets it finish
+ *  while the reader's eye is still arriving at it. The quote observes its own
+ *  paragraph inside the same band, so it takes the same line — otherwise its
+ *  stricter default would type it in even later than the rules around it. */
+const BAND_TRIGGER = { threshold: 0.1, rootMargin: "0px 0px -6% 0px" } as const;
+
 /** Card footer — the quote and the dark "View Project" bar with its dotted
  *  accent tab. Fixed height so the desktop band decoration lines up. */
 function CardFoot({ p }: { p: SideProject }) {
@@ -233,6 +243,7 @@ function CardFoot({ p }: { p: SideProject }) {
         <RevealText
           text={p.quote}
           className="type-caption text-center leading-snug text-ink-muted"
+          {...BAND_TRIGGER}
         />
       </div>
       <a
@@ -255,14 +266,15 @@ function CardFoot({ p }: { p: SideProject }) {
 function BandDecor() {
   return (
     <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 hidden h-[113px] lg:block">
-      <DashRule edge="top" />
-      <DashRule edge="bottom" />
+      <DashRule edge="top" {...BAND_TRIGGER} />
+      <DashRule edge="bottom" {...BAND_TRIGGER} />
       {/* Edge cells — each fills the whole outer margin, from the viewport edge
           right up to the card's outer edge (the decor box is the page-container,
           so its 0 / 100% sit on the outer card edges), putting corner dots on
           those edges. They bleed off-screen (clipped by the section). The three
           cells draw in with a small left-to-right stagger (delay). */}
       <HatchCell
+        {...BAND_TRIGGER}
         className="absolute hidden lg:block"
         delay={0}
         style={{ left: "calc(50% - 50vw)", width: "calc(50vw - 50%)", top: 0, height: 113 }}
@@ -270,11 +282,13 @@ function BandDecor() {
       {/* Centre-gutter cell — fills the gap between the two image columns, so
           its inner edges (and corner dots) land on the cards' inner edges. */}
       <HatchCell
+        {...BAND_TRIGGER}
         className="absolute hidden lg:block"
         delay={90}
         style={{ left: "50%", top: 0, height: 113, width: "var(--gut)", transform: "translateX(-50%)" }}
       />
       <HatchCell
+        {...BAND_TRIGGER}
         className="absolute hidden lg:block"
         delay={180}
         style={{ left: "100%", width: "calc(50vw - 50%)", top: 0, height: 113 }}

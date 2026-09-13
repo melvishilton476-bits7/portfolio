@@ -35,10 +35,18 @@ export default function HatchCell({
   className = "",
   style,
   delay = 0,
+  threshold = 0.35,
+  rootMargin = "0px 0px -18% 0px",
 }: {
   className?: string;
   style?: CSSProperties;
   delay?: number;
+  /** IntersectionObserver trigger. The default waits until the cell is well
+   *  inside the viewport; a band that sits at the foot of something tall
+   *  (Side Streets' card rows) passes an earlier line, or it only draws once
+   *  it has already scrolled most of the way up the screen. */
+  threshold?: number;
+  rootMargin?: string;
 }) {
   const ref = useRef<HTMLSpanElement>(null);
   const [drawn, setDrawn] = useState(false);
@@ -52,14 +60,14 @@ export default function HatchCell({
         setDrawn(true);
         io.disconnect();
       },
-      // Hold off until the cell is well inside the viewport, not just peeking
-      // over the bottom edge: a negative bottom margin pulls the trigger line
-      // up ~18% of the viewport height.
-      { threshold: 0.35, rootMargin: "0px 0px -18% 0px" },
+      // By default, hold off until the cell is well inside the viewport, not
+      // just peeking over the bottom edge: the negative bottom margin pulls the
+      // trigger line up ~18% of the viewport height.
+      { threshold, rootMargin },
     );
     io.observe(el);
     return () => io.disconnect();
-  }, [drawn]);
+  }, [drawn, threshold, rootMargin]);
 
   const dot = (variant: string, corner: string) => (
     <span
