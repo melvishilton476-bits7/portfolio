@@ -26,13 +26,14 @@ import RevealText from "./RevealText";
 const PURPLE = "#8581ff";
 
 /**
- * The archive proper — work that has no case study on this site.
+ * The archive proper — work that isn't one of the three flagship case studies
+ * pinned above in "Sights to See". Most of it leaves the site outright
+ * (Behance); ebb is the one exception, a spec piece with its own short page
+ * here rather than a full case study — "keep wandering" covers both kinds.
  *
- * Deliberately disjoint from "Sights to See": that section carries the three
- * projects with full write-ups here, and repeating them below turned the
- * second showcase into a louder copy of the first rather than more work. So
- * every card in this grid leaves the site, and "keep wandering" means what it
- * says.
+ * Deliberately disjoint from "Sights to See" itself, though: repeating those
+ * three below would have turned the second showcase into a louder copy of the
+ * first rather than more work.
  */
 type SideProject = {
   title: string;
@@ -83,6 +84,18 @@ const PROJECTS: SideProject[] = [
     thumb: "/work/mirzam.webp",
     thumbAlt:
       "Sage-green Mirzam chocolate bars, each carrying a stamp illustration of a houseboat on a Kashmiri lake, with a paisley-embossed bar and a tin beside them.",
+  },
+  {
+    // The one card here that stays on-site: ebb has its own short page
+    // (see src/case-studies/ebb.tsx) rather than a full case study, so it
+    // sits in the archive, not in "Sights to See" — but the link is internal,
+    // no `external`, same as any other project on this site.
+    title: "EBB | MOTION",
+    quote: "“Strip everything away and see what is left.”",
+    href: "/work/ebb-headspace",
+    thumb: "/case/ebb/poster.webp",
+    thumbAlt:
+      "The closing frame of the ebb film: the character asleep above the Headspace lockup and the line “Calm can always find its way home.”",
   },
 ];
 
