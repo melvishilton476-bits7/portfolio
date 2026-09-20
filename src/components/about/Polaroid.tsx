@@ -142,9 +142,28 @@ const FACE: Box = {
   w: FACE_BASE.w * FACE_GROW,
   h: FACE_BASE.h * FACE_GROW,
 };
+/* The two secondary crops, grown about their own centres the way the subject
+   frame is — the source drew them small enough that the faces inside were a
+   smudge at the size this prints at, and a detection you cannot see the subject
+   of is just a box.
+
+   Per side, not one factor, because they start at different sizes and have
+   different room: the left one grows into the page's margin, which is empty,
+   while the right one is already 20 units off the card's edge and would walk
+   into it. The two factors land them at the same final size, which reads as a
+   pair of equal secondary detections rather than an accident — and both stay
+   under the subject frame, so the hierarchy is still subject, then crops. */
+const CROP_GROW: Record<Side, number> = { left: 1.75, right: 1.25 };
+const grow = (b: Box, g: number): Box => ({
+  ...b,
+  x: b.x - (b.w * (g - 1)) / 2,
+  y: b.y - (b.h * (g - 1)) / 2,
+  w: b.w * g,
+  h: b.h * g,
+});
 const CROP: Record<Side, Box> = {
-  left: srcBox(346, 475.49, 62.845, 58.655, 1.397),
-  right: srcBox(782.37, 381.66, 87.628, 81.432, 1.397),
+  left: grow(srcBox(346, 475.49, 62.845, 58.655, 1.397), CROP_GROW.left),
+  right: grow(srcBox(782.37, 381.66, 87.628, 81.432, 1.397), CROP_GROW.right),
 };
 const WIRE_SW = 2.655;
 
@@ -788,14 +807,14 @@ export default function Polaroid() {
       }}
     >
       {/* ---- The card ------------------------------------------------------
-          The periwinkle the homepage locks "ENGINEER" onto. It was cream, which
-          separated the print from the page but tied it to nothing; on the site's
-          own accent the print belongs to the same family as the squares and
-          hatch cells around it, and the detector's blue reads as a second, colder
-          blue drawn ON a coloured card rather than ink on paper. */}
+          The detector's own blue, the same one the plates and wires are drawn
+          in — so the card and the apparatus on it are one instrument rather
+          than a diagram sitting on a coloured mount. It was periwinkle before,
+          which tied the print to the site's accent family; this ties it to the
+          thing it is a picture OF. */}
       <div
-        className="absolute bg-[#8581ff] shadow-[0px_6.675px_16.355px_0px_rgba(0,0,0,0.09)]"
-        style={box(482.31, 348.91, 279.703, 353.133)}
+        className="absolute shadow-[0px_6.675px_16.355px_0px_rgba(0,0,0,0.09)]"
+        style={{ ...box(482.31, 348.91, 279.703, 353.133), backgroundColor: BLUE }}
       />
 
       {/* The photo, inset inside the card's border the way a print is mounted:
@@ -849,10 +868,12 @@ export default function Polaroid() {
           quote written in the card's border below and reads as the same hand.
           The box widens with it, or "Status: In progress.." wraps.
 
-          The ink is the site's #171717 rather than the source's #3d3d3d, which
-          was a grey belonging to no palette here. */}
+          It was the site's #171717, which had the contrast for periwinkle. On
+          the detector blue the card now carries, that same ink falls to about
+          1.7:1 and the line stops being readable — so on this card the badge
+          is set in white, like the quote in the border below it. */}
       <div
-        className="text-ink absolute leading-[1.417]"
+        className="absolute leading-[1.417] text-white"
         style={{
           ...box(
             BADGE_X + BADGE_LOGO + BADGE_GAP,
@@ -923,16 +944,16 @@ export default function Polaroid() {
       {/* ---- The pixel dissolve --------------------------------------------
           Above the photograph so the squares punch through it, below the
           apparatus (z-20) so the drawn frame and its wires still run over the
-          top — the card is eating the picture, not the diagram. Same
-          #8581ff as the card itself, because that is what they are: card
-          showing through. */}
+          top — the card is eating the picture, not the diagram. The card's own
+          colour, because that is what they are: card showing through. */}
       <div aria-hidden className="pointer-events-none absolute inset-0 z-[5]">
         {PIXELS.map(([x, y, w, h]) => (
           <span
             key={`${x}-${y}`}
-            className="about-pixel absolute bg-[#8581ff]"
+            className="about-pixel absolute"
             style={{
               ...box(x, y, w, h),
+              backgroundColor: BLUE,
               ["--d" as string]: `${pixelDelay(x, y)}ms`,
               ["--p" as string]: `${pixelPhase(x, y)}ms`,
             }}
@@ -952,7 +973,7 @@ export default function Polaroid() {
         >
           <div
             className="absolute overflow-hidden"
-            style={box(346, 475.49, 62.845, 58.655)}
+            style={boxS(CROP.left.x, CROP.left.y, CROP.left.w, CROP.left.h)}
           >
             <Image
               quality={100}
@@ -960,7 +981,7 @@ export default function Polaroid() {
               alt=""
               aria-hidden
               fill
-              sizes="110px"
+              sizes="200px"
               className="object-cover"
             />
           </div>
@@ -973,7 +994,7 @@ export default function Polaroid() {
         >
           <div
             className="absolute overflow-hidden"
-            style={box(782.37, 381.66, 87.628, 81.432)}
+            style={boxS(CROP.right.x, CROP.right.y, CROP.right.w, CROP.right.h)}
           >
             <Image
               quality={100}
@@ -981,7 +1002,7 @@ export default function Polaroid() {
               alt=""
               aria-hidden
               fill
-              sizes="140px"
+              sizes="200px"
               className="object-cover"
             />
           </div>
