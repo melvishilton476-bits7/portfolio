@@ -78,7 +78,7 @@ export default function EbbCaseStudy() {
 
         <Beat
           kicker="The film"
-          title="Introducing an AI companion by taking everything else away."
+          title="An AI companion that helps you find your way back to calm."
         >
           <P>
             A 55-second motion piece imagining ebb, a calm-focused AI companion for Headspace.
