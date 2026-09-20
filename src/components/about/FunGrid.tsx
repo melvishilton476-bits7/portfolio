@@ -487,7 +487,17 @@ export default function FunGrid() {
           grid alone, the dots stopped at the last print and left a bare band
           the height of that padding under them. */}
       <div className="relative mt-16 pb-24 sm:pb-32">
-        <span aria-hidden className="dot-field pointer-events-none absolute inset-0" />
+        <span
+          aria-hidden
+          /* -top-16 cancels this wrapper's own mt-16, so the field starts at
+             the title band's rule rather than 64px under it. The grid keeps
+             that margin — the prints should breathe below the band — but the
+             wall behind them should not start halfway down. What is left is
+             the pattern's own half-pitch: a dot sits at the centre of its
+             72px tile, so the first row lands 36px in, which is the rhythm
+             rather than a gap. */
+          className="dot-field pointer-events-none absolute -top-16 right-0 bottom-0 left-0"
+        />
         <div className="page-container">
         <GrowOnView>
           {/* ---- Desktop: the floating cluster ---------------------------- */}
