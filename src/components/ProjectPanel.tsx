@@ -48,12 +48,20 @@ const SLOT = SLIDE_W + GAP;
  * centre, the previous one peeks off the left edge and the next off the right.
  * When `step` changes, all slides translate by one slot on the same easing,
  * conveying the strip right-to-left. No depth or fade: slides only move.
+ *
+ * A peeking neighbour is a CONTROL, not scenery: `onSelect` puts a transparent
+ * button across it, so the obvious gesture — click the card half off the edge
+ * — brings that project to the centre. Its own contents stay `inert` while it
+ * waits there, which is what keeps the card's "View project" link out of the
+ * tab order and stops a click landing on the project page when the reader
+ * meant to bring the card into view.
  */
 export default function ProjectPanel({
   project,
   index,
   count,
   step,
+  onSelect,
 }: {
   project: Project;
   index: number;
@@ -61,6 +69,8 @@ export default function ProjectPanel({
    *  end when the strip reverses, so it needs to know where that end is. */
   count: number;
   step: number;
+  /** Bring this slide to the centre. Omit and a neighbour is inert scenery. */
+  onSelect?: (index: number) => void;
 }) {
   const current = index === step;
 
@@ -100,7 +110,7 @@ export default function ProjectPanel({
 
   return (
     <motion.div
-      className="absolute top-[calc(50%-2px)] left-1/2 flex -translate-x-1/2 -translate-y-1/2 flex-col items-center gap-7"
+      className="absolute top-[calc(50%-2px)] left-1/2 -translate-x-1/2 -translate-y-1/2"
       style={{ width: SLIDE_W }}
       // Off-stage neighbours sit smaller and softly blurred so they read as
       // pushed back; the centred slide is full size and sharp. `scale` writes
@@ -130,20 +140,38 @@ export default function ProjectPanel({
             }
           : { x: traverse, scale: traverse, filter: traverse }
       }
-      // Only the centred slide is interactive; the peeking neighbours are
-      // decorative until they arrive.
-      inert={!current}
     >
-      <FeaturedProject
-        title={project.title}
-        quote={project.quote}
-        href={project.href}
-        thumb={project.thumb}
-        thumbAlt={project.thumbAlt}
-        thumbPosition={project.thumbPosition}
-        current={current}
-      />
-      <Ticket {...project} active={current} />
+      {/* The whole neighbour is the hit area. Over the top of the card rather
+          than under it, because the card carries its own link and the reader's
+          first click on an off-centre slide means "bring that one here". */}
+      {!current && onSelect ? (
+        <button
+          type="button"
+          onClick={() => onSelect(index)}
+          // The site hides the native cursor, so `cursor-pointer` says nothing
+          // here — <Cursor> reads data-cursor and swells into a labelled pill
+          // instead. Same mechanism the ticket uses for "View case study".
+          data-cursor="Bring to centre"
+          className="absolute inset-0 z-10"
+        >
+          <span className="sr-only">Bring {project.title} to the centre</span>
+        </button>
+      ) : null}
+
+      {/* Only the centred slide is interactive; the peeking neighbours are
+          decorative until they arrive — the button above is the way in. */}
+      <div className="flex flex-col items-center gap-7" inert={!current}>
+        <FeaturedProject
+          title={project.title}
+          quote={project.quote}
+          href={project.href}
+          thumb={project.thumb}
+          thumbAlt={project.thumbAlt}
+          thumbPosition={project.thumbPosition}
+          current={current}
+        />
+        <Ticket {...project} active={current} />
+      </div>
     </motion.div>
   );
 }

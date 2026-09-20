@@ -1,8 +1,8 @@
 "use client";
 
-import { useId, useRef, useState } from "react";
-import type { CSSProperties } from "react";
-import { motion, useScroll, useMotionValueEvent, useReducedMotion } from "framer-motion";
+import { useCallback, useEffect, useId, useRef, useState } from "react";
+import type { CSSProperties, KeyboardEvent } from "react";
+import { motion, useReducedMotion } from "framer-motion";
 import FeaturedProject from "./FeaturedProject";
 import Ticket from "./Ticket";
 import ProjectPanel, { type Project } from "./ProjectPanel";
@@ -239,11 +239,6 @@ function StaticWork() {
   );
 }
 
-/** Scroll distance given to each project, in viewport heights. Scroll no
-    longer drives the animation directly (see below), so this only needs to
-    be enough to feel like a deliberate "hold" before the next trigger. */
-const VH_PER_PROJECT = 160;
-
 /** Pagination timing (seconds). The switch reads as ONE continuous easing
     arc split across the two boxes: the outgoing marker starts slow and
     accelerates as it shrinks (ease-in), hits peak speed at the seam where the
@@ -253,61 +248,94 @@ const VH_PER_PROJECT = 160;
 const SHRINK = 0.5;
 const RISE = 0.65;
 
-/** Turns continuous scroll progress into a discrete step index: -1 while the
-    pin hasn't been reached yet, then 0..total-1 as thresholds are crossed. */
-function thresholdStep(p: number, total: number) {
-  if (p < 0) return -1;
-  if (p >= 1) return total - 1;
-  return Math.floor(p * total);
-}
+/** How much sideways wheel travel (px) a step costs. A trackpad flick emits a
+    long tail of small deltas, so this is an accumulator rather than a per-event
+    test: too low and one flick throws the strip three projects along, too high
+    and the gesture feels dead. */
+const WHEEL_PER_STEP = 90;
 
-/** `lg` and up, motion allowed: the pinned carousel. Scroll position is a
-    trigger here, not a scrub source — crossing a threshold advances `step`
-    by exactly one, and ProjectPanel plays that transition on its own timed
-    easing (stepDuration), independent of scroll speed. While a step is
-    mid-transition, further threshold crossings are ignored; once it
-    finishes, `settle` re-checks where the scroll actually is and advances
-    again if the user scrolled further while locked, one step at a time,
-    until it catches up. */
+/** `lg` and up, motion allowed: the filmstrip carousel.
+ *
+ * SIDEWAYS, NOT DOWNWARDS. This used to be a pinned section: it reserved
+ * several screens of vertical scroll, stuck to the top, and spent that
+ * scroll advancing the strip. That put the page's scrollbar in charge of a
+ * horizontal motion — the reader had to scroll DOWN to move a card SIDEWAYS,
+ * and could not leave the section until they had paged through every project.
+ *
+ * Now the section is an ordinary block the page scrolls past, and the strip is
+ * driven by the gestures that actually mean "sideways":
+ *
+ *   - a horizontal wheel / two-finger trackpad swipe over the section;
+ *   - a click on either of the cards peeking in at the edges;
+ *   - the pagination markers, which are real buttons;
+ *   - the arrow keys, once anything in the section holds focus.
+ *
+ * `step` still advances one project at a time on ProjectPanel's own timed
+ * easing, and `lockedRef` holds every input off until that gesture has
+ * finished — the strip's stagger means a step is ~1.5s of motion, and a second
+ * one fired into the middle of it would break the chain mid-pull. */
 function Carousel() {
-  const pinRef = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: pinRef,
-    offset: ["start start", "end end"],
-  });
+  const rootRef = useRef<HTMLDivElement>(null);
 
-  const [step, setStep] = useState(-1);
-  const stepRef = useRef(-1);
+  const [step, setStep] = useState(0);
+  const stepRef = useRef(0);
   const lockedRef = useRef(false);
+  /** Sideways wheel travel banked since the last step. */
+  const wheelRef = useRef(0);
 
-  function settle() {
-    const target = thresholdStep(scrollYProgress.get(), PROJECTS.length);
-    if (target === stepRef.current) {
-      lockedRef.current = false;
-      return;
-    }
+  const goTo = useCallback((next: number) => {
+    const target = Math.max(0, Math.min(PROJECTS.length - 1, next));
+    if (lockedRef.current || target === stepRef.current) return;
     lockedRef.current = true;
-    const next = target > stepRef.current ? stepRef.current + 1 : stepRef.current - 1;
-    stepRef.current = next;
-    setStep(next);
-    window.setTimeout(settle, stepDuration(PROJECTS.length) * 1000);
-  }
+    stepRef.current = target;
+    setStep(target);
+    window.setTimeout(() => {
+      lockedRef.current = false;
+      wheelRef.current = 0;
+    }, stepDuration(PROJECTS.length) * 1000);
+  }, []);
 
-  useMotionValueEvent(scrollYProgress, "change", (p) => {
-    if (lockedRef.current) return;
-    if (thresholdStep(p, PROJECTS.length) !== stepRef.current) settle();
-  });
+  useEffect(() => {
+    const el = rootRef.current;
+    if (!el) return;
+
+    const onWheel = (e: WheelEvent) => {
+      // Vertical intent stays the page's. Only a gesture that is more sideways
+      // than downwards belongs to the strip.
+      if (Math.abs(e.deltaX) <= Math.abs(e.deltaY)) return;
+      // Swallowed even while locked, and even at the ends of the strip: on a
+      // trackpad this same gesture is the browser's back-swipe, and letting it
+      // through would navigate away from the site mid-flick.
+      e.preventDefault();
+      if (lockedRef.current) return;
+
+      wheelRef.current += e.deltaX;
+      if (wheelRef.current > WHEEL_PER_STEP) goTo(stepRef.current + 1);
+      else if (wheelRef.current < -WHEEL_PER_STEP) goTo(stepRef.current - 1);
+    };
+
+    // Not React's onWheel: React attaches wheel listeners passively at the
+    // root, and a passive listener cannot preventDefault.
+    el.addEventListener("wheel", onWheel, { passive: false });
+    return () => el.removeEventListener("wheel", onWheel);
+  }, [goTo]);
+
+  const onKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
+    if (e.key === "ArrowRight") {
+      e.preventDefault();
+      goTo(stepRef.current + 1);
+    } else if (e.key === "ArrowLeft") {
+      e.preventDefault();
+      goTo(stepRef.current - 1);
+    }
+  };
 
   return (
-    <div
-      ref={pinRef}
-      className="relative hidden lg:block"
-      style={{ height: `${PROJECTS.length * VH_PER_PROJECT}vh` }}
-    >
+    <div ref={rootRef} className="relative hidden lg:block" onKeyDown={onKeyDown}>
       {/* Full viewport width, overflow clipped: the strip conveys across the
           whole screen and its neighbours have to run off the true edges, not
           vanish at the page-container gutter. */}
-      <div className="sticky top-0 flex h-screen flex-col overflow-hidden">
+      <div className="flex h-screen flex-col overflow-hidden">
         {/* Heading holds the top, inside the normal gutter. */}
         <div className="page-container pt-16">
           <Heading />
@@ -321,48 +349,63 @@ function Carousel() {
               Each marker animates its own height / width / colour (the grey is
               ink at low alpha, so becoming active is just that same ink going
               opaque as it grows). Row is items-center, so the tall bar extends
-              evenly above and below the squares. `step` is -1 before the pin
-              engages; clamp to 0 so a marker is always raised. Decorative — the
-              scroll is the navigation (aria-hidden). */}
-          {/* Fixed 17px height (the raised marker's height) so the row never
-              resizes as markers grow/shrink — otherwise its items-center
-              content shifts up mid-swap, jumping the whole pagination. */}
-          <div aria-hidden className="mt-8 flex h-[11px] items-center justify-center gap-[6px]">
-            {PROJECTS.map((_, i) => {
-              const active = Math.max(step, 0) === i;
+              evenly above and below the squares.
+
+              These are BUTTONS now, not decoration. When the section was
+              scroll-driven the markers could be aria-hidden because the
+              scrollbar was the navigation; with the pin gone they are the
+              keyboard's way in, and the only visible control that names how
+              many projects there are. The hit area is the button (11 x 22),
+              not the 5px mark inside it — the pitch is unchanged because the
+              button is exactly the old square plus the old gap. */}
+          <div
+            className="mt-8 flex h-[22px] items-center justify-center"
+            role="group"
+            aria-label="Choose a project"
+          >
+            {PROJECTS.map((project, i) => {
+              const active = step === i;
               return (
-                <motion.span
+                <button
                   key={i}
-                  // Fixed 5px thickness for every marker, active or not — only
-                  // the height (and colour) tells them apart.
-                  className="block h-[5px] w-[5px] shrink-0"
-                  initial={false}
-                  animate={{
-                    height: active ? 11 : 5,
-                    backgroundColor: active
-                      ? "rgb(23, 23, 23)"
-                      : "rgba(23, 23, 23, 0.22)",
-                  }}
-                  // One continuous arc across both boxes: the outgoing marker
-                  // shrinks on an ease-IN (easeInCubic — slow start building to
-                  // top speed at the seam), then the incoming one, after
-                  // waiting out SHRINK, rises on the mirrored ease-OUT
-                  // (easeOutCubic — leaves the seam at top speed and slows as
-                  // it extends). Mirror curves + equal 10px travel make the two
-                  // halves meet at matching velocity, so it reads as a single
-                  // fastest-in-the-middle motion, not two separate ones.
-                  transition={
-                    active
-                      ? {
-                          height: { delay: SHRINK, duration: RISE, ease: [0.33, 1, 0.68, 1] },
-                          backgroundColor: { delay: SHRINK, duration: RISE, ease: [0.33, 1, 0.68, 1] },
-                        }
-                      : {
-                          height: { duration: SHRINK, ease: [0.32, 0, 0.67, 0] },
-                          backgroundColor: { duration: SHRINK, ease: [0.32, 0, 0.67, 0] },
-                        }
-                  }
-                />
+                  type="button"
+                  onClick={() => goTo(i)}
+                  aria-label={project.title}
+                  aria-current={active ? "true" : undefined}
+                  className="flex h-full w-[11px] cursor-pointer items-center justify-center"
+                >
+                  <motion.span
+                    // Fixed 5px thickness for every marker, active or not —
+                    // only the height (and colour) tells them apart.
+                    className="block h-[5px] w-[5px] shrink-0"
+                    initial={false}
+                    animate={{
+                      height: active ? 11 : 5,
+                      backgroundColor: active
+                        ? "rgb(23, 23, 23)"
+                        : "rgba(23, 23, 23, 0.22)",
+                    }}
+                    // One continuous arc across both boxes: the outgoing marker
+                    // shrinks on an ease-IN (easeInCubic — slow start building to
+                    // top speed at the seam), then the incoming one, after
+                    // waiting out SHRINK, rises on the mirrored ease-OUT
+                    // (easeOutCubic — leaves the seam at top speed and slows as
+                    // it extends). Mirror curves + equal 10px travel make the two
+                    // halves meet at matching velocity, so it reads as a single
+                    // fastest-in-the-middle motion, not two separate ones.
+                    transition={
+                      active
+                        ? {
+                            height: { delay: SHRINK, duration: RISE, ease: [0.33, 1, 0.68, 1] },
+                            backgroundColor: { delay: SHRINK, duration: RISE, ease: [0.33, 1, 0.68, 1] },
+                          }
+                        : {
+                            height: { duration: SHRINK, ease: [0.32, 0, 0.67, 0] },
+                            backgroundColor: { duration: SHRINK, ease: [0.32, 0, 0.67, 0] },
+                          }
+                    }
+                  />
+                </button>
               );
             })}
           </div>
@@ -407,6 +450,7 @@ function Carousel() {
               index={i}
               count={PROJECTS.length}
               step={step}
+              onSelect={goTo}
             />
           ))}
 
