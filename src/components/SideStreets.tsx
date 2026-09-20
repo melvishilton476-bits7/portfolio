@@ -14,7 +14,7 @@ import RevealText from "./RevealText";
  * rules, diagonal-hatch intersection cells with black corner dots, periwinkle
  * registration squares, and crop-mark + dot corners around each title. Each
  * row is a relative band: two cards on top (title → image), then a shared
- * footer band (quote + a dark "View Project" bar with a dotted accent tab)
+ * footer band (blurb + a dark "View Project" bar with a dotted accent tab)
  * bracketed by dashed rules with hatch cells at the centre gutter and bleeding
  * off both viewport edges.
  *
@@ -37,7 +37,12 @@ const PURPLE = "#8581ff";
  */
 type SideProject = {
   title: string;
-  quote: string;
+  /** One line saying what the thing IS — the medium first ("a zine", "chocolate
+   *  packaging", "a brand film"), then who it was for and what it argues. Not a
+   *  pull-quote: a card in an archive is often the only thing a reader sees of
+   *  a project, and a line of atmosphere leaves them unable to say what they
+   *  just looked at. */
+  blurb: string;
   href: string;
   /** Cover art. Without one the card keeps its Placeholder. */
   thumb?: string;
@@ -55,8 +60,8 @@ const PROJECTS: SideProject[] = [
     // crop it was made with (base64 "crop,W,H,x,y"), so the same region taken
     // out of the original artboard is ~3x the detail at the same framing.
     title: "MUMBAI EK | TRANSIT",
-    quote:
-      "“One app for every way Mumbai moves — train, metro, bus, taxi and rickshaw, against one map.”",
+    blurb:
+      "A transit app for Mumbai — train, metro, bus, taxi and rickshaw, routed against one map.",
     href: "https://www.behance.net/gallery/226991227/Mumbai-Ek-Mobile-App",
     external: true,
     thumb: "/work/mumbai-ek.webp",
@@ -64,11 +69,9 @@ const PROJECTS: SideProject[] = [
       "The Mumbai Ek app on a phone: a map with train, metro, bus, taxi and rickshaw filters and saved places beneath it, beside the app's orange arrow mark.",
   },
   {
-    // Quote is the zine's own cover line rather than anything written for this
-    // card — it is the work's argument in the work's words.
     title: "WHERE IS GOD? | ZINE",
-    quote:
-      "“I sought God in the spectacle and tradition. Yet, the more I searched, the more elusive the divine became.”",
+    blurb:
+      "A zine on the search for God in spectacle and ritual — the harder the looking, the more elusive the divine.",
     href: "https://www.behance.net/gallery/227052149/Where-is-god-Zine",
     external: true,
     thumb: "/work/where-is-god.webp",
@@ -77,8 +80,8 @@ const PROJECTS: SideProject[] = [
   },
   {
     title: "MIRZAM | PACKAGING",
-    quote:
-      "“Chocolate packaging as a vessel for storytelling — a box built like a Kashmiri houseboat, carrying the Spice Route to the lake.”",
+    blurb:
+      "Chocolate packaging for Mirzam — a bar box built like a Kashmiri houseboat, carrying the Spice Route to the lake.",
     href: "https://www.behance.net/gallery/247571517/Mirzam-Kashmiri-Houseboat-Chocolate-Packaging",
     external: true,
     thumb: "/work/mirzam.webp",
@@ -91,7 +94,8 @@ const PROJECTS: SideProject[] = [
     // sits in the archive, not in "Sights to See" — but the link is internal,
     // no `external`, same as any other project on this site.
     title: "EBB | MOTION",
-    quote: "“Strip everything away and see what is left.”",
+    blurb:
+      "A 55-second spec brand film for Headspace, introducing ebb — a calm-focused companion.",
     href: "/work/ebb-headspace",
     thumb: "/case/ebb/poster.webp",
     thumbAlt:
@@ -196,7 +200,7 @@ function CardHead({ p }: { p: SideProject }) {
       {/* The still sits on an ink slab, the same frame the featured card in
           Sights to See gives its thumbnail — a mount, not a hairline. The
           padding is equal on all four sides here, where the featured card
-          leaves its foot deep to carry the quote: this card's quote lives
+          leaves its foot deep to carry the quote: this card's blurb lives
           below the frame, so a deep foot would just look like a mistake. */}
       <div className="bg-ink p-[clamp(10px,1.6vw,18px)]">
         {p.thumb ? (
@@ -226,22 +230,22 @@ function CardHead({ p }: { p: SideProject }) {
  *  440px card row, so by the time it cleared that line the row had scrolled
  *  most of the way up and the band drew late, high on the screen. Firing as
  *  soon as a sliver is in view (6% up from the bottom edge) lets it finish
- *  while the reader's eye is still arriving at it. The quote observes its own
+ *  while the reader's eye is still arriving at it. The blurb observes its own
  *  paragraph inside the same band, so it takes the same line — otherwise its
  *  stricter default would type it in even later than the rules around it. */
 const BAND_TRIGGER = { threshold: 0.1, rootMargin: "0px 0px -6% 0px" } as const;
 
-/** Card footer — the quote and the dark "View Project" bar with its dotted
+/** Card footer — the blurb and the dark "View Project" bar with its dotted
  *  accent tab. Fixed height so the desktop band decoration lines up. */
 function CardFoot({ p }: { p: SideProject }) {
   return (
     <div className="flex flex-col">
-      {/* Quote reveals letter-by-letter once the band rules have drawn. The
+      {/* Blurb reveals letter-by-letter once the band rules have drawn. The
           flex wrapper keeps the vertical centring within the fixed 60px band;
           RevealText renders a normal text-centred <p> so words wrap cleanly. */}
       <div className="flex h-[60px] items-center justify-center px-6">
         <RevealText
-          text={p.quote}
+          text={p.blurb}
           className="type-caption text-center leading-snug text-ink-muted"
           {...BAND_TRIGGER}
         />
