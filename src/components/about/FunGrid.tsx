@@ -264,6 +264,7 @@ function Mount({
       style={{ border: `${shot.mount ?? 5}px solid ${bare ? "transparent" : shot.mountColor ?? PURPLE}` }}
     >
       <Image
+        quality={100}
         src={shot.src}
         alt={shot.alt}
         fill

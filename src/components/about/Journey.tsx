@@ -113,6 +113,7 @@ export default function Journey() {
                       }`}
                     >
                       <Image
+                        quality={100}
                         src={stop.logo}
                         alt={stop.logoAlt}
                         fill

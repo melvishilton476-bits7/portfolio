@@ -808,6 +808,7 @@ export default function Polaroid() {
         style={box(496.33, 360.26, 250.331, 279.703)}
       >
         <Image
+          quality={100}
           src="/about/portrait.webp"
           alt="Melvis on a beach in a black t-shirt, smiling at the camera, the sea behind him"
           fill
@@ -818,6 +819,7 @@ export default function Polaroid() {
         {/* Grain, soft-light — the print's own texture rather than a filter on
             the person. Same plate the source layers here. */}
         <Image
+          quality={100}
           src="/about/grain.webp"
           alt=""
           aria-hidden
@@ -836,6 +838,7 @@ export default function Polaroid() {
         style={box(BADGE_X, BADGE_Y, BADGE_LOGO, BADGE_LOGO)}
       >
         <Image
+          quality={100}
           src="/about/isdi.webp"
           alt="ISDI"
           fill
@@ -963,6 +966,7 @@ export default function Polaroid() {
             style={box(346, 475.49, 62.845, 58.655)}
           >
             <Image
+              quality={100}
               src="/about/face-a.webp"
               alt=""
               aria-hidden
@@ -983,6 +987,7 @@ export default function Polaroid() {
             style={box(782.37, 381.66, 87.628, 81.432)}
           >
             <Image
+              quality={100}
               src="/about/face-b.webp"
               alt=""
               aria-hidden
