@@ -446,12 +446,6 @@ export default function FunGrid() {
 
   return (
     <section aria-labelledby="fun-title" className="relative">
-      {/* The pegboard. First child and unpositioned in the stacking order, so
-          every sibling after it paints on top without anyone needing a z-index
-          — a negative one here would have sunk it behind the page's own
-          background instead. Inset to the section's box: the dots start under
-          the title's dashed rules and stop with the last print. */}
-      <span aria-hidden className="dot-field pointer-events-none absolute inset-0" />
       <div className="page-container relative">
         <div className="relative flex items-center justify-center py-4">
           <DashRule edge="top" />
@@ -476,7 +470,20 @@ export default function FunGrid() {
         </div>
       </div>
 
-      <div className="page-container mt-16">
+      {/* The pegboard hangs on the GRID, not the section. Run across the whole
+          section it reached up through the title band — dots either side of
+          the words and a row above the band's top rule, which read as the
+          field leaking into the header rather than as something the prints are
+          pinned to. Starting it here puts its first row under that rule.
+
+          Full width rather than page-container, so the field still runs to
+          both edges: it is the wall, and a wall does not stop at the gutter.
+          First child and unpositioned, so every sibling paints over it without
+          a z-index — a negative one would have sunk it behind the page's own
+          background. */}
+      <div className="relative mt-16">
+        <span aria-hidden className="dot-field pointer-events-none absolute inset-0" />
+        <div className="page-container">
         <GrowOnView>
           {/* ---- Desktop: the floating cluster ---------------------------- */}
           <div
@@ -659,6 +666,7 @@ export default function FunGrid() {
             </p>
           </div>
         </GrowOnView>
+        </div>
       </div>
     </section>
   );
