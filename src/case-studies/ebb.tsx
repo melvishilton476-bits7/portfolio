@@ -76,7 +76,10 @@ export default function EbbCaseStudy() {
           />
         </div>
 
-        <Beat kicker="The film" title="Strip everything away and see what is left.">
+        <Beat
+          kicker="The film"
+          title="Introducing an AI companion by taking everything else away."
+        >
           <P>
             A 55-second motion piece imagining ebb, a calm-focused AI companion for Headspace.
             The film opens in sensory overload — notifications, motion, static — and slowly
