@@ -57,7 +57,7 @@ export default function EbbCaseStudy() {
               className="type-lead mx-auto mt-6 max-w-[560px] text-balance"
               style={{ letterSpacing: "-0.02em", fontWeight: 300 }}
             >
-              A short motion piece introducing ebb, Headspace&rsquo;s calm-focused companion.
+              A short motion piece introducing ebb, Headspace&rsquo;s calm-focused AI companion.
             </p>
           </div>
         </div>
@@ -78,7 +78,7 @@ export default function EbbCaseStudy() {
 
         <Beat kicker="The film" title="Strip everything away and see what is left.">
           <P>
-            A 55-second motion piece imagining ebb, a calm-focused companion for Headspace.
+            A 55-second motion piece imagining ebb, a calm-focused AI companion for Headspace.
             The film opens in sensory overload — notifications, motion, static — and slowly
             strips away sound and clutter until only breath and calm remain.
           </P>

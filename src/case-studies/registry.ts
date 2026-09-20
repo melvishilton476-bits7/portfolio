@@ -43,7 +43,7 @@ export const CASE_STUDIES: Record<string, CaseStudy> = {
   },
   "ebb-headspace": {
     name: "ebb",
-    title: "ebb — a calm-focused companion for Headspace",
+    title: "ebb — a calm-focused AI companion for Headspace",
     description:
       "A 55-second spec motion piece: sensory overload stripped back, layer by layer, until only breath and calm remain. Concept, script, animation and edit solo in After Effects.",
     Component: EbbCaseStudy,

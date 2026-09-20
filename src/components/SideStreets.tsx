@@ -95,7 +95,7 @@ const PROJECTS: SideProject[] = [
     // no `external`, same as any other project on this site.
     title: "EBB | MOTION",
     blurb:
-      "A 55-second spec brand film for Headspace, introducing ebb — a calm-focused companion.",
+      "A 55-second spec brand film for Headspace, introducing ebb — a calm-focused AI companion.",
     href: "/work/ebb-headspace",
     thumb: "/case/ebb/poster.webp",
     thumbAlt:
