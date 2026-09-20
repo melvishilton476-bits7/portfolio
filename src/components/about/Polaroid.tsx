@@ -816,17 +816,6 @@ export default function Polaroid() {
           className="object-cover object-top"
           priority
         />
-        {/* Grain, soft-light — the print's own texture rather than a filter on
-            the person. Same plate the source layers here. */}
-        <Image
-          quality={100}
-          src="/about/grain.webp"
-          alt=""
-          aria-hidden
-          fill
-          sizes="(max-width: 1024px) 60vw, 360px"
-          className="pointer-events-none object-cover mix-blend-soft-light"
-        />
       </div>
 
       {/* Course badge, sat on the print itself rather than in the caption band.
