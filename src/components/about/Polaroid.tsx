@@ -161,9 +161,19 @@ const grow = (b: Box, g: number): Box => ({
   w: b.w * g,
   h: b.h * g,
 });
+/** The crops' stroke. The source draws it at 1.397 — a hairline that read as a
+ *  frame around a 62-unit box and as a thread around the grown one. One weight
+ *  for both sides now that the two finish the same size; a stroke that scaled
+ *  with each side's own grow factor would have left the pair visibly mismatched.
+ *
+ *  It grows INWARD: rect() lays every frame down inset by half its stroke, so
+ *  the outer edge stays on the box and thickening eats into the picture rather
+ *  than pushing the frame out into the page. Still under the subject frame's
+ *  3.9, which is the hierarchy the whole detector rests on. */
+const CROP_SW = 2.6;
 const CROP: Record<Side, Box> = {
-  left: grow(srcBox(346, 475.49, 62.845, 58.655, 1.397), CROP_GROW.left),
-  right: grow(srcBox(782.37, 381.66, 87.628, 81.432, 1.397), CROP_GROW.right),
+  left: grow(srcBox(346, 475.49, 62.845, 58.655, CROP_SW), CROP_GROW.left),
+  right: grow(srcBox(782.37, 381.66, 87.628, 81.432, CROP_SW), CROP_GROW.right),
 };
 const WIRE_SW = 2.655;
 

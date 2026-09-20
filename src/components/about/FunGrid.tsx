@@ -57,6 +57,11 @@ const box = (x: number, y: number, w: number, h: number) => ({
 /** A source px type size against the stage, capped at what was drawn. */
 const cq = (px: number) => `min(${px}px, ${((px / STAGE_W) * 100).toFixed(3)}cqw)`;
 
+/** A source px width in stage units, UNCAPPED — for the things that are part of
+ *  a photograph's frame and so must grow with it, where cq() is for the
+ *  marginalia that must not. */
+const swq = (px: number) => `${((px / STAGE_W) * 100).toFixed(4)}cqw`;
+
 /* ---- Lineboil --------------------------------------------------------------
    The mounts and the joins are both struck by hand, so both wobble — but they
    get there by different means, and deliberately so.
@@ -261,7 +266,16 @@ function Mount({
   return (
     <span
       className={`relative block overflow-hidden ${className}`}
-      style={{ border: `${shot.mount ?? 5}px solid ${bare ? "transparent" : shot.mountColor ?? PURPLE}` }}
+      /* In stage units, not px. <MountOutline> strokes the centreline of this
+         border in SVG, and that stroke scales with the print — so a fixed 5px
+         inset here would leave the two out of step the moment the field is
+         printed at any size but the source's, and the frame would eat into the
+         photograph. */
+      style={{
+        border: `${bare ? swq(shot.mount ?? 5) : `${shot.mount ?? 5}px`} solid ${
+          bare ? "transparent" : shot.mountColor ?? PURPLE
+        }`,
+      }}
     >
       <Image
         quality={100}
@@ -462,11 +476,19 @@ export default function FunGrid() {
           <div
             ref={stageRef}
             className="type-caption text-ink-alt relative mx-auto hidden lg:block"
-            /* 725 of the source's 1137-wide content, as a percentage rather
-               than a px cap: the prints are 126px in a 725px field, and a
-               fixed max-width wider than that silently enlarges every one of
-               them. Centred, which is where the source leaves it. */
-            style={{ width: "63.76%", aspectRatio: `${STAGE_W} / ${STAGE_H}`, containerType: "inline-size" }}
+            /* The source lays this field out at 725 of its 1137-wide content —
+               63.76% — which left the prints at 128px on a 1280px container and
+               a band of white down both sides doing nothing. 88% is the same
+               composition printed larger: every position here is a percentage
+               of the stage, so the prints, their mounts and the lines between
+               them all grow by the one factor and nothing has to be re-placed.
+               
+               What must NOT grow is the marginalia. The tags, the two written
+               notes and the amber squares are all sized through cq(), which
+               caps at the source's own px — so they hold at the size they were
+               while the photographs get bigger around them. That is the whole
+               reason cq() is a min() and not a plain cqw. */
+            style={{ width: "88%", aspectRatio: `${STAGE_W} / ${STAGE_H}`, containerType: "inline-size" }}
           >
             {/* Lines under everything: they run corner to corner and should
                 pass BEHIND the mounts they join, not across them. Rendered at
@@ -553,7 +575,10 @@ export default function FunGrid() {
                   confRefs.current[i] = el;
                 }}
                 className="absolute will-change-transform"
-                style={box(x, y, 24.369, 22.048)}
+                /* Placed as a percentage, SIZED in px: these are loose squares
+                   dropped over the field, not part of the photographs, so they
+                   stay put at the size they were drawn while the prints grow. */
+                style={{ ...box(x, y, 24.369, 22.048), width: cq(24.369), height: cq(22.048) }}
               >
                 <span
                   className="accent-flicker-a block h-full w-full"
