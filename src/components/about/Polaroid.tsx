@@ -72,13 +72,16 @@ const cq = (px: number) => `${((px / STAGE_W) * 100).toFixed(3)}cqw`;
 const PLATE_TEXT = 10.8;
 const PLATE_PAD = 3.4;
 
+/** Stage coordinates only: both plates now hang off the bottom-left corner of
+ *  the frame they label, and those corners are computed (FACE, CROP) rather
+ *  than typed in source px. The source-coordinate wrapper this used to carry
+ *  went with the last plate that was parked at a fixed spot. */
 const plateS = (x: number, y: number, h: number) => ({
   left: `${(x / STAGE_W) * 100}%`,
   top: `${(y / STAGE_H) * 100}%`,
   height: `${(h / STAGE_H) * 100}%`,
   paddingInline: cq(PLATE_PAD),
 });
-const plate = (x: number, y: number, h: number) => plateS(x - OX, y - OY, h);
 
 /* ---- The course badge ------------------------------------------------------
    The mark and the two lines beside it are one cluster, so they come off one
@@ -573,10 +576,17 @@ function Apparatus({
           id={sketch}
           filterUnits="userSpaceOnUse"
           primitiveUnits="userSpaceOnUse"
-          x={-16}
-          y={-16}
-          width={STAGE_W + 32}
-          height={STAGE_H + 32}
+          /* 40, not 16. A filter clips to its region as hard as a viewBox does,
+             and the grown left crop reaches x=-22.3 — past the old -16, so its
+             left edge came back stippled where the displacement had nothing to
+             sample. The margin has to cover the frame's own overhang, half its
+             stroke, AND the displacement that pushes pixels off it: -23.6 - 3.6
+             on the left, 538.6 on the right against a region that ended at 540.
+             Both were inside their limit by under two units. */
+          x={-40}
+          y={-40}
+          width={STAGE_W + 80}
+          height={STAGE_H + 80}
         >
           <feTurbulence
             ref={boilRef}
@@ -1050,8 +1060,13 @@ export default function Polaroid() {
           }}
           className="absolute inset-0"
         >
+          {/* Hung off the crop's own bottom-left corner, the way the subject's
+              plate is — it was parked at the source's coordinates, which were
+              that corner before the crop grew and are now a point inside the
+              box, so the label sat up over the frame's bottom edge instead of
+              hanging from it. */}
           <Plate
-            style={plate(782.37, 463.1, 15.6)}
+            style={plateS(CROP.right.x, CROP.right.y + CROP.right.h, 15.6)}
             label="unidentified"
             delay={1160}
           />
