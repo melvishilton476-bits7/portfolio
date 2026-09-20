@@ -19,7 +19,11 @@ export default function About() {
       <div className="mt-28 sm:mt-36">
         <Journey />
       </div>
-      <div className="mt-28 pb-24 sm:mt-36 sm:pb-32">
+      {/* No bottom padding here: the fun grid ends in a dot field that runs to
+          the foot of the page, so the breathing room before the footer has to
+          sit INSIDE the section or the dots stop short and leave a bare band
+          under the last row. FunGrid owns it. */}
+      <div className="mt-28 sm:mt-36">
         <FunGrid />
       </div>
     </>

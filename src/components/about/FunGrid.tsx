@@ -480,8 +480,13 @@ export default function FunGrid() {
           both edges: it is the wall, and a wall does not stop at the gutter.
           First child and unpositioned, so every sibling paints over it without
           a z-index — a negative one would have sunk it behind the page's own
-          background. */}
-      <div className="relative mt-16">
+          background.
+
+          The page's breathing room before the footer is this wrapper's padding
+          rather than the About page's, so the field covers it: hung on the
+          grid alone, the dots stopped at the last print and left a bare band
+          the height of that padding under them. */}
+      <div className="relative mt-16 pb-24 sm:pb-32">
         <span aria-hidden className="dot-field pointer-events-none absolute inset-0" />
         <div className="page-container">
         <GrowOnView>
