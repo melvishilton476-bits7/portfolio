@@ -139,6 +139,15 @@
      `hidden`) suppresses the overflow without creating a scroll container, so
      the sticky filmstrip and scroll-driven nav keep working. */
   overflow-x: clip;
+  /* Stated here as well as on <body>. Normally redundant — the body's
+     background propagates to the canvas and paints the whole viewport — but
+     that propagation only covers what the document occupies. The full-bleed
+     rules on this site are `w-screen`, so 100vw includes the scrollbar and
+     runs ~7px past the document on each side; anything rendering to a surface
+     that wide (a full-page screen capture, most obviously) finds those two
+     strips unpainted and fills them with black. Painting the root as well
+     leaves nothing for them to find. */
+  background: var(--color-background);
 }
 
 body {
