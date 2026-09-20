@@ -556,7 +556,14 @@ function Apparatus({
   return (
     <svg
       aria-hidden
-      className="pointer-events-none absolute inset-0 z-20 h-full w-full"
+      /* overflow-visible, or the viewBox clips the apparatus back to the stage.
+         The crops are grown about their own centres, which puts the left one's
+         frame at x=-22 and the right one's right edge at 533.7 against a 524
+         viewBox — so both outer edges were being cut off and each crop read as
+         an L rather than a box. Same reason <MountOutline> in the fun grid
+         carries it: a stroke that leaves the box it was measured from has to be
+         allowed out of the element too. */
+      className="pointer-events-none absolute inset-0 z-20 h-full w-full overflow-visible"
       viewBox={`0 0 ${STAGE_W} ${STAGE_H}`}
       fill="none"
       preserveAspectRatio="none"
