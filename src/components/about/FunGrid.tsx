@@ -446,6 +446,12 @@ export default function FunGrid() {
 
   return (
     <section aria-labelledby="fun-title" className="relative">
+      {/* The pegboard. First child and unpositioned in the stacking order, so
+          every sibling after it paints on top without anyone needing a z-index
+          — a negative one here would have sunk it behind the page's own
+          background instead. Inset to the section's box: the dots start under
+          the title's dashed rules and stop with the last print. */}
+      <span aria-hidden className="dot-field pointer-events-none absolute inset-0" />
       <div className="page-container relative">
         <div className="relative flex items-center justify-center py-4">
           <DashRule edge="top" />

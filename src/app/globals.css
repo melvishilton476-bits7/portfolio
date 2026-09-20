@@ -4233,3 +4233,28 @@ body {
     animation-delay: calc((var(--i, 0) - 4.001) * var(--zx-step));
   }
 }
+
+/* ============================================================================
+   DOT FIELD
+   The pegboard the fun grid's prints are pinned to — a regular lattice of dots
+   running the full width of the section, behind everything in it.
+
+   One radial-gradient tiled by background-size rather than a raster: a texture
+   this regular is cheaper stated than shipped, it stays crisp at any density of
+   screen, and the pitch is a number in this file rather than baked into a file
+   nobody can edit.
+
+   #171717 at full strength, like every other decorative dot on this site — the
+   field reads light because the dots are 1.2px on a 72px pitch, not because the
+   ink has been watered down. The stop is a hair wider than the dot so the edge
+   has somewhere to land instead of aliasing into a square.
+   ========================================================================== */
+.dot-field {
+  background-image: radial-gradient(
+    circle,
+    #171717 0,
+    #171717 1.2px,
+    transparent 1.6px
+  );
+  background-size: 72px 72px;
+}
