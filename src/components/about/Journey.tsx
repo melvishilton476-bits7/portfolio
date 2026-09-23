@@ -39,7 +39,7 @@ export default function Journey() {
   return (
     <section aria-labelledby="journey-title" className="relative">
       <div className="page-container relative">
-        <div className="relative flex items-center justify-center py-4">
+        <div className="title-band relative flex items-center justify-center">
           <DashRule edge="top" />
           <DashRule edge="bottom" />
           <HatchCell
@@ -51,7 +51,6 @@ export default function Journey() {
             id="journey-title"
             className="type-heading text-ink-hero text-center font-light"
             style={{
-              fontSize: "clamp(1.5rem, 0.6rem + 2.9vw, 2.375rem)",
               letterSpacing: "-0.08em",
             }}
           >

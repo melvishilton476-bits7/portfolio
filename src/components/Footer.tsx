@@ -135,9 +135,19 @@ export default function Footer() {
       <div
         aria-hidden
         data-footer-band
-        className="relative h-[clamp(44px,5vw,62px)] w-screen bg-[#8581ff]/[0.07]"
-        style={{ left: "calc(50% - 50vw)", backgroundImage: HATCH }}
+        className="relative h-[clamp(44px,5vw,62px)] w-screen overflow-hidden bg-[#8581ff]/[0.07]"
+        style={{ left: "calc(50% - 50vw)" }}
       >
+        {/* The hatch rides on its own layer, one stripe-step wider than the
+            band, and slides left → right by exactly that step on a loop —
+            6px spacing at 45° is 6√2 ≈ 8.485px along the band, so the end
+            frame is the start frame and the lines run forward endlessly. A
+            transform, so it stays on the compositor instead of repainting a
+            full-width gradient every frame. */}
+        <span
+          className="hatch-run absolute inset-y-0 -left-[8.485px] right-0"
+          style={{ backgroundImage: HATCH }}
+        />
         <span className="absolute inset-x-0 top-0 h-px" style={{ backgroundImage: DASH_H }} />
         <span className="absolute inset-x-0 bottom-0 h-px" style={{ backgroundImage: DASH_H }} />
       </div>

@@ -121,7 +121,7 @@ export default function PlaygroundPage() {
             it. There the section just flows at its natural height. */}
         <section
           aria-labelledby="playground-title"
-          className="relative flex flex-col pt-12 md:min-h-svh md:pt-20"
+          className="relative flex flex-col pt-12 md:min-h-svh md:pt-28"
         >
           <TitleBand>
             <h1
@@ -135,13 +135,6 @@ export default function PlaygroundPage() {
           <Game brief={<Brief />} />
         </section>
 
-        <section aria-labelledby="thoughts-title" className="relative pt-24 pb-24 md:pt-36 md:pb-36">
-          <TitleBand cell={250}>
-            <h2 id="thoughts-title" className="type-heading text-ink-alt text-center">
-              3 : 24 AM THOUGHTS
-            </h2>
-          </TitleBand>
-        </section>
       </main>
       <Footer />
     </>

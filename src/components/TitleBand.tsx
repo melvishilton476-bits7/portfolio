@@ -48,7 +48,7 @@ export default function TitleBand({
         {chip({ left: 36, top: -21, width: 26, height: 14, background: AMBER }, "accent-flicker-a")}
       </span>
 
-      <div className="relative flex items-center justify-center py-4">
+      <div className="title-band relative flex items-center justify-center">
         <DashRule edge="top" />
         <DashRule edge="bottom" />
         {/* Hard against the title rather than out at the page edge: the heading

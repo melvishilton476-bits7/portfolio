@@ -3,6 +3,7 @@ import TitanCaseStudy from "./titan";
 import NagarholeCaseStudy from "./nagarhole";
 import ZenxoCaseStudy from "./zenxo";
 import EbbCaseStudy from "./ebb";
+import DrawTheLineCaseStudy from "./draw-the-line";
 
 /**
  * Slug → case study. The dynamic route reads this for both its static params
@@ -47,6 +48,13 @@ export const CASE_STUDIES: Record<string, CaseStudy> = {
     description:
       "A 55-second spec motion piece: sensory overload stripped back, layer by layer, until only breath and calm remain. Concept, script, animation and edit solo in After Effects.",
     Component: EbbCaseStudy,
+  },
+  "draw-the-line": {
+    name: "Draw the Line",
+    title: "Draw the Line — teaching 33 students to interrupt bullying in two days",
+    description:
+      "A two-day anti-bullying workshop with Going to School. These students already recognised bullying; what they lacked was a way to respond, so we designed for response, not awareness.",
+    Component: DrawTheLineCaseStudy,
   },
 };
 

@@ -86,7 +86,7 @@ export default function AboutIntro() {
           a hole under the second line that nothing filled. */}
       <div className="page-container relative">
         <BandAccents />
-        <div className="relative flex items-center justify-center py-4">
+        <div className="title-band relative flex items-center justify-center">
           <DashRule edge="top" />
           <DashRule edge="bottom" />
           {/* The cells sit hard against the title rather than out at the page

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { Framed } from "./Figure";
 
@@ -22,6 +22,13 @@ import { Framed } from "./Figure";
  * NO-JS / PRE-HYDRATION: the button is wrapped in a real link to the video, so
  * a reader whose JS hasn't landed still gets to the film — they leave for
  * YouTube instead of playing in place, which is the correct degradation.
+ *
+ * SCROLL: the facade also lifts itself when the frame is well inside the
+ * viewport, so a reader who scrolls to the film finds it already running. That
+ * start is MUTED — sound a reader did not ask for is the one thing worse than
+ * a player they have to click — and a click still starts it with sound. It
+ * fires once, and not at all under prefers-reduced-motion, where a video
+ * starting by itself is exactly what the setting is asking us not to do.
  */
 export default function CaseYouTube({
   id,
@@ -43,7 +50,30 @@ export default function CaseYouTube({
    *  start something deserves to know it is 55 seconds and not 12 minutes. */
   seconds?: number;
 }) {
-  const [playing, setPlaying] = useState(false);
+  // null = at rest. "auto" came from scrolling and must stay muted; "click"
+  // was asked for and gets sound.
+  const [playing, setPlaying] = useState<null | "auto" | "click">(null);
+  const frame = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (playing) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const el = frame.current;
+    if (!el) return;
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setPlaying("auto");
+          io.disconnect();
+        }
+      },
+      // Most of the frame, not a sliver of it: the film should start when the
+      // reader has arrived at it, not when its top edge clips the fold.
+      { threshold: 0.6 },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, [playing]);
 
   const runtime =
     seconds != null
@@ -51,59 +81,73 @@ export default function CaseYouTube({
       : null;
 
   return (
-    <Framed className="relative w-full" round={false} style={{ aspectRatio: "16 / 9" }}>
-      {playing ? (
-        <iframe
-          className="absolute inset-0 h-full w-full"
-          src={`https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0&modestbranding=1`}
-          title={title}
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-          referrerPolicy="strict-origin-when-cross-origin"
-          allowFullScreen
-        />
-      ) : (
-        <a
-          href={`https://youtu.be/${id}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          onClick={(e) => {
-            // Only take over the click when we can actually play in place —
-            // a modified click is the reader asking for a new tab, and the
-            // link is the right answer to that.
-            if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
-            e.preventDefault();
-            setPlaying(true);
-          }}
-          className="group absolute inset-0 block cursor-pointer"
-        >
-          <Image
-            src={poster}
-            alt={posterAlt}
-            fill
-            sizes="(min-width: 1080px) 980px, 92vw"
-            className="object-cover"
-            priority
+    <div ref={frame}>
+      <Framed
+        className="relative w-full"
+        round={false}
+        style={{ aspectRatio: "16 / 9" }}
+      >
+        {playing ? (
+          <iframe
+            className="absolute inset-0 h-full w-full"
+            src={`https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0&modestbranding=1${
+              playing === "auto" ? "&mute=1" : ""
+            }`}
+            title={title}
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            referrerPolicy="strict-origin-when-cross-origin"
+            allowFullScreen
           />
-          {/* The button. White on a soft scrim rather than YouTube's red — the
-              page is allowed to look like itself while it borrows the player. */}
-          <span
-            aria-hidden
-            className="absolute inset-0 flex items-center justify-center bg-black/10 transition-colors group-hover:bg-black/20"
+        ) : (
+          <a
+            href={`https://youtu.be/${id}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={(e) => {
+              // Only take over the click when we can actually play in place —
+              // a modified click is the reader asking for a new tab, and the
+              // link is the right answer to that.
+              if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0)
+                return;
+              e.preventDefault();
+              setPlaying("click");
+            }}
+            className="group absolute inset-0 block cursor-pointer"
           >
-            <span className="flex size-[64px] items-center justify-center rounded-full bg-white/90 shadow-[0_8px_24px_-8px_rgba(0,0,0,0.45)] transition-transform duration-300 group-hover:scale-[1.06]">
-              {/* A triangle, drawn rather than fetched — three points is less
+            <Image
+              src={poster}
+              alt={posterAlt}
+              fill
+              sizes="(min-width: 1080px) 980px, 92vw"
+              className="object-cover"
+              priority
+            />
+            {/* The button. White on a soft scrim rather than YouTube's red — the
+              page is allowed to look like itself while it borrows the player. */}
+            <span
+              aria-hidden
+              className="absolute inset-0 flex items-center justify-center bg-black/10 transition-colors group-hover:bg-black/20"
+            >
+              <span className="flex size-[64px] items-center justify-center rounded-full bg-white/90 shadow-[0_8px_24px_-8px_rgba(0,0,0,0.45)] transition-transform duration-300 group-hover:scale-[1.06]">
+                {/* A triangle, drawn rather than fetched — three points is less
                   code than the request for an icon file would be. */}
-              <svg viewBox="0 0 24 24" className="ml-[3px] size-[24px]" fill="#171717">
-                <path d="M6 4.5 20 12 6 19.5z" />
-              </svg>
+                <svg
+                  viewBox="0 0 24 24"
+                  className="ml-[3px] size-[24px]"
+                  fill="#171717"
+                >
+                  <path d="M6 4.5 20 12 6 19.5z" />
+                </svg>
+              </span>
             </span>
-          </span>
-          <span className="sr-only">
-            Play {title}
-            {runtime ? ` — ${runtime}` : ""} (opens on YouTube if the player cannot load)
-          </span>
-        </a>
-      )}
-    </Framed>
+            <span className="sr-only">
+              Play {title}
+              {runtime ? ` — ${runtime}` : ""} (opens on YouTube if the player
+              cannot load)
+            </span>
+          </a>
+        )}
+      </Framed>
+    </div>
   );
 }

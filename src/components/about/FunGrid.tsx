@@ -35,6 +35,9 @@ import GrowOnView from "@/components/GrowOnView";
 const PURPLE = "#7f90ff";
 const AMBER = "#ffae00";
 
+/** How far the pegboard drifts against the pointer, px, at the section's edge. */
+const BOARD_DRIFT = 36;
+
 /** Source bounding box of the whole constellation. */
 const STAGE_W = 725;
 const STAGE_H = 830;
@@ -334,6 +337,40 @@ export default function FunGrid() {
   const tagRefs = useRef<(HTMLElement | null)[]>([]);
   const confRefs = useRef<(HTMLElement | null)[]>([]);
   const linkRefs = useRef<(SVGPathElement | null)[]>([]);
+  const fieldRef = useRef<HTMLDivElement>(null);
+  const dotsRef = useRef<HTMLSpanElement>(null);
+
+  /* The pegboard as a surface behind the prints: it drifts AGAINST the
+     pointer — left pushes it right — and eases there rather than snapping,
+     so it has weight. No return on leave; it rests where the pointer left
+     it. Mouse only, and off under reduced motion. */
+  useEffect(() => {
+    const field = fieldRef.current;
+    const dots = dotsRef.current;
+    if (!field || !dots) return;
+    if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    let tx = 0, ty = 0, x = 0, y = 0, raf = 0;
+    const tick = () => {
+      x += (tx - x) * 0.08;
+      y += (ty - y) * 0.08;
+      dots.style.transform = `translate3d(${x.toFixed(2)}px, ${y.toFixed(2)}px, 0)`;
+      raf = Math.abs(tx - x) > 0.05 || Math.abs(ty - y) > 0.05 ? requestAnimationFrame(tick) : 0;
+    };
+    const onMove = (e: PointerEvent) => {
+      const r = field.getBoundingClientRect();
+      // -1 … 1 across the section, inverted.
+      tx = -((e.clientX - r.left) / r.width - 0.5) * 2 * BOARD_DRIFT;
+      ty = -((e.clientY - r.top) / r.height - 0.5) * 2 * BOARD_DRIFT;
+      if (!raf) raf = requestAnimationFrame(tick);
+    };
+    field.addEventListener("pointermove", onMove);
+    return () => {
+      field.removeEventListener("pointermove", onMove);
+      cancelAnimationFrame(raf);
+    };
+  }, []);
 
   useEffect(() => {
     const stage = stageRef.current;
@@ -447,7 +484,7 @@ export default function FunGrid() {
   return (
     <section aria-labelledby="fun-title" className="relative">
       <div className="page-container relative">
-        <div className="relative flex items-center justify-center py-4">
+        <div className="title-band relative flex items-center justify-center">
           <DashRule edge="top" />
           <DashRule edge="bottom" />
           <HatchCell
@@ -458,7 +495,7 @@ export default function FunGrid() {
           <h2
             id="fun-title"
             className="type-heading text-ink-hero text-center font-light"
-            style={{ fontSize: "clamp(1.5rem, 0.6rem + 2.9vw, 2.375rem)", letterSpacing: "-0.08em" }}
+            style={{ letterSpacing: "-0.08em" }}
           >
             FUN BEING ACHIEVED
           </h2>
@@ -486,18 +523,24 @@ export default function FunGrid() {
           rather than the About page's, so the field covers it: hung on the
           grid alone, the dots stopped at the last print and left a bare band
           the height of that padding under them. */}
-      <div className="relative mt-16 pb-24 sm:pb-32">
+      <div ref={fieldRef} className="relative mt-16 pb-24 sm:pb-32">
+        {/* -top-16 cancels this wrapper's own mt-16, so the field starts at
+            the title band's rule rather than 64px under it.
+
+            The outer span clips; the inner one is the pegboard, oversized by
+            BOARD_DRIFT on every side so the drift never shows an edge. BOARD_DRIFT is one
+            36px pitch, which also keeps the tiling on its rhythm: the first
+            row still lands half a pitch under the band. */}
         <span
           aria-hidden
-          /* -top-16 cancels this wrapper's own mt-16, so the field starts at
-             the title band's rule rather than 64px under it. The grid keeps
-             that margin — the prints should breathe below the band — but the
-             wall behind them should not start halfway down. What is left is
-             the pattern's own half-pitch: a dot sits at the centre of its
-             72px tile, so the first row lands 36px in, which is the rhythm
-             rather than a gap. */
-          className="dot-field pointer-events-none absolute -top-16 right-0 bottom-0 left-0"
-        />
+          className="pointer-events-none absolute -top-16 right-0 bottom-0 left-0 overflow-hidden"
+        >
+          <span
+            ref={dotsRef}
+            className="dot-field absolute will-change-transform"
+            style={{ inset: -BOARD_DRIFT }}
+          />
+        </span>
         <div className="page-container">
         <GrowOnView>
           {/* ---- Desktop: the floating cluster ---------------------------- */}

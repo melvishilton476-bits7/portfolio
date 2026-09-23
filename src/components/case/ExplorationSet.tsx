@@ -82,7 +82,15 @@ export default function ExplorationSet({
                 so it takes the caption size and uppercase tracking <ComparePair>
                 already uses to label two compared things — a 21px heading here
                 competed with the page's real headings. */}
-            <div className={`mt-5${wide ? " sm:max-w-[calc(50%-1.25rem)]" : ""}`}>
+            {/* The wide option's caption is centred under its figure, the way
+                <Figure> centres its own heading and caption: left-aligned at
+                one column's measure it hung off the far edge of a full-width
+                frame with the rest of the row empty beside it. The column
+                options stay left-aligned, since their text already starts at
+                the edge of the frame it belongs to. */}
+            <div
+              className={`mt-5${wide ? " sm:mx-auto sm:max-w-[calc(50%-1.25rem)] sm:text-center" : ""}`}
+            >
               <h3
                 className="type-caption uppercase tracking-[0.14em]"
                 style={{ color: "var(--color-ink)" }}

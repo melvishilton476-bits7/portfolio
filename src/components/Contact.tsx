@@ -6,11 +6,13 @@ import Fire from "./Fire";
 import Fireplace from "./Fireplace";
 import Fumes from "./Fumes";
 import CodeMotes from "./CodeMotes";
+import ContactForm from "./ContactForm";
 
 /**
  * "Come have a seat!" — contact section. Dark form on the left, playful
- * illustrations (campfire + chair) on the right. Submission is stubbed;
- * wire "Book a Slot" / "Go To LinkedIn" to real endpoints later.
+ * illustrations (campfire + chair) on the right. The form itself lives in
+ * <ContactForm> (a client component) so this section can stay on the server;
+ * sending composes a mail in the visitor's own client.
  *
  * The header reuses the site's blueprint vocabulary (Figma node 488:448): the
  * heading sits in a band bracketed by full-bleed dashed rules with periwinkle
@@ -20,15 +22,6 @@ import CodeMotes from "./CodeMotes";
  */
 
 const DASH_H = `repeating-linear-gradient(to right, rgba(23,23,23,0.16) 0px, rgba(23,23,23,0.16) 10px, transparent 10px, transparent 18px)`;
-const PURPLE = "#8581ff";
-
-/** The two form actions. Periwinkle rather than the lime `--color-accent`:
- *  every other accent in this section — the registration squares straddling
- *  the card, the hatch cells bracketing the heading, the nav's active state —
- *  is #8581ff, and the lime was the one surface here speaking a different
- *  brand colour. Fixed height, not padding, so both sit level. */
-const actionBtn =
-  "inline-flex h-11 items-center gap-2 px-5";
 
 /** Full-bleed dashed hairline pinned to the top or bottom of its relative
  *  parent — runs off-centre to both viewport edges (clipped by the body). */
@@ -64,9 +57,6 @@ function SubtitleCorners() {
 }
 
 export default function Contact() {
-  const fieldWell =
-    "w-full bg-btn-dark px-4 text-white placeholder:text-white/40 outline-none ring-1 ring-white/10 focus:ring-accent";
-
   return (
     <section id="contact" aria-label="Contact" className="relative overflow-x-clip py-24 sm:py-32">
       <div className="page-container">
@@ -107,61 +97,7 @@ export default function Contact() {
         {/* Form — kept compact (p-6, 40px fields, 3-row message, gap-4) so the
             dark box sits trimly beside the campfire/chair rather than looming
             over them. */}
-        <form
-          className="relative bg-btn-dark/95 p-6"
-          /* TODO: wire onSubmit to backend / form service */
-        >
-          {/* Periwinkle registration square-pairs (outline + filled, meeting
-              corner-to-corner) sitting fully OUTSIDE the form — they kiss the
-              card at a single corner/edge point rather than overlapping its
-              dark face. 18px each. Desktop only.
-              (1) top-left corner: a diagonal chain up-left — outline nearest the
-              corner (bottom-right on the card corner), filled beyond it.
-              (2) right edge beside the Email field: filled resting flush on the
-              edge (outside), outline continuing up-right. */}
-          <span aria-hidden className="pointer-events-none absolute left-0 top-0 hidden lg:block">
-            <span className="absolute -left-[20px] -top-[20px] size-[10px] accent-flicker-a" style={{ background: PURPLE, ["--enter" as string]: "0.9s" } as CSSProperties} />
-            <span className="absolute -left-[10px] -top-[10px] size-[10px] accent-flicker-b" style={{ border: `1px solid ${PURPLE}`, ["--enter" as string]: "1.1s" } as CSSProperties} />
-          </span>
-          <span aria-hidden className="pointer-events-none absolute left-full top-[140px] hidden lg:block">
-            <span className="absolute left-0 top-0 size-[10px] accent-flicker-b" style={{ background: PURPLE, ["--enter" as string]: "1.3s" } as CSSProperties} />
-            <span className="absolute left-[10px] -top-[10px] size-[10px] accent-flicker-a" style={{ border: `1px solid ${PURPLE}`, ["--enter" as string]: "1.5s" } as CSSProperties} />
-          </span>
-          <div className="flex flex-col gap-4">
-            <label className="flex flex-col gap-2">
-              <span className="type-caption text-white/70">Name</span>
-              <input type="text" className={`${fieldWell} h-10`} />
-            </label>
-            <label className="flex flex-col gap-2">
-              <span className="type-caption text-white/70">Email</span>
-              <input type="email" className={`${fieldWell} h-10`} />
-            </label>
-            <label className="flex flex-col gap-2">
-              <span className="type-caption text-white/70">What it&rsquo;s About</span>
-              <input type="text" className={`${fieldWell} h-10`} />
-            </label>
-            <label className="flex flex-col gap-2">
-              <span className="type-caption text-white/70">Message</span>
-              <textarea rows={3} className={`${fieldWell} resize-none py-3`} />
-            </label>
-          </div>
-
-          {/* Both actions share one class so they are the same object at two
-              labels. The height is FIXED rather than padding-derived: the
-              submit carries an arrow glyph whose line box is taller than the
-              type-caption next to it, so equal padding produced two different
-              heights and the pair sat off-level. `items-center` then centres
-              each label inside that shared height. */}
-          <div className="mt-5 flex flex-wrap items-center gap-3">
-            <button type="submit" className={`${actionBtn} text-white`} style={{ background: PURPLE }}>
-              <span aria-hidden className="leading-none">←</span>
-              <span className="type-caption font-medium">Book a Slot</span>
-            </button>
-            <a href="#" className={`${actionBtn} bg-white/10 text-white`}>
-              <span className="type-caption font-medium">Go To LinkedIn</span>
-            </a>
-          </div>
-        </form>
+        <ContactForm />
 
         {/* Illustrations — a flower vase + chair resting on a horizon line,
             the way the section reads: "come have a seat." The column aligns to

@@ -101,6 +101,17 @@ const PROJECTS: SideProject[] = [
     thumbAlt:
       "The closing frame of the ebb film: the character asleep above the Headspace lockup and the line “Calm can always find its way home.”",
   },
+  {
+    title: "DRAW THE LINE | WORKSHOP",
+    blurb:
+      "A two-day anti-bullying workshop for 33 government-school students, run with Going to School.",
+    href: "/work/draw-the-line",
+    // The hero's two layers flattened into one still: the card is a thumbnail,
+    // so the parallax the hero splits them for has nothing to act on here.
+    thumb: "/case/draw-the-line/card.webp",
+    thumbAlt:
+      "The Draw the Line logo over a school corridor with students walking away down it",
+  },
 ];
 
 /** Two per row, derived rather than written out: the grid is a growing
