@@ -1,44 +1,58 @@
+import Image from "next/image";
 import CaseHero from "@/components/case/CaseHero";
 import Beat, { P } from "@/components/case/Beat";
-import BandLine from "@/components/case/BandLine";
-import Moment, { MomentContinued } from "@/components/case/Moment";
 import Callout from "@/components/case/Callout";
 import CaseOverview from "@/components/case/CaseOverview";
-import ExplorationSet from "@/components/case/ExplorationSet";
+import CaseKicker from "@/components/case/CaseKicker";
+import DashRule from "@/components/DashRule";
+import GrowOnView from "@/components/GrowOnView";
+import Highlight from "@/components/case/Highlight";
+import ScrubText from "@/components/case/ScrubText";
+import ZenxoFeatures from "@/components/case/ZenxoFeatures";
+import RevealVideo from "@/components/case/RevealVideo";
+import ZenxoFunnel from "@/components/case/ZenxoFunnel";
 import ZenxoDirection, {
   DirectionBoilDefs,
   DIRECTION_RATIO,
 } from "@/components/case/ZenxoDirection";
-import { Figure, FigurePair } from "@/components/case/Figure";
+import { Figure } from "@/components/case/Figure";
 import ScrollStrip from "@/components/case/ScrollStrip";
-import ZenxoBoard, { BOARD } from "@/components/case/ZenxoBoard";
-import ZenxoLegSlot from "@/components/case/ZenxoLegSlot";
 import ZenxoResultsPan, { RESULTS_RATIO } from "@/components/case/ZenxoResultsPan";
 import ZenxoCardShot, { CARD_RATIO } from "@/components/case/ZenxoCardShot";
-import ZenxoResultsShot, {
-  RESULTS_AFTER_RATIO,
-} from "@/components/case/ZenxoResultsShot";
 import CaseVideo, { cropRatio } from "@/components/case/CaseVideo";
-import ZenxoTheme, { THEME_RATIO } from "@/components/case/ZenxoTheme";
 import ZenxoPreRunCard, { PRE_RUN_RATIO } from "@/components/case/ZenxoPreRunCard";
 import ZenxoRunningCard, { RUNNING_RATIO } from "@/components/case/ZenxoRunningCard";
 
 /**
  * ZENXO — a strategy builder for Indian retail options traders.
  *
- * Composed from the shared case primitives, same as Titan and Nagarhole.
+ * Laid out from the Figma redraw (MY_PORTFOLIO, node 765:563) rather than from
+ * the shared one-column rhythm the other case studies use. The page argues the
+ * same thing it did before; what changed is that the layout now does some of
+ * the arguing:
  *
- * EVERY FRAME ON THIS PAGE IS STILL A PLACEHOLDER. The source brief marks all
- * sixteen slots as artwork that doesn't exist yet, so each Figure and each
- * exploration option reserves its slot at the ratio the final asset will have
- * and keeps the dashed box. That is the convention <Figure> was built for —
- * swapping real art in later moves nothing around it — and it is why the page
- * can be read and judged now rather than after a capture session.
+ *   - The sections do not share an axis. Context opens as a two-column spread,
+ *     Moment 1 and 3 hang off the left margin, Moment 2 answers from the
+ *     right. A reader crossing the page is crossing between decisions.
+ *   - Two headings are SCRUBBED — they fill in character by character as the
+ *     reader scrolls to them — and they are the two sentences the rest of the
+ *     page exists to prove: what the product is, and what the results page
+ *     became.
+ *   - The yellow highlighter is spent only on conclusions: the thesis, the
+ *     interview finding, the direction that shipped, the card that won.
+ *   - Comparisons live in ruled tables — full-bleed dashed hairlines with a
+ *     dashed divider standing between the options — so a set of alternatives
+ *     reads as one object laid out for inspection, not as figures in a column.
+ *   - Scale contrast carries emphasis instead of weight: a 9px aside sits on
+ *     top of the line it leads into, a grey lead-in hands over to the quote
+ *     it opens.
  *
- * The slot numbers from the brief are noted on each frame so the two stay
- * matched when the captures land.
+ * Copy follows the v3 write-up (zenxo-case-study3.md). Where the redraw set a
+ * heading of its own — Moment 1's quote, Moment 2 and 3's headings — the
+ * redraw's wording wins, since it was written against this layout. Outcomes,
+ * Reflection and the credits are unchanged from the previous build.
  *
- * Unlike the other two case studies, this one was team work at a company. The
+ * Unlike the other case studies, this one was team work at a company. The
  * prose keeps that distinction visible — "we" for the team's decisions, "I"
  * only where the work was actually mine — because a portfolio that blurs the
  * two is claiming credit it can't support.
@@ -56,40 +70,163 @@ import ZenxoRunningCard, { RUNNING_RATIO } from "@/components/case/ZenxoRunningC
  *      bottom ~791 to 806, so cropping to y 90-789 starts and ends on
  *      straight edge. All four corners of this rectangle land on app content
  *      at every timestamp checked, with no white notch.
+ *
+ *  Trimmed 72px in from each side as well, so the frame is 2:1 rather than
+ *  2.2:1 and sits closer in shape to the other three.
  */
-const ZENBOT_CROP = { x: 28, y: 90, w: 1544, h: 700, sw: 1600, sh: 900 } as const;
+const ZENBOT_CROP = { x: 100, y: 90, w: 1400, h: 700, sw: 1600, sh: 900 } as const;
 
-/** The login recording, minus the black bar the transcode leaves along its
- *  bottom edge. Constant at y 697 on every frame checked, so this is a fixed
- *  crop rather than anything that needs to track the content. */
-const LOGIN_CROP = { x: 0, y: 0, w: 1280, h: 697, sw: 1280, sh: 780 } as const;
+/** The results recording, cut below the app's header bar: the header carries
+ *  the signed-in account's email. */
+const RESULTS_CROP = { x: 0, y: 64, w: 1920, h: 1002, sw: 1920, sh: 1066 } as const;
 
-/** The results-page scroll, cropped to the page's own column.
+/** The recording cards' edge: a wide white stroke at low opacity, so the
+ *  ground shows through it and it reads as a glass rim. */
+const RIM = "0 0 0 6px rgba(255,255,255,0.45), 0 24px 60px -28px rgba(23,23,23,0.35)";
+
+/** The redraw's 19px text line (Figma 819:719, 794:641), at the page's
+ *  regular heading weight. */
+const FIGMA_19: React.CSSProperties = {
+  fontSize: "1.1875rem",
+  lineHeight: 1.45,
+  letterSpacing: "-0.5px",
+};
+
+/** Same ink and rhythm as <DashRule>, stood on end. */
+const DASH_V =
+  "repeating-linear-gradient(to bottom, rgba(23,23,23,0.16) 0px, rgba(23,23,23,0.16) 10px, transparent 10px, transparent 18px)";
+
+/** The heading voice of the redraw: Space Grotesk at the subheading size,
+ *  regular weight like the site's section heads but set looser, because these
+ *  run to two and three lines where a section head runs to one. */
+const HEAD: React.CSSProperties = {
+  fontWeight: 400,
+  lineHeight: 1.3,
+  letterSpacing: "-0.02em",
+};
+
+/** Running copy for the two-column spreads — light, justified, a size under
+ *  the lead so a column 400px wide still sets 60-odd characters a line. */
+function Body({
+  children,
+  className = "",
+  justify = true,
+}: {
+  children: React.ReactNode;
+  className?: string;
+  /** Off where the column is ragged-right or right-aligned on purpose. */
+  justify?: boolean;
+}) {
+  return (
+    <p
+      className={`${justify ? "prose-justified" : ""} text-pretty ${className}`}
+      style={{ fontSize: "0.9375rem", lineHeight: 1.6, fontWeight: 300, color: "var(--color-ink)" }}
+    >
+      {children}
+    </p>
+  );
+}
+
+/** A dashed divider standing between two cells of a ruled table. Desktop
+ *  only, like the horizontal rules it meets — below lg the cells stack and
+ *  there is nothing to stand between. */
+function VRule({ left }: { left: string }) {
+  return (
+    <span
+      aria-hidden
+      className="pointer-events-none absolute inset-y-0 hidden w-px lg:block"
+      style={{ left, backgroundImage: DASH_V }}
+    />
+  );
+}
+
+/** The two dividers of the directions table, at exact thirds: the columns
+ *  have no gap and pad themselves instead, so all three cells are the same
+ *  width. Shared by the dividers and the dots so a dot always lands on its
+ *  line. No edge dividers: the outer sides stay open. */
+const TABLE_X = ["calc(100% / 3)", "calc(200% / 3)"] as const;
+
+/** A black dot at every place a vertical divider meets the top or bottom rule —
+ *  the registration marks the redraw drops on the table's corners and joints.
+ *  Desktop only, like the rules they sit on. */
+function RuleDots() {
+  return (
+    <>
+      {TABLE_X.map((x) =>
+        (["top", "bottom"] as const).map((edge) => (
+          <span
+            key={`${x}-${edge}`}
+            aria-hidden
+            className="pointer-events-none absolute z-10 hidden size-[5px] rounded-full bg-[#171717] lg:block"
+            style={{ left: x, [edge]: 0, transform: `translate(-50%, ${edge === "top" ? "-50%" : "50%"})` }}
+          />
+        )),
+      )}
+    </>
+  );
+}
+
+/** Rules that sit low in a tall section draw too late with DashRule's default
+ *  -18% bottom margin — the trigger line lands high up the viewport, so the
+ *  rule is well on screen before it fires. These fire as soon as the rule
+ *  crosses into the bottom of the viewport instead. */
+const EAGER = { threshold: 0, rootMargin: "0px 0px 12% 0px" } as const;
+
+/** Two full-bleed hairlines 27px apart — the heavier edge a ruled table gets
+ *  where it opens and closes. */
+function DoubleRule() {
+  return (
+    <div aria-hidden className="relative hidden h-[27px] lg:block">
+      <DashRule edge="top" {...EAGER} />
+      <DashRule edge="bottom" {...EAGER} />
+    </div>
+  );
+}
+
+/** A black registration dot centred on a horizontal edge of a relative box —
+ *  used where the card table's single divider meets its inner rules. */
+function EdgeDot({ left, edge }: { left: string; edge: "top" | "bottom" }) {
+  return (
+    <span
+      aria-hidden
+      className="pointer-events-none absolute z-10 hidden size-[5px] rounded-full bg-[#171717] lg:block"
+      style={{ left, [edge]: 0, transform: `translate(-50%, ${edge === "top" ? "-50%" : "50%"})` }}
+    />
+  );
+}
+
+/** The question the three directions answered, on a ruled orange card.
  *
- *  Measured, not framed by eye: scanning every column for ink across the clip,
- *  the page content runs x 347-1009 across the whole clip and never moves. To
- *  its left are a 21px icon rail and 325px of empty margin; to its right, 250px
- *  more, then the Zenbot launcher in the bottom corner and the browser
- *  scrollbar at 1275. So this takes 329-1027: the content plus about 18px of
- *  air on each side.
- *
- *  The right edge is 1009 rather than the 954 a first pass gave, because the
- *  insight cards at the foot of the page run wider than everything above them
- *  and a scan that stops short of the last section misses it. Worth stating
- *  because the difference is invisible until the crop clips a card in half.
- *
- *  That is roughly a 2x zoom on what the frame used to hold, and it is the
- *  difference
- *  between a page you can see and a page you can read — at 1269 wide the trade
- *  log and the insight cards rendered below 8px.
- *
- *  What it costs is the empty right-hand side. That absence used to be this
- *  figure's own evidence for the paragraph above; cropping to the content
- *  means the caption can no longer point at it, so the caption now describes
- *  the ranking the page does instead, and the demotion is left to the prose.
- *  It also takes the account email out of frame, which the wider crop had
- *  sitting legible in the header. */
-const RESULTS_PAGE_CROP = { x: 329, y: 0, w: 698, h: 656, sw: 1280, sh: 656 } as const;
+ *  The rules are the paragraph's own background, repeating at its line height,
+ *  so the words sit on them at any width and the card grows a line rather than
+ *  spilling off its last rule. */
+const DIRECTIONS = [
+  {
+    label: "A — Editor only",
+    src: "/case/zenxo/directions/editor-only.svg",
+    alt: "Wireframe of the editor-only direction: a single full-width form column of stacked, grouped fields with a step header across the top and no canvas anywhere in the frame",
+    good: "Cleanest and most familiar, a real step up from the 9-section form.",
+    costLabel: "Why it didn’t ship:",
+    cost: "Still couldn’t show a rule shared across legs. It listed the capability, never the relationship.",
+  },
+  {
+    label: "B — Canvas-led",
+    src: "/case/zenxo/directions/canvas-led.svg",
+    alt: "Wireframe of the canvas-led direction: a full-frame dot-grid canvas carrying the strategy as connected nodes, with the form reduced to a secondary panel",
+    good: "The most honest model, since a strategy really is a graph.",
+    costLabel: "Why it didn’t ship:",
+    cost: "Asks a first-time trader to learn a node editor before placing a single order.",
+  },
+  {
+    label: "C — Editor + live canvas",
+    src: "/case/zenxo/directions/editor-led.svg",
+    alt: "Wireframe of the shipped direction: the form as a narrow left column with the dot-grid canvas filling the rest of the frame beside it, both showing the same strategy",
+    good: "Traders start in the form they know; the canvas mirrors it live, so they learn to read it without being taught.",
+    costLabel: "Cost:",
+    cost: "A narrower form column and a much harder build (two surfaces kept in sync).",
+    shipped: true,
+  },
+] as const;
 
 export default function ZenxoCaseStudy() {
   return (
@@ -98,6 +235,8 @@ export default function ZenxoCaseStudy() {
         eyebrow="Product design · Zenxo · Shipped 2026"
         title="ZENXO"
         dek="A canvas could show what a form never could. Keeping the form next to it is the reason traders actually learned it."
+        dekTone="ink"
+        titleMarks
         frameLabel="Two traders at a desk reading a Zenxo results dashboard — the summary, the P&L chart and the open position, all on one screen"
         // slot-01, in two layers rather than one flattened still, so the scene
         // rides above its ground on the tilt's depth axis and swings against
@@ -125,9 +264,6 @@ export default function ZenxoCaseStudy() {
         // at the 1100px cap, 15px at a 335px phone. Still clear of 8.39, but
         // that is the number to check if this ratio is ever narrowed.
         //
-        // The crop also loses the heaviest of the chair backs, which the
-        // composition is better for.
-        //
         // `fade` off: flat artwork on a light ground has no edge to dissolve,
         // and the ramp would just bleach the lower two thirds.
         image={{ src: "/case/zenxo/hero-ground.webp", ratio: 17 / 10 }}
@@ -145,489 +281,545 @@ export default function ZenxoCaseStudy() {
         fade={false}
       />
 
-      <div className="page-container flex flex-col gap-24 pt-24 sm:gap-32 sm:pt-32">
-        <Beat
-          kicker="Context"
-          title="We fixed the form, and you still couldn't see your own strategy"
-        >
-          <P>
-            Zenxo lets Indian retail traders build a multi-leg options strategy and test it
-            against years of historical data before risking real money. A strategy is 4 or 5
-            legs, each with its own entry, stop loss, target, and re-entry rules, plus rules
-            that sit across several legs at once.
-          </P>
-          <P>
-            The first version put all of that into 9 form sections on one scroll. We came in as
-            a design team a few weeks out from launch, with the business unhappy about what was
-            going to ship, and we started where you&rsquo;d expect, by tightening sections and
-            sorting out the hierarchy.
-          </P>
-          <P>
-            Those fixes worked. However, a form can only list settings, and it can&rsquo;t hold
-            a rule that belongs to 3 legs at once, since that relationship becomes a checkbox
-            inside a panel and vanishes the second the panel closes. Several people on our team
-            trade F&amp;O themselves, and it was their read that moved us: there&rsquo;s no
-            structure here, and you can&rsquo;t see your own strategy.
-          </P>
-        </Beat>
+      {/* ── CONTEXT ─────────────────────────────────────────────────────────
+          A spread rather than a column: the claim on the left, the plain
+          facts it rests on across from it, then the old form between them
+          and the rest of the story in two columns underneath. The heading
+          and the definition of the product are read as a pair, so they sit
+          as a pair. No kicker — it is the first thing after the hero, and a
+          label saying "context" would only say where we are. */}
+      <div className="page-container pt-24 sm:pt-32">
+        <section className="mx-auto w-full max-w-[915px]">
+          <div className="grid grid-cols-1 items-start gap-y-6 lg:grid-cols-2 lg:gap-x-28">
+            <h2 className="type-subheading text-ink-alt max-w-[340px]" style={HEAD}>
+              We fixed the form, and you still couldn&rsquo;t see your own strategy.
+            </h2>
+            <Body className="lg:mt-1">
+              Indian retail traders build multi-leg options strategies (several buy and sell
+              positions that work as one) and backtest them against years of market data before
+              risking real money.
+            </Body>
+          </div>
 
-        {/* The previous builder, pulled through the frame end to end. The
-            screenshot is 1:2.23 against a 16:9 window, so only a quarter of it
-            is ever on screen — which is the figure's argument, and why the
-            grip on the right is a quarter tall. */}
-        <Figure
-          label="The old nine-section form, scrolled end to end"
-          ratio={16 / 9}
-          caption="Twenty-five controls before you describe a single leg."
-          visual={
-            <ScrollStrip
-              src="/case/zenxo/old-form-strip.webp"
-              alt="The previous Zenxo builder: nine configuration sections — settings, templates, entry conditions, legs, adjustments, payoff, brokerage — stacked in a single scrolling column."
-              width={1733}
-              height={3866}
+          {/* The previous builder, pulled through the frame end to end. Only a
+              slice of the 1:2.23 capture is ever on screen at once — which is
+              the figure's argument. */}
+          <div className="mt-14 sm:mt-20">
+            <Figure
+              label="The old nine-section form, scrolled end to end"
+              ratio={915 / 475}
+              maxWidth={915}
+              visual={
+                <ScrollStrip
+                  src="/case/zenxo/old-form-strip.webp"
+                  alt="The previous Zenxo builder: nine configuration sections — settings, templates, entry conditions, legs, adjustments, payoff, brokerage — stacked in a single scrolling column."
+                  width={1733}
+                  height={3866}
+                />
+              }
             />
-          }
-        />
+          </div>
 
-        <Beat
-          kicker="Solution"
-          title="Zenxo: a strategy builder that shows you the strategy you're building."
-        >
-          <P>
-            We laid it out the way it actually runs, with entries above, legs across, and exits
-            below. A shared rule became a single node wired to each leg it governs, which had a
-            nice side effect: a leg with nothing underneath it is now visibly a leg with no
-            exit.
-          </P>
-        </Beat>
+          <div className="mt-12 grid grid-cols-1 gap-y-8 lg:mt-14 lg:grid-cols-2 lg:gap-x-28">
+            <ul className="flex list-disc flex-col gap-5 pl-4 marker:text-ink">
+              <li>
+                <Body>
+                  A strategy is 4 or 5 &ldquo;legs.&rdquo; Each leg has its own entry, stop-loss,
+                  target and re-entry rules, and some rules apply across several legs at once.
+                </Body>
+              </li>
+              <li>
+                <Body>
+                  The first build put all of it into 9 form sections on one scroll: 25 controls
+                  before you&rsquo;d described a single leg.
+                </Body>
+              </li>
+              <li>
+                <Body>
+                  We joined a few weeks before launch, with the business unhappy about what was
+                  about to ship.
+                </Body>
+              </li>
+            </ul>
+            <div className="flex flex-col gap-4">
+              <Body>
+                We started where you&rsquo;d expect, tightening sections and fixing hierarchy. It
+                helped, but it couldn&rsquo;t touch the real problem.
+              </Body>
+              <Body>
+                A form can only list settings. It can&rsquo;t hold a rule that belongs to three
+                legs at once; that relationship turns into a checkbox that disappears the moment
+                its panel closes.
+              </Body>
+              <Body>
+                The people on our team who trade futures and options (F&amp;O) said it plainly:
+                there&rsquo;s no structure here, and you can&rsquo;t see your own strategy.
+              </Body>
+            </div>
+          </div>
+        </section>
+      </div>
 
-        {/* The builder rebuilt and walked through — rail, form, canvas, and a
-            camera between them. Rebuilt rather than screenshotted: the real
-            editor is close to square and would letterbox into nothing at 16:9,
-            and a recording could not hold a legible zoom. Geometry and colour
-            are measured — design-source/zenxo-builder-spec.md. */}
-        <Figure
-          label="Stepped rail: filling the form while the canvas builds itself alongside"
-          ratio={BOARD.width / BOARD.height}
-          heading="You fill the form and watch the diagram assemble itself"
-          visual={<ZenxoBoard />}
-        />
-
-        {/* slot-16 + slot-06 · two figures that each make their own point and
-            neither of which is the page's main event, so they share a row
-            instead of taking a full measure each. Not a comparison — see
-            <FigurePair>. The node close-up keeps its own 16:9 and the theme
-            frame its own 2560:1319; they sit at a shared width, not in a
-            shared box.
-
-            slot-16 is a close-up on the canvas rather than the whole builder:
-            slot-03 already carries that, and the claim here is about one node.
-            slot-06 is one frame dissolving between the two themes rather than
-            two panels side by side — see <ZenxoTheme>. */}
-        <FigurePair
-          left={{
-            label: "A leg with an empty + Exit slot",
-            /* Both halves take the theme shot's ratio rather than their own,
-               so the two frames are the same size — side by side, two boxes
-               of different heights read as one of them having gone wrong.
-               
-               It costs nothing here, which is why this is the shared ratio and
-               not the node close-up's: the leg artboard is 960x540 with its
-               ink stopping at y 481, and 1.940 leaves 495 visible, so the 45px
-               that go are blank canvas. Taking the leg's 16:9 instead would
-               have cropped 8% off both sides of a real screenshot. */
-            ratio: THEME_RATIO,
-            caption:
-              "A leg with nothing under it keeps an empty + Exit slot, so the affordance and the warning are the same thing.",
-            visual: <ZenxoLegSlot />,
-          }}
-          right={{
-            label: "Dark mode across the builder and results",
-            ratio: THEME_RATIO,
-            heading: "Dark is the default traders actually work in",
-            visual: (
-              <ZenxoTheme
-                light="/case/zenxo/theme-light.webp"
-                dark="/case/zenxo/theme-dark.webp"
-                lightAlt="The strategy builder in the light theme: the leg editor open on Leg 2 down the left, and the canvas beside it carrying the strategy settings block, three legs, a target profit and a stop loss shared with one leg"
-                darkAlt="The same screen at the same moment in the dark theme — identical layout, inverted surfaces, with the orange accent and the leg colours carrying through unchanged"
+      {/* ── SOLUTION ────────────────────────────────────────────────────────
+          The heading scrubs in in the product's own orange: it is the one
+          sentence on the page that says what Zenxo IS, so it is the one that
+          waits for the reader to arrive. The quote that used to be the dek
+          sits across from it as its gloss. */}
+      {/* The Solution and the builder video share one wrapper so the video
+          can sit sticky beneath it: the section is opaque and on top, and
+          as it scrolls up it slides off the video, which holds still until
+          it is fully uncovered and then scrolls on with the page. */}
+      <div className="relative">
+      {/* The cover is full width, not the text column: anything narrower
+          leaves the pinned video showing down both sides. */}
+      <div className="relative z-10 bg-background">
+      <div className="page-container pb-16 pt-28 sm:pb-24 sm:pt-36">
+        <section className="mx-auto w-full max-w-[915px]">
+          <CaseKicker>Solution</CaseKicker>
+          <div className="mt-10 grid grid-cols-1 items-start gap-y-6 lg:grid-cols-[minmax(0,1fr)_232px] lg:gap-x-24">
+            <div className="order-1">
+              <ScrubText
+                text="Zenxo: a strategy builder that shows you the strategy you're building."
+                on="#d07600"
+                off="#c1c1c1"
+                className="font-display text-balance"
+                // The page's one statement of what Zenxo is, so it alone steps
+                // up from the subheading size.
+                style={{
+                  fontSize: "clamp(1.625rem, 1.1rem + 1.6vw, 2.25rem)",
+                  lineHeight: 1.35,
+                  letterSpacing: "-0.05em",
+                }}
               />
-            ),
-          }}
-        />
-
-        {/* slot-04 · video, cropped to the app's own UI — see ZENBOT_CROP.
-            `square` because the crop is flush to that UI: a radius here would
-            take a bite out of the form column and the canvas rather than
-            softening an edge. */}
-        <Figure
-          label="Zenbot: a typed sentence becomes wired blocks on the canvas"
-          ratio={cropRatio(ZENBOT_CROP)}
-          square
-          heading="Zenbot turns a sentence into wired blocks, on the canvas you were already looking at"
-          visual={
-            <CaseVideo
-              crop={ZENBOT_CROP}
-              src="/case/zenxo/video/zenbot.mp4"
-              label="A recording of the Zenxo builder: a sentence is sent to Zenbot, and the canvas beside the form wires itself up — a strategy settings block, session and filters, a range breakout entry, then Leg 1 and Leg 2 each gaining a stop loss, a target profit, and re-entry and trail rules, with an overall SL block on the right and an Add Leg ghost still empty"
-            />
-          }
-        />
-
-
-        {/* slot-15 · video. The transcode lands at 1280x780 with a constant
-            83px black bar along the bottom — measured identical on every frame
-            sampled across all 25s — so the crop takes y 0 to 696 and the frame
-            follows at 1280:697. `square` for the same reason the Zenbot figure
-            is: the crop is flush to the page inside it. */}
-        <Figure
-          label="The login flow"
-          ratio={cropRatio(LOGIN_CROP)}
-          square
-          caption="Sign in, and the strategy you left is the one you come back to."
-          visual={
-            <CaseVideo
-              crop={LOGIN_CROP}
-              src="/case/zenxo/video/login-flow.mp4"
-              label="A recording of the Zenxo sign-in page: the Welcome Back panel with email and password fields beside a rendering of the builder, then Login with Google and Sign in with Email Link below them, and the product loading in behind once sign-in completes"
-            />
-          }
-        />
-
-        <Beat>
-          <P>
-            All of this started as 3 separate arguments about what a strategy builder should
-            even be. The one we shipped wasn&rsquo;t the most powerful of the 3&hellip;
-          </P>
-        </Beat>
+            </div>
+            <Body justify={false} className="order-3 lg:order-2 lg:mt-3">
+              A canvas could show what a form never could, and keeping the form beside it is why
+              traders actually learned to read it.
+            </Body>
+            {/* Spans both columns, so its right edge meets the gloss's. */}
+            <Body className="order-2 lg:order-3 lg:col-span-2 lg:mt-1">
+              We laid the strategy out the way it runs: entries on top, legs across the middle,
+              exits below. A shared rule became one node wired to every leg it governs. That
+              had a useful side effect: a leg with nothing beneath it is now, visibly, a leg
+              with no exit.
+            </Body>
+          </div>
+        </section>
+      </div>
       </div>
 
-      {/* What the three directions were each an answer to, broken out of the
-          text column into a full-width band — the same treatment Titan gives
-          its thesis. A claim rather than a question now, so it takes no mark
-          and stays in sentence case. */}
-      <div className="my-24 sm:my-32">
-        <BandLine fit>
-          Visual strategies without a node-editor learning curve
-        </BandLine>
+        <RevealVideo
+          src="/case/zenxo/video/product-showcase.mp4?v=3"
+          label="A screen recording of the Zenxo strategy builder: the form on the left is filled out — strategy settings, then session and filters — and the strategy card and diagram on the right assemble themselves to match, step by step"
+        />
       </div>
 
-      <div className="page-container flex flex-col gap-24 sm:gap-32">
-        <Moment
-          index={1}
-          kicker="Editor, canvas, or both"
-          title="The most capable version was the one nobody would learn"
-        >
-          <P>
-            The 3 of us each took a direction: editor only, editor-led with a canvas, and
-            canvas-led with an editor. The canvas-led one was the most honest expression of the
-            problem, since a strategy really is a graph, so why not let people work on the
-            graph? However, it also asks a retail trader who has never opened a node editor to
-            learn one before placing their first order.
-          </P>
-          <P>
-            I pushed for a blend of the two early on, and once all 3 were built we went
-            through them together and it held up. The form stays default because traders
-            optimise for speed, and changing one number on a canvas is slow. So the canvas sits
-            beside it as a live mirror instead of a mode you switch into. New users work in the
-            surface they already know, and by the time they can read the diagram, nobody has had
-            to teach it to them.
-          </P>
-          <P>
-            The cost landed on the build. Every form feature had to earn a canvas equivalent
-            that didn&rsquo;t add visual weight, which meant contextual buttons on the block
-            they apply to, colour carrying state, and icons doing the work labels would
-            otherwise do. We now have 2 surfaces reading the same data, and they have to stay in
-            step.
-          </P>
-        </Moment>
+      {/* The builder: the video above, then the four things you meet using it. */}
+      <section aria-label="The builder">
+        {/* The four things you meet using the builder: one stage, shown whole
+            and one at a time, with the list beside it doing the explaining. */}
+        <div className="page-container pt-6 sm:pt-8">
+          <ZenxoFeatures
+            features={[
+              {
+                title: "The affordance is the warning",
+                body: <>An empty &ldquo;+ Exit&rdquo; slot is both the prompt and the alarm.</>,
+                ratio: 2082 / 1442,
+                hold: 10100,
+                ground: "url(/case/zenxo/ground-blue.jpg) center / cover no-repeat #dbe9f8",
+                visual: (
+                  <Image
+                    src="/case/zenxo/feature-affordance.png"
+                    alt="The Zenxo builder canvas: two legs hang under the strategy card. Leg 1 has a stop loss wired beneath it; Leg 2 still shows an empty + Exit slot"
+                    fill
+                    sizes="(min-width: 1024px) 60vw, 82vw"
+                    className="object-cover"
+                  />
+                ),
+              },
+              {
+                title: "Dark by default",
+                body: "The way traders actually work.",
+                ratio: 1920 / 1048,
+                hold: 15300,
+                ground: "url(/case/zenxo/ground-orange.jpg) center / cover no-repeat #f7a531",
+                visual: (
+                  <CaseVideo
+                    src="/case/zenxo/video/dark-mode.mp4?v=4"
+                    preload="auto"
+                    label="A recording of the Zenxo strategy builder switching into its dark theme: the leg editor and the canvas beside it invert, with the orange accent carrying through unchanged"
+                  />
+                ),
+              },
+              {
+                title: "Zenbot",
+                body: "Turns a plain sentence into wired blocks, on the canvas you were already looking at.",
+                ratio: cropRatio(ZENBOT_CROP),
+                hold: 11800,
+                ground: "url(/case/zenxo/ground-blue.jpg) center / cover no-repeat #dbe9f8",
+                visual: (
+                  <CaseVideo
+                    crop={ZENBOT_CROP}
+                    src="/case/zenxo/video/zenbot.mp4?v=3"
+                    preload="auto"
+                    label="A recording of the Zenxo builder: a sentence is sent to Zenbot, and the canvas beside the form wires itself up — a strategy settings block, session and filters, a range breakout entry, then Leg 1 and Leg 2 each gaining a stop loss, a target profit, and re-entry and trail rules"
+                  />
+                ),
+              },
+              {
+                title: "Session restore",
+                body: "Sign in, and the strategy you left is the one you come back to.",
+                ratio: 2165 / 1206,
+                hold: 23700,
+                ground: "url(/case/zenxo/ground-orange.jpg) center / cover no-repeat #f7a531",
+                visual: (
+                  <Image
+                    src="/case/zenxo/feature-login.png"
+                    alt="The Zenxo sign-in page: the Welcome Back panel with email and password fields beside a rendering of the builder, over a warm blurred ground"
+                    fill
+                    sizes="(min-width: 1024px) 60vw, 82vw"
+                    className="object-cover"
+                  />
+                ),
+              },
+            ]}
+          />
+        </div>
+      </section>
 
-        {/* The wireframes, not screenshots — see <ZenxoDirection> for why. The
-            frame takes the export's own 1512x982 ratio rather than a nominal
-            16:9, so all three land edge to edge with nothing cropped. */}
-        <DirectionBoilDefs count={3} />
-        <ExplorationSet
-          kicker="Three directions, built"
-          ratio={DIRECTION_RATIO}
-          options={[
-            {
-              label: "Editor only",
-              visual: (
-                <ZenxoDirection
-                  index={0}
-                  src="/case/zenxo/directions/editor-only.svg"
-                  alt="Wireframe of the editor-only direction: a single full-width form column of stacked, grouped fields with a step header across the top and no canvas anywhere in the frame"
+      {/* ── MOMENT 1 · EDITOR, CANVAS, OR BOTH ──────────────────────────────
+          The moment opens on its verdict, as a quote: a grey lead-in hands
+          over to the sentence that matters. The question all three directions
+          answered sits across from it on a note card — the brief, pinned up
+          beside the outcome. */}
+      <div className="page-container pt-32 sm:pt-40">
+        <section>
+          <CaseKicker>Moment 1</CaseKicker>
+          <p className="type-caption text-ink-muted mt-10">
+            &ldquo;All of this started as three separate arguments about what a strategy builder
+            should even be.
+          </p>
+          {/* The heading on the left; on the right, a key to the table below,
+              starting on the heading's first line. */}
+          <div className="mt-3 grid grid-cols-1 items-start gap-y-6 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)] lg:gap-x-16">
+            <h2 className="type-subheading text-ink-alt max-w-[640px] text-balance" style={HEAD}>
+              The one we shipped wasn&rsquo;t the most powerful of the three. It was the only
+              one traders would learn.&rdquo;
+            </h2>
+            <div className="lg:justify-self-end lg:pt-1">
+              <p className="type-caption text-ink uppercase tracking-[0.08em]">
+                Exploration set — three directions, built
+              </p>
+              <p className="type-caption text-ink-muted mt-2">
+                (Direction / what it did well / why it didn&rsquo;t ship)
+              </p>
+            </div>
+          </div>
+
+          <DirectionBoilDefs count={3} />
+          {/* The three directions as one full-bleed ruled table. A top rule the
+              thesis sits on and a bottom rule under the last line of copy carry
+              the width of the viewport, with a second rule closing the thesis strip;
+              dashed dividers run from that rule down in the two gutters, and a
+              black dot marks every joint. The thesis is
+              the brief each direction was judged against, so it heads the table
+              like a column note. */}
+          {/* Double rules, as in the redraw: a second rule 28px outside the
+              table's own top and bottom, with the dividers running only
+              between the inner pair. */}
+          <div className="relative mt-14 py-[28px] lg:ml-[calc(50%-50vw)] lg:w-screen">
+            <DashRule edge="top" {...EAGER} />
+            <DashRule edge="bottom" {...EAGER} />
+          <div className="relative">
+            <DashRule edge="top" {...EAGER} />
+            <DashRule edge="bottom" {...EAGER} />
+            {TABLE_X.map((x) => (
+              <VRule key={x} left={x} />
+            ))}
+            <RuleDots />
+            <div className="grid grid-cols-1 gap-y-12 pb-10 pt-5 sm:grid-cols-2 sm:gap-x-12 lg:grid-cols-3 lg:gap-x-0">
+              {DIRECTIONS.map((d, i) => (
+              <article key={d.label} className="flex flex-col lg:px-12 xl:px-16">
+                <GrowOnView className="case-figure relative block">
+                  <div
+                    className="relative w-full overflow-hidden rounded-[11px] bg-white ring-1 ring-[#e6e6e6]"
+                    style={{ aspectRatio: String(DIRECTION_RATIO) }}
+                  >
+                    <ZenxoDirection index={i} src={d.src} alt={d.alt} />
+                  </div>
+                </GrowOnView>
+                <h3 className="type-label mt-5 flex flex-wrap items-center gap-x-3 gap-y-1 uppercase text-ink">
+                  {d.label}
+                  {"shipped" in d ? (
+                    <Highlight className="type-caption normal-case text-black">Shipped</Highlight>
+                  ) : null}
+                </h3>
+                <p className="type-caption text-ink-muted mt-2 max-w-[340px] leading-[1.55]">
+                  <span className="text-ink">Did well:</span> {d.good}
+                </p>
+                <p className="type-caption text-ink-muted mt-3 max-w-[340px] leading-[1.55]">
+                  <span className="text-ink">{d.costLabel}</span> {d.cost}
+                </p>
+              </article>
+              ))}
+            </div>
+          </div>
+          </div>
+        </section>
+      </div>
+
+      {/* ── MOMENT 2 · RANKING THE RESULTS ──────────────────────────────────
+          Answered from the right. The old page sits opposite the heading as
+          the thing being answered; then the page narrows to the centre for
+          the finding, the path it produced, and the new page it became. */}
+      <div className="page-container pt-32 sm:pt-40">
+        <section>
+          <div className="grid grid-cols-1 items-stretch gap-y-10 lg:grid-cols-[504px_minmax(0,1fr)] lg:gap-x-[86px]">
+            <div className="order-2 lg:order-1 lg:-mt-[18px]">
+              {/* The old page, read by a moving camera — at this size a still
+                  of dense UI is unreadable, and the numbers ARE the argument.
+                  See <ZenxoResultsPan>. */}
+              <Figure
+                label="Before, win rate leads"
+                ratio={RESULTS_RATIO}
+                maxWidth={504}
+                chrome
+                caption="Before: everything one size, leading with a number the trader wasn't asking for."
+                visual={
+                  <ZenxoResultsPan
+                    src="/case/zenxo/results-before.webp"
+                    alt="The old Zenxo results page: a large win rate percentage leading the summary, total net P&L set small in the top-right corner, max profit, max loss, average profit, average loss and Sharpe all at one weight, a configuration column down the right, and the cumulative P&L chart starting below the fold"
+                  />
+                }
+              />
+            </div>
+            {/* Kicker and heading at the top of the image, the paragraph at its
+                foot, so the text column spans the picture beside it. */}
+            <div className="order-1 flex flex-col items-start lg:order-2 lg:pb-12">
+              <CaseKicker>Moment 2</CaseKicker>
+              <h2 className="type-subheading text-ink-alt mt-10 max-w-[560px] text-balance" style={HEAD}>
+                Results need to guide what your next step is, so we built the page as a path.
+              </h2>
+              <Body justify={false} className="mt-8 max-w-[440px] lg:mt-auto">
+                The results page had 21 panels at the same weight. Net profit sat in a tile the
+                same size as the worst losing streak. But a trader opens a backtest to answer one
+                question: should I run this?
+              </Body>
+            </div>
+          </div>
+
+          {/* The finding, with the method whispered above it: the aside at a
+              third of the size of the line it leads into, so the eye lands on
+              the result and only then reads how it was got. */}
+          <div className="mt-20 text-center sm:mt-24">
+            {/* Figma 819:719: one 19px block, 330px wide, method then finding. */}
+            <p className="text-ink mx-auto max-w-[370px]" style={FIGMA_19}>
+              I sat with traders one at a time.
+              <br />
+              Priorities differed,{" "}
+              <Highlight>but the shape&nbsp;held.</Highlight>
+            </p>
+          </div>
+
+          <div className="mt-8">
+            <ZenxoFunnel />
+          </div>
+
+          <ScrubText
+            text="And then we rewrote the same numbers, re-ranked into the order traders read them in"
+            on="#171717"
+            off="#959595"
+            className="font-display mx-auto mt-8 max-w-[470px] text-center text-balance sm:mt-12"
+            style={FIGMA_19}
+          />
+
+          {/* The redesigned results page, running: a full-bleed band of the
+              blue ground with the recording floating on it as a glass-rimmed
+              card, the same treatment as the feature row. */}
+          <div
+            className="relative mt-10 w-screen overflow-hidden px-4 py-12 sm:px-8 sm:py-16 lg:py-20"
+            style={{
+              marginLeft: "calc(50% - 50vw)",
+              background: "url(/case/zenxo/ground-blue.jpg) center / cover no-repeat #dbe9f8",
+            }}
+          >
+            <GrowOnView className="case-figure relative mx-auto block w-full max-w-[1120px]">
+              <div
+                className="relative w-full overflow-hidden rounded-[12px]"
+                style={{ aspectRatio: String(cropRatio(RESULTS_CROP)), boxShadow: RIM }}
+              >
+                <CaseVideo
+                  crop={RESULTS_CROP}
+                  src="/case/zenxo/video/results-after.mp4?v=1"
+                  preload="auto"
+                  label="A recording of the redesigned Zenxo results page: total net P&L set large at the top right, the summary metrics and cumulative P&L chart beneath it, then the day's P&L chart with its position snapshot, the drawdown panel, and Zen's insights further down"
                 />
-              ),
-              body: "The 9 sections restructured into a stepped, grouped flow. Genuinely much better than what it replaced.",
-              verdict:
-                "It still couldn't show a rule shared across legs. We fixed the length, not the capability.",
-            },
-            {
-              label: "Canvas-led, editor secondary",
-              visual: (
-                <ZenxoDirection
-                  index={1}
-                  src="/case/zenxo/directions/canvas-led.svg"
-                  alt="Wireframe of the canvas-led direction: a full-frame dot-grid canvas carrying the strategy as connected nodes, with the form reduced to a secondary panel"
-                />
-              ),
-              body: "The graph as the primary surface, with the form available underneath.",
-              verdict:
-                "The most expressive of the 3, and the least learnable. It puts a node editor in front of the thing meant to simplify the product.",
-            },
-            {
-              label: "Editor-led, canvas as live mirror",
-              // The one we shipped, and the only one of the 3 with two surfaces
-              // in the frame at once — at half width its form column and its
-              // canvas both collapse to unreadable. Full width it also lands
-              // last and alone, which is the shape of the argument.
-              wide: true,
-              visual: (
-                <ZenxoDirection
-                  index={2}
-                  src="/case/zenxo/directions/editor-led.svg"
-                  alt="Wireframe of the shipped direction: the form as a narrow left column with the dot-grid canvas filling the rest of the frame beside it, both showing the same strategy"
-                />
-              ),
-              body: "Form default, canvas beside it, both reading the same data.",
-              verdict:
-                "Traders start in the surface they already know, and pick up the canvas by watching it. It costs us a narrow form column and a much harder build.",
-            },
-          ]}
-        />
+              </div>
+            </GrowOnView>
+          </div>
+          <p className="type-caption text-ink-muted mx-auto mt-5 max-w-[780px] text-balance text-center leading-relaxed">
+            After: the verdict at display size, the curve full height on the first screen, the
+            settings moved below. Ranking meant demoting — the settings that produced the run lost
+            their permanent column. A deliberate trade.
+          </p>
+        </section>
+      </div>
 
-        {/* The before/after used to sit as a two-up set AFTER all three
-            paragraphs, which put both pictures on the far side of the whole
-            argument. Interleaved, each figure lands on the sentence it is
-            evidence for: the flat page under the complaint about it, the
-            ranked page under the funnel that replaced it, and the last
-            paragraph — what ranking cost — reads against the new one still on
-            screen. <MomentContinued> carries the same rule and measure across
-            the breaks so it stays one moment. */}
-        <Moment
-          index={2}
-          kicker="Ranking the results"
-          title="Every trader wanted a different number first, so we had to pick one for everybody"
-        >
-          <P>
-            The results page had 21 panels sitting at one weight. Net profit was in a tile the
-            same size as the worst losing streak, and a warning that the strategy would lose
-            money over time got the same treatment as everything above it. A trader opens a
-            backtest to answer 1 question: should I run this?
-          </P>
-        </Moment>
+      {/* ── MOMENT 3 · THE SAME ARGUMENT, AT CARD SIZE ──────────────────────
+          Before and after in a ruled table: double rules at head and foot, a
+          divider down the middle, each card standing on its own label. The
+          cards keep their own heights — the new one is genuinely taller, and
+          that cost is in the copy. */}
+      <div className="page-container pt-32 sm:pt-40">
+        <section>
+          <div className="grid grid-cols-1 items-start gap-y-6 lg:grid-cols-2 lg:gap-x-16">
+            <div>
+            <CaseKicker>Moment 3</CaseKicker>
+            <h2 className="type-subheading text-ink-alt mt-10 max-w-[380px]" style={HEAD}>
+              The dashboard card had the same problem, just smaller
+            </h2>
+            </div>
+            <Body justify={false} className="max-w-[370px] lg:ml-auto lg:mt-16 lg:text-right">
+              Everything sat at one weight. The redesign trades density for rank: the verdict
+              leads, the curve shows the shape, the legs become a table.
+            </Body>
+          </div>
 
-        {/* slot 10 · the old page, read by a moving camera — at this width a
-            still of 1920x1083 of dense UI is unreadable, and the numbers ARE
-            the argument. See <ZenxoResultsPan>. */}
-        <Figure
-          label="Before, win rate leads"
-          ratio={RESULTS_RATIO}
-          maxWidth={980}
-          caption="Before. A percentage at the top, total net P&L small in the corner, Sharpe given the same room as max loss, and the cumulative curve below the fold. It leads with a question the trader wasn't asking first."
-          visual={
-            <ZenxoResultsPan
-              src="/case/zenxo/results-before.webp"
-              alt="The old Zenxo results page: a large win rate percentage leading the summary, total net P&L set small in the top-right corner, max profit, max loss, average profit, average loss and Sharpe all at one weight, a configuration column down the right, and the cumulative P&L chart starting below the fold"
-            />
-          }
-        />
+          <div className="mt-10">
+            <DoubleRule />
+            <div className="relative grid grid-cols-1 gap-y-14 py-10 sm:grid-cols-2 lg:py-12">
+              <VRule left="50%" />
+              <EdgeDot left="50%" edge="top" />
+              <EdgeDot left="50%" edge="bottom" />
+              {(
+                [
+                  {
+                    which: "before",
+                    src: "/case/zenxo/card/before.svg",
+                    alt: "The old dashboard card: strategy name and run window at the top, a legs block listing each leg with its stop loss and target, then a results block where net P&L, winning trades, trades and max drawdown all sit at the same small size, above View results and Configure",
+                  },
+                  {
+                    which: "after",
+                    src: "/case/zenxo/card/after.svg",
+                    alt: "The redesigned dashboard card: net P/L set at display size under the strategy name, wins, trades and max drawdown as supporting figures beneath it, a cumulative curve across the middle with a breakeven line, the legs as a readable table, and View results and Configure at the foot",
+                  },
+                ] as const
+              ).map((c) => (
+                <div key={c.which} className="flex flex-col items-center justify-end">
+                  <GrowOnView className="case-figure relative block w-[min(360px,80vw)]">
+                    <div
+                      className="relative w-full"
+                      style={{ aspectRatio: String(CARD_RATIO[c.which]) }}
+                    >
+                      <ZenxoCardShot
+                        which={c.which}
+                        curve={c.which === "after"}
+                        src={c.src}
+                        alt={c.alt}
+                      />
+                    </div>
+                  </GrowOnView>
+                  <p className="type-label mt-8 uppercase text-ink">
+                    {c.which === "after" ? <Highlight>After</Highlight> : "Before"}
+                  </p>
+                </div>
+              ))}
+            </div>
+            <DoubleRule />
+          </div>
+        </section>
+      </div>
 
-        <MomentContinued>
-          <P>
-            That wasn&rsquo;t a question we could answer from the inside. I sat down with
-            traders individually to find out which values mattered and in what order, and their
-            answers genuinely differed. However, the variation had a shape to it: everyone
-            wanted the verdict first, then the curve, then the reasons, then the raw rows. We rebuilt
-            the page as that funnel, and went back and forth with the PM on where the smaller
-            variables should land.
-          </P>
-        </MomentContinued>
+      {/* ── MOMENT 4 · CRAFT ────────────────────────────────────────────────
+          Last, after every decision has been argued: it is the only section
+          about how the thing is made rather than why. Heading left, the three
+          principles answering it from the right — the same header as the
+          dashboard-card spread. Then the two cards as a centred pair, because
+          the pair IS the comparison — nothing running, nothing moving;
+          something running, every stage reporting. */}
+      <div className="page-container pt-32 sm:pt-40">
+        <section>
+          <div className="grid grid-cols-1 items-start gap-y-8 lg:grid-cols-2 lg:gap-x-16">
+            <div>
+              <CaseKicker>Moment 4</CaseKicker>
+              <h2 className="type-subheading text-ink-alt mt-10 max-w-[440px]" style={HEAD}>
+                Confusing states were driven towards clarity with motion
+              </h2>
+              <Body justify={false} className="mt-6 max-w-[440px]">
+                One accent colour, rationed. Orange only ever means &ldquo;act here&rdquo; or
+                &ldquo;you are here,&rdquo; so you can read a screen without reading a word of it.
+              </Body>
+            </div>
+            {/* The two motion rules, level with the paragraph's foot so the
+                pair of columns closes on one line. */}
+            <ul className="flex max-w-[420px] flex-col gap-3 lg:ml-auto lg:self-end">
+              {[
+                [
+                  "Motion reports instead of reassuring.",
+                  "A backtest names the stage it’s on, so a slow run and a stuck run look different.",
+                ],
+                [
+                  "If nothing is happening, nothing moves.",
+                  "The orbiting dots stop when the strategy stalls. That’s the whole idea in one gesture.",
+                ],
+              ].map(([lead, rest]) => (
+                <li key={lead} className="flex gap-2">
+                  <Body justify={false}>
+                    &ndash;&nbsp;<span className="font-medium">{lead}</span> {rest}
+                  </Body>
+                </li>
+              ))}
+            </ul>
+          </div>
 
-        {/* slot 11 · image. The mockup carries no ground of its own, so this
-            one is square and fades out sideways instead of sitting in a frame
-            — see <ZenxoResultsShot>. Wider than the pan above it because the
-            scene includes the machine it is running on. */}
-        <Figure
-          label="After, the verdict leads"
-          title="The same numbers, re-ranked into the order traders read them in"
-          ratio={RESULTS_AFTER_RATIO}
-          maxWidth={1100}
-          square
-          // The scene fades out sideways, so it has no edge to sit on.
-          flat
-          caption="After. Net P&L at display size, metrics grouped so each one carries its own supporting detail, and the curve at full height on the first screen. The settings that produced the run gave up their standing column."
-          visual={
-            <ZenxoResultsShot
-              src="/case/zenxo/results-after.webp"
-              alt="The redesigned Zenxo results page on a monitor: total net P&L set large at the top right, win rate with its breakdown grouped into one panel, the supporting metrics gathered beneath it, and the cumulative P&L chart at full height beside them, with a second row for the P&L chart across the trading range and the contract legs"
-            />
-          }
-        />
+          {/* Transcribed from Figma rather than screenshotted, because what
+              each card is FOR is the thing that moves in it — see
+              <ZenxoPreRunCard> and <ZenxoRunningCard>. Not <Figure>: its frame
+              clips, and each card's soft shadow reaches past the plate it sits
+              on, so it was cut off in a hard rectangle. Here nothing clips and
+              there are no crop marks — the card is the object, not a picture
+              of one. */}
+          <div className="mx-auto mt-16 grid max-w-[1000px] grid-cols-1 items-start gap-y-16 sm:mt-20 sm:grid-cols-2 sm:gap-x-12 lg:gap-x-20">
+            {(
+              [
+                {
+                  label: "Pre-run card, orange on the primary action only",
+                  ratio: PRE_RUN_RATIO,
+                  visual: <ZenxoPreRunCard />,
+                  caption:
+                    "Nothing is running, so nothing moves. Orange sits on the primary action and nowhere else.",
+                },
+                {
+                  label: "Backtest running, with each stage named as it completes",
+                  ratio: RUNNING_RATIO,
+                  visual: <ZenxoRunningCard />,
+                  caption:
+                    "Connecting, loading, analysing, simulating, computing, finalising. Each one reports rather than reassures.",
+                },
+              ] as const
+            ).map((c) => (
+              <figure key={c.label} aria-label={c.label} className="mx-auto w-full max-w-[460px]">
+                <GrowOnView className="case-figure relative block">
+                  <div className="relative w-full" style={{ aspectRatio: String(c.ratio) }}>
+                    {c.visual}
+                  </div>
+                </GrowOnView>
+                <figcaption className="type-caption text-ink-muted mx-auto mt-2 max-w-[380px] text-balance text-center leading-relaxed">
+                  {c.caption}
+                </figcaption>
+              </figure>
+            ))}
+          </div>
+        </section>
+      </div>
 
-        <MomentContinued>
-          <P>
-            Ranking things also meant demoting things. Configuration lost its permanent
-            right-hand column, so a trader checking what produced these numbers has less of it
-            on screen than before.
-          </P>
-        </MomentContinued>
-
-        {/* slot 11b · video, cropped to the page — see RESULTS_PAGE_CROP.
-            The demotion needs its own frame: the paragraph above admits a
-            cost, and a cost claimed with no picture of it is the one kind of
-            admission a case study gets no credit for.
-
-            What the recording actually shows is the ABSENCE — the page scrolls
-            end to end with nothing running down its right-hand side — so the
-            caption is written to that rather than to a panel opening. The
-            clip is cut at 25.5s of its 36.9: the last frame that changes lands
-            at 24.5s and everything after it is a still, which in a loop reads
-            as a stalled video rather than a held beat.
-
-            `square` for the same reason the other two recordings are: the crop
-            is flush to the product inside it, so a radius would clip content
-            rather than soften an edge. */}
-        <Figure
-          label="The results page, read end to end"
-          ratio={cropRatio(RESULTS_PAGE_CROP)}
-          maxWidth={700}
-          square
-          caption="The whole page, top to bottom, in the order it now argues: the verdict, the chart, the trade log, then what the run is telling you."
-          visual={
-            <CaseVideo
-              crop={RESULTS_PAGE_CROP}
-              src="/case/zenxo/video/results-page.mp4"
-              label="A recording of the redesigned Zenxo results page scrolling from top to bottom: the strategy name and total net P&L at the head, then the P&L chart across the trading range, the per-trade table, a monthly breakdown, drawdown and streak figures, and the AI insight cards at the foot — with no configuration column anywhere down the right-hand side"
-            />
-          }
-        />
-
-        <Beat
-          kicker="The same argument, at card size"
-          title="The dashboard card had the same problem, just smaller"
-        >
-          <P>
-            Strategy name, legs, stop losses, targets, net P&amp;L, trades, win count, all at
-            one weight in a small card. The number you opened the card for had no more claim on
-            your eye than the ones next to it. The redesign gives up some density to establish
-            rank, with the verdict at display size, the curve underneath, and the legs in a
-            readable table.
-          </P>
-        </Beat>
-
-        {/* slots 12 / 13 · image, portrait. Each frame takes its own export's
-            ratio rather than a shared 3:4: the two cards sit in the same
-            dashboard column at the same width, and the new one is genuinely
-            taller. Squaring them to one box would flatten the exact cost the
-            caption owns up to. */}
-        <ExplorationSet
-          kicker="Strategy card"
-          options={[
-            {
-              label: "Before",
-              ratio: CARD_RATIO.before,
-              // The card casts its own shadow; a second one under the plate
-              // would draw a rectangle around white-on-white.
-              flat: true,
-              visual: (
-                <ZenxoCardShot
-                  which="before"
-                  src="/case/zenxo/card/before.svg"
-                  alt="The old dashboard card: strategy name and run window at the top, a legs block listing each leg with its stop loss and target, then a results block where net P&L, winning trades, trades and max drawdown all sit at the same small size, above View results and Configure"
-                />
-              ),
-              body: "Compact and complete, but flat, with every value at the same size as every other.",
-              verdict: "There's nothing here to scan for.",
-            },
-            {
-              label: "After",
-              ratio: CARD_RATIO.after,
-              flat: true,
-              visual: (
-                <ZenxoCardShot
-                  which="after"
-                  curve
-                  src="/case/zenxo/card/after.svg"
-                  alt="The redesigned dashboard card: net P/L set at display size under the strategy name, wins, trades and max drawdown as supporting figures beneath it, a cumulative curve across the middle with a breakeven line, the legs as a readable table, and View results and Configure at the foot"
-                />
-              ),
-              body: "Net P/L leads, wins and trades support it, the curve shows shape over time, and the legs paginate.",
-              verdict:
-                "It costs vertical space, and version comparison moves behind the history control.",
-            },
-          ]}
-        />
-
-        {/* Craft sits LAST, after every decision has been argued. It is the
-            only section about how the thing is made rather than why — put
-            earlier it interrupted the run from "here is the product" to "here
-            is what we chose and what it cost", which is the spine of the
-            page. */}
-        <Beat kicker="Craft" title="Motion as a function.">
-          <P>
-            There&rsquo;s 1 accent colour, and we rationed it. Orange only ever means
-            &ldquo;act here&rdquo; or &ldquo;you are here,&rdquo; so a trader can scan a screen
-            and know where the product wants them without reading a word of it.
-          </P>
-          <P>
-            Motion follows the same rule. A backtest doesn&rsquo;t spin a generic loader at
-            you, it names the stage it&rsquo;s on, so a run that&rsquo;s slow and a run
-            that&rsquo;s stuck look different from each other. And the dots stop orbiting
-            when the strategy stalls, which is the whole idea in one gesture: if nothing is
-            happening, nothing moves.
-          </P>
-        </Beat>
-
-        {/* slot-18 + slot-17 · the two cards, transcribed from Figma rather
-            than screenshotted, because what each one is FOR is the thing that
-            moves in it — see <ZenxoPreRunCard> and <ZenxoRunningCard>.
-
-            Side by side rather than stacked with a paragraph between them,
-            which is also why the two paragraphs above merged: the pair IS the
-            comparison the section is making. One card is a strategy with
-            nothing running, the other is the same product with something
-            running, and the difference between "nothing moves" and "every
-            stage reports" only reads if both are on screen at once.
-
-            The orbit stalls on the left card. That is the state the card is
-            in — "a few more steps, then you're ready to run" is a strategy
-            that has not started — so the claim gets made by the artwork
-            rather than only by the sentence above it.
-
-            The two frames sit at different heights on purpose: these are
-            genuinely different cards, and a shared box would have cropped one
-            to flatter the other. */}
-        <FigurePair
-          left={{
-            label: "Pre-run card, orange on the primary action only",
-            ratio: PRE_RUN_RATIO,
-            flat: true,
-            caption:
-              "Nothing is running, so nothing moves. Orange sits on the primary action and nowhere else.",
-            visual: <ZenxoPreRunCard />,
-          }}
-          right={{
-            label: "Backtest running, with each stage named as it completes",
-            ratio: RUNNING_RATIO,
-            flat: true,
-            caption:
-              "Connecting, loading, analysing, simulating, computing, finalising. Each one reports rather than reassures.",
-            visual: <ZenxoRunningCard />,
-          }}
-        />
-
-        <Beat>
-          <P>
-            The form and the canvas share components, because they&rsquo;re reading the same
-            data and it would be strange if they disagreed about it.
-          </P>
-        </Beat>
-
+      {/* ── OUTCOMES, REFLECTION, CREDITS ── unchanged from the previous
+          build. */}
+      <div className="page-container flex flex-col gap-24 pt-28 sm:gap-32 sm:pt-36">
         <Beat
           kicker="Outcomes"
           title="Zenxo is live, and a shared rule is finally a thing you can see."
+          titleStyle={HEAD}
         >
           <P>
             The rebuilt builder and the new results page both shipped. The 9-section scroll is
@@ -647,7 +839,7 @@ export default function ZenxoCaseStudy() {
         {/* Two named lessons under one heading rather than one long confession:
             the first is what went wrong, the second is what I would keep. Split
             like that the second stops reading as an apology for the first. */}
-        <Beat kicker="Reflection" title="What I learned">
+        <Beat kicker="Reflection" title="What I learned" titleStyle={HEAD}>
           <h3 className="type-subheading-sm text-ink-alt">
             I didn&rsquo;t know how F&amp;O worked&hellip; and the team paid for me learning it.
           </h3>

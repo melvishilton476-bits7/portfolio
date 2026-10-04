@@ -109,7 +109,21 @@ export type FigureProps = {
    *  looking for rather than working it out and then being told. Use it where
    *  the figure is the payoff of an argument the prose has just made. */
   title?: React.ReactNode;
+  /** The recording-card look: no crop marks and no drop shadow, a larger
+   *  radius, and a wide translucent rim in place of the frame's edge. */
+  glass?: boolean;
+  /** Frame the artwork as a macOS window: a light title bar with the three
+   *  traffic lights, matching the chrome in the raw Zenbot capture. No crop
+   *  marks. */
+  chrome?: boolean;
 };
+
+/** Sampled off the Zenbot capture's own window chrome. */
+const TRAFFIC = ["#e9735c", "#e5b046", "#5ca66b"] as const;
+
+/** A wide rim at low opacity, so it reads as glass rather than a border. Grey
+ *  rather than white because it sits on the white page, not on a ground. */
+const GLASS_RIM = "0 0 0 1px rgba(23,23,23,0.06), 0 0 0 6px rgba(23,23,23,0.045)";
 
 export function Figure({
   label,
@@ -121,6 +135,8 @@ export function Figure({
   square = false,
   flat = false,
   title,
+  glass = false,
+  chrome = false,
 }: FigureProps) {
   return (
     <figure className="mx-auto w-full" style={{ maxWidth }}>
@@ -135,7 +151,31 @@ export function Figure({
         </h3>
       ) : null}
       <GrowOnView className="case-figure relative block">
-        <Framed round={!square} shadow={!flat}>
+        <Framed
+          round={!square && !glass && !chrome}
+          shadow={!flat && !glass && !chrome}
+          className={glass || chrome ? "rounded-[10px]" : ""}
+          style={
+            glass
+              ? { boxShadow: GLASS_RIM }
+              : chrome
+                ? {
+                    border: "1px solid #e4e2df",
+                    boxShadow: flat ? "none" : "0 18px 44px -26px rgba(23,23,23,0.14)",
+                  }
+                : undefined
+          }
+        >
+          {chrome ? (
+            <div
+              aria-hidden
+              className="flex h-7 items-center gap-[7px] border-b border-[#ebe9e6] bg-[#f7f5f3] px-3"
+            >
+              {TRAFFIC.map((c) => (
+                <span key={c} className="size-[10px] rounded-full" style={{ background: c }} />
+              ))}
+            </div>
+          ) : null}
           {visual ? (
             // Same box the Placeholder reserved, so swapping art in moves
             // nothing around it.
@@ -146,7 +186,7 @@ export function Figure({
             <Placeholder label={label} ratio={ratio} className={R} />
           )}
         </Framed>
-        <CropMarks />
+        {glass || chrome ? null : <CropMarks />}
       </GrowOnView>
       {heading || caption ? (
         <figcaption>

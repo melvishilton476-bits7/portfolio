@@ -76,9 +76,11 @@ const PLATES = {
 } as const;
 
 export default function ScenarioCycle({ side }: { side: "scene" | "response" }) {
-  // Seeded from the clock rather than 0, so a pane mounting late (lazy, below
-  // the fold) lands on the card its partner is already showing.
-  const [i, setI] = useState(() => Math.floor(Date.now() / PERIOD_MS) % CARDS.length);
+  // Starts at 0 so the server's HTML and the first client render agree (a
+  // clock-seeded start differed between the two and broke hydration). The
+  // effect then snaps it to the clock, so a pane mounting late still lands on
+  // the card its partner is already showing.
+  const [i, setI] = useState(0);
 
   useEffect(() => {
     const tick = () => setI(Math.floor(Date.now() / PERIOD_MS) % CARDS.length);
@@ -86,11 +88,13 @@ export default function ScenarioCycle({ side }: { side: "scene" | "response" }) 
     // period — otherwise a pane mounted mid-interval turns off-beat forever.
     const delay = PERIOD_MS - (Date.now() % PERIOD_MS);
     let interval: ReturnType<typeof setInterval>;
+    const sync = setTimeout(tick, 0);
     const start = setTimeout(() => {
       tick();
       interval = setInterval(tick, PERIOD_MS);
     }, delay);
     return () => {
+      clearTimeout(sync);
       clearTimeout(start);
       clearInterval(interval);
     };

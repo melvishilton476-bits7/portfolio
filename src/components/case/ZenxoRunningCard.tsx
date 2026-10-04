@@ -35,10 +35,14 @@ import { CardPlate, plateRatio } from "./ZenxoCardShot";
  * webfont requests.
  */
 
-const S = { w: 663, h: 867 } as const;
+/** Stretched from the design's 867 to the pre-run card's 1036, so the pair
+ *  sits as two cards of one size. The extra height went into the content —
+ *  larger type and a looser stage list — rather than into empty space. */
+const S = { w: 663, h: 1036 } as const;
 const RADIUS = 16;
 
 export const RUNNING_RATIO = plateRatio(S);
+
 
 /** The card's origin inside the captured frame. */
 const O = { x: 57, y: 13 };
@@ -57,25 +61,36 @@ const ACCENT =
  * Rendered as the typo it is, the figure would put a misspelling in a
  * portfolio piece as evidence of care; rendered as "Simulating" it matches
  * the rest of the list and the copy around it. Worth fixing at source.
- *
- * `cx` is the label's captured centre-x, in frame coordinates. They differ per
- * row because Figma centred each label on itself — the left edges still land
- * within a pixel or two of each other, which is what the design intends.
  */
 const STAGES = [
-  { label: "Connecting Engine", cx: 102 + 127.5 },
-  { label: "Loading Data", cx: 102 + 104 },
-  { label: "Analysing Conditions", cx: 102 + 137.5 },
-  { label: "Simulating Legs", cx: 102 + 118.5 },
-  { label: "Computing P&L metrics", cx: 253.5 },
-  { label: "Finalising Results", cx: 223.5 },
+  { label: "Connecting Engine" },
+  { label: "Loading Data" },
+  { label: "Analysing Conditions" },
+  { label: "Simulating Legs" },
+  { label: "Computing P&L metrics" },
+  { label: "Finalising Results" },
 ] as const;
 
-/** Captured tops for each row, in frame coordinates. The first four sit on the
- *  Y Axis group's own grid (390 + 23 + 55n); the last two were placed outside
- *  it and land 50px apart rather than 55. */
-const ROW_Y = [413, 468, 523, 578, 628, 678];
-const LABEL_Y = [417, 472, 527, 581, 631, 681];
+/** Row tops in frame coordinates, on one 70px pitch (the design ran 55 then
+ *  50; the taller card has room to let the list breathe evenly). */
+const PITCH = 70;
+const ROW_Y = STAGES.map((_, i) => 470 + i * PITCH);
+/** Labels are left-aligned on one edge rather than centred on themselves, so
+ *  the larger type cannot drift the edge row to row. */
+const LABEL_X = 150;
+const LABEL_TOP = 2;
+const FS = 22;
+
+/** Where the done wipe and the latest-row window cut, per stage, as insets of
+ *  the card — derived from ROW_Y so the animation cannot fall out of step
+ *  with the rows it reveals. The 4px is the marker's glow overrun. */
+const pct = (y: number) => `${((y / S.h) * 100).toFixed(3)}%`;
+const CLIP_VARS = Object.fromEntries(
+  ROW_Y.flatMap((y, i) => [
+    [`--zx-t${i}`, pct(y - O.y - 4)],
+    [`--zx-b${i}`, pct(S.h - (y - O.y + 34))],
+  ]),
+);
 
 /** Seconds per stage, and so the beat the whole card is timed to. */
 const STEP = 2;
@@ -92,6 +107,7 @@ export default function ZenxoRunningCard() {
             borderRadius: `calc(100cqw * ${RADIUS / S.w})`,
             containerType: "inline-size",
             "--zx-dur": `${DUR}s`,
+            ...CLIP_VARS,
           } as React.CSSProperties
         }
       >
@@ -129,13 +145,13 @@ export default function ZenxoRunningCard() {
               only during its own beat — the alternative was one node whose
               text changes, which CSS cannot do and which would have needed a
               client component for a decorative card. */}
-          <img alt="" src="/case/zenxo/run/b-gear.svg" className="absolute block" style={{ ...at(107, 205), width: 29, height: 28.993 }} />
-          <div className="absolute" style={{ ...at(262, 206.74), width: 0, height: 0 }}>
+          <img alt="" src="/case/zenxo/run/b-gear.svg" className="absolute block" style={{ ...at(104, 226), width: 34, height: 34 }} />
+          <div className="absolute" style={{ ...at(160, 228), width: 0, height: 0 }}>
             {STAGES.map((s, i) => (
               <p
                 key={s.label}
-                className={`zx-now absolute -translate-x-1/2 whitespace-nowrap text-center ${UI}`}
-                style={{ ["--i" as string]: i, top: 0, left: 0, fontSize: 20, letterSpacing: "-0.2px", color: "#969696" }}
+                className={`zx-now absolute whitespace-nowrap ${UI}`}
+                style={{ ["--i" as string]: i, top: 0, left: 0, fontSize: 23, letterSpacing: "-0.23px", color: "#969696" }}
               >
                 {s.label}...
               </p>
@@ -154,10 +170,10 @@ export default function ZenxoRunningCard() {
             className={`zx-pct absolute whitespace-nowrap bg-clip-text text-transparent ${UI}`}
             style={
               {
-                ...at(585, 197),
+                ...at(568, 214),
                 fontWeight: 500,
-                fontSize: 35,
-                letterSpacing: "-0.35px",
+                fontSize: 40,
+                letterSpacing: "-0.4px",
                 backgroundImage: ACCENT,
                 "--zx-pct": 67,
               } as React.CSSProperties
@@ -165,13 +181,13 @@ export default function ZenxoRunningCard() {
           />
 
           {/* the bar */}
-          <div className="absolute rounded-[6px] bg-[#f5f5f5]" style={{ ...at(102, 260), width: 563, height: 52 }} />
+          <div className="absolute rounded-[6px] bg-[#f5f5f5]" style={{ ...at(102, 286), width: 563, height: 58 }} />
           <div
             className="zx-bar absolute rounded-[6px]"
             style={{
-              ...at(102, 260),
+              ...at(102, 286),
               width: 563,
-              height: 52,
+              height: 58,
               backgroundImage: "linear-gradient(to right, #ff7427 2.547%, #f6945e)",
               boxShadow: "0px 0px 5.3px 0px rgba(255,164,19,0.48)",
             }}
@@ -179,14 +195,14 @@ export default function ZenxoRunningCard() {
 
           {/* elapsed and remaining. Static: the design's own numbers, and a
               countdown here would be inventing data the capture never had. */}
-          <div className="absolute flex items-center gap-[6px] rounded-[8px]" style={{ ...at(538, 329), paddingLeft: 9, paddingRight: 9, paddingTop: 5, paddingBottom: 5 }}>
-            <img alt="" src="/case/zenxo/run/b-clock.svg" className="block" style={{ width: 11, height: 11 }} />
-            <p className={`whitespace-nowrap ${UI}`} style={{ fontWeight: 500, fontSize: 12, lineHeight: "16px", color: "#4a4a44" }}>1m 0s</p>
-            <p className={`whitespace-nowrap ${UI}`} style={{ fontWeight: 500, fontSize: 12, lineHeight: "16px", color: "#7c7c74" }}>·</p>
-            <p className={`whitespace-nowrap ${UI}`} style={{ fontWeight: 500, fontSize: 12, lineHeight: "16px", color: "#7c7c74" }}>43s left</p>
+          <div className="absolute flex items-center gap-[6px] rounded-[8px]" style={{ ...at(522, 358), paddingLeft: 9, paddingRight: 9, paddingTop: 5, paddingBottom: 5 }}>
+            <img alt="" src="/case/zenxo/run/b-clock.svg" className="block" style={{ width: 13, height: 13 }} />
+            <p className={`whitespace-nowrap ${UI}`} style={{ fontWeight: 500, fontSize: 14, lineHeight: "18px", color: "#4a4a44" }}>1m 0s</p>
+            <p className={`whitespace-nowrap ${UI}`} style={{ fontWeight: 500, fontSize: 14, lineHeight: "18px", color: "#7c7c74" }}>·</p>
+            <p className={`whitespace-nowrap ${UI}`} style={{ fontWeight: 500, fontSize: 14, lineHeight: "18px", color: "#7c7c74" }}>43s left</p>
           </div>
 
-          <p className={`absolute -translate-x-1/2 whitespace-nowrap text-center ${UI}`} style={{ ...at(144, 355), fontSize: 20, letterSpacing: "-0.2px", color: "#969696" }}>
+          <p className={`absolute whitespace-nowrap ${UI}`} style={{ ...at(102, 408), fontSize: 20, letterSpacing: "0.6px", color: "#969696" }}>
             RUNNING
           </p>
 
@@ -211,12 +227,12 @@ export default function ZenxoRunningCard() {
           {STAGES.map((s, i) => (
             <div key={s.label}>
               {i > 0 ? (
-                <div className="absolute" style={{ ...at(117, ROW_Y[i] - 25), width: 0.5, height: 25, background: "#D7D7D7" }} />
+                <div className="absolute" style={{ ...at(117, ROW_Y[i] - (PITCH - 30)), width: 0.5, height: PITCH - 30, background: "#D7D7D7" }} />
               ) : null}
               <div className="absolute rounded-full bg-[#F4F4F4]" style={{ ...at(102, ROW_Y[i]), width: 30, height: 30 }} />
               <p
-                className={`absolute -translate-x-1/2 whitespace-nowrap text-center ${UI}`}
-                style={{ ...at(s.cx, LABEL_Y[i]), fontSize: 20, letterSpacing: "-0.2px", color: "#d8d8d8" }}
+                className={`absolute whitespace-nowrap ${UI}`}
+                style={{ ...at(LABEL_X, ROW_Y[i] + LABEL_TOP), fontSize: FS, letterSpacing: "-0.22px", color: "#d8d8d8" }}
               >
                 {s.label}
               </p>
@@ -237,8 +253,8 @@ export default function ZenxoRunningCard() {
                   style={{ ...at(98, ROW_Y[i] - 4), width: 38, height: 38 }}
                 />
                 <p
-                  className={`absolute -translate-x-1/2 whitespace-nowrap text-center ${UI}`}
-                  style={{ ...at(s.cx, LABEL_Y[i]), fontSize: 20, letterSpacing: "-0.2px", color: "#969696" }}
+                  className={`absolute whitespace-nowrap ${UI}`}
+                  style={{ ...at(LABEL_X, ROW_Y[i] + LABEL_TOP), fontSize: FS, letterSpacing: "-0.22px", color: "#969696" }}
                 >
                   {s.label}
                 </p>
@@ -251,8 +267,8 @@ export default function ZenxoRunningCard() {
             {STAGES.map((s, i) => (
               <p
                 key={s.label}
-                className={`absolute -translate-x-1/2 whitespace-nowrap text-center ${UI}`}
-                style={{ ...at(s.cx, LABEL_Y[i]), fontWeight: 500, fontSize: 20, letterSpacing: "-0.2px", color: "#595959" }}
+                className={`absolute whitespace-nowrap ${UI}`}
+                style={{ ...at(LABEL_X, ROW_Y[i] + LABEL_TOP), fontWeight: 500, fontSize: FS, letterSpacing: "-0.22px", color: "#595959" }}
               >
                 {s.label}
               </p>
@@ -261,8 +277,8 @@ export default function ZenxoRunningCard() {
 
           {/* Cancel — outlined, grey. The one action on a running card is not
               the one the eye should land on. */}
-          <div className="absolute flex items-center justify-center gap-[14.091px] rounded-[12px] border-[0.5px] border-solid border-[#838383] bg-white" style={{ ...at(93, 754), width: 581, height: 81 }}>
-            <p className={`whitespace-nowrap text-center ${UI}`} style={{ fontWeight: 500, fontSize: 24.66, lineHeight: "35.228px", letterSpacing: "-0.1691px", color: "#686868" }}>
+          <div className="absolute flex items-center justify-center gap-[14.091px] rounded-[12px] border-[0.5px] border-solid border-[#838383] bg-white" style={{ ...at(93, 916), width: 581, height: 88 }}>
+            <p className={`whitespace-nowrap text-center ${UI}`} style={{ fontWeight: 500, fontSize: 26, lineHeight: "36px", letterSpacing: "-0.1691px", color: "#686868" }}>
               Cancel
             </p>
             <img alt="" src="/case/zenxo/run/b-arrow.svg" className="block" style={{ width: 22.893, height: 22.893 }} />

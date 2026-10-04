@@ -52,11 +52,15 @@ export default function CaseVideo({
   src,
   label,
   crop,
+  preload = "metadata",
 }: {
   src: string;
   /** What the recording shows, for anyone who cannot watch it. */
   label: string;
   crop?: VideoCrop;
+  /** "auto" where the video may sit paused in view: a paused video that only
+   *  loaded metadata has no frame to show, and renders as an empty box. */
+  preload?: "metadata" | "auto";
 }) {
   const style: React.CSSProperties = crop
     ? {
@@ -75,7 +79,11 @@ export default function CaseVideo({
 
   return (
     <div className="absolute inset-0 overflow-hidden">
+      {/* A browser extension in the author's Chrome stamps a class on
+          every <video> before React hydrates. Only this element's own
+          attributes are exempted from the mismatch check. */}
       <video
+        suppressHydrationWarning
         style={style}
         src={src}
         aria-label={label}
@@ -83,7 +91,7 @@ export default function CaseVideo({
         autoPlay
         loop
         playsInline
-        preload="metadata"
+        preload={preload}
         disablePictureInPicture
       />
     </div>

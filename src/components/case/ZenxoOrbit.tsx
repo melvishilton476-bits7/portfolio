@@ -2,7 +2,11 @@
  * The pre-run orbit: three rings, a gear, and three dots going round them.
  *
  * The rings, the gear and the ring glows are the Figma export verbatim
- * (`orbit.svg`, a 319x319 artboard). The three dots are NOT — they were lifted
+ * (`orbit.svg`, a 319x319 artboard), with two exceptions on the inner and
+ * middle grey rings: their `crispEdges` is dropped, because with
+ * anti-aliasing off a 0.67-unit circle breaks into stair-stepped dashes, and
+ * their halos come down from 55-60% black to 18%, which in the export only
+ * ever read as a fringe but blurred those broken pixels into a grey smudge. The three dots are NOT — they were lifted
  * out of that file and the export's copies deleted, for the same reason the
  * strategy card's curve was: a dot can only orbit if nothing is already
  * painting it in place. Their circles, gradients and blur are the export's own
@@ -100,7 +104,7 @@ export default function ZenxoOrbit({
         {/* the export's rings and gear, verbatim */}
         <g id="Group 174">
         <g id="Ellipse 27" filter="url(#filter0_d_0_25)">
-        <circle cx="159.995" cy="159.673" r="76.4621" stroke="#E9E9E9" strokeWidth="0.665998" shapeRendering="crispEdges"/>
+        <circle cx="159.995" cy="159.673" r="76.4621" stroke="#E9E9E9" strokeWidth="0.665998"/>
         </g>
         <circle id="Ellipse 28" cx="159.995" cy="159.673" r="76.4621" stroke="url(#paint0_linear_0_25)" strokeWidth="0.665998"/>
         <circle id="Ellipse 29" cx="159.5" cy="159.5" r="113.22" transform="rotate(38.3273 159.5 159.5)" stroke="url(#paint1_linear_0_25)" strokeWidth="0.665998"/>
@@ -112,7 +116,7 @@ export default function ZenxoOrbit({
         <circle cx="159.994" cy="159.673" r="76.4621" stroke="url(#paint3_linear_0_25)" strokeWidth="0.665998"/>
         </g>
         <g id="Ellipse 32" filter="url(#filter3_d_0_25)">
-        <circle cx="159.995" cy="159.673" r="113.822" stroke="#E9E9E9" strokeWidth="0.665998" shapeRendering="crispEdges"/>
+        <circle cx="159.995" cy="159.673" r="113.822" stroke="#E9E9E9" strokeWidth="0.665998"/>
         </g>
         <circle id="Ellipse 35" cx="159.993" cy="159.673" r="148.691" stroke="#DDDDDD" strokeWidth="0.665998"/>
         <circle id="Ellipse 30" cx="159.83" cy="159.833" r="148.851" stroke="url(#paint7_linear_0_25)" strokeWidth="0.665998"/>
@@ -125,7 +129,7 @@ export default function ZenxoOrbit({
         <feOffset dy="-0.665998"/>
         <feGaussianBlur stdDeviation="3.92939"/>
         <feComposite in2="hardAlpha" operator="out"/>
-        <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.55 0"/>
+        <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.18 0"/>
         <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_0_25"/>
         <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_0_25" result="shape"/>
         </filter>
@@ -150,7 +154,7 @@ export default function ZenxoOrbit({
         <feOffset/>
         <feGaussianBlur stdDeviation="3.42989"/>
         <feComposite in2="hardAlpha" operator="out"/>
-        <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.6 0"/>
+        <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.18 0"/>
         <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_0_25"/>
         <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_0_25" result="shape"/>
         </filter>

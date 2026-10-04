@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import CaseKicker from "./CaseKicker";
 
 /**
@@ -17,6 +17,7 @@ import CaseKicker from "./CaseKicker";
 export default function Beat({
   kicker,
   title,
+  titleStyle,
   children,
 }: {
   /** Omitted on a beat that continues the previous one across a thesis band —
@@ -26,13 +27,15 @@ export default function Beat({
    *  isn't a new claim — a heading there would announce a section that the
    *  copy doesn't actually start. */
   title?: string;
+  /** Lets a case study set its subheads in its own heading voice. */
+  titleStyle?: CSSProperties;
   children?: ReactNode;
 }) {
   return (
     <section className="mx-auto w-full max-w-[620px]">
       {kicker ? <CaseKicker>{kicker}</CaseKicker> : null}
       {title ? (
-        <h2 className={`type-subheading text-ink-alt ${kicker ? "mt-7" : ""}`}>{title}</h2>
+        <h2 className={`type-subheading text-ink-alt ${kicker ? "mt-7" : ""}`} style={titleStyle}>{title}</h2>
       ) : null}
       {children ? (
         <div className={`flex flex-col gap-5 ${kicker || title ? "mt-5" : ""}`}>{children}</div>

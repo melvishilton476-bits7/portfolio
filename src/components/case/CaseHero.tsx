@@ -68,10 +68,21 @@ export default function CaseHero({
   image,
   lockup,
   fade = true,
+  dekWidth = 520,
+  dekTone = "muted",
+  titleMarks = false,
 }: {
   eyebrow: string;
   title: string;
   dek: string;
+  /** Measure for the dek, in px. 520 holds a one-line tagline; a dek that is
+   *  a short paragraph needs more, or it stacks into a narrow column of six
+   *  lines under a title that is only one word wide. */
+  dekWidth?: number;
+  /** "ink" sets the dek in body ink rather than the muted lead grey. */
+  dekTone?: "muted" | "ink";
+  /** Crop marks at the title's corners, each with a dot inside. */
+  titleMarks?: boolean;
   frameLabel: string;
   /** The hero plate. `ratio` defaults to 16:9, and `objectPosition` anchors
    *  the crop when the artwork's own ratio differs from it. Omit `src` and the
@@ -124,10 +135,26 @@ export default function CaseHero({
           />
 
           <p className="type-caption text-ink-muted uppercase tracking-[0.14em]">{eyebrow}</p>
-          <h1 className="type-display text-ink-hero mt-5">{title}</h1>
+          {titleMarks ? (
+            <div className="relative mx-auto mt-5 w-fit px-14 py-6">
+              {(["left-0 top-0 border-l border-t", "right-0 top-0 border-r border-t", "left-0 bottom-0 border-l border-b", "right-0 bottom-0 border-r border-b"] as const).map((c) => (
+                <span key={c} aria-hidden className={`absolute size-[9px] border-[#8a8a8a] ${c}`}>
+                  <span className="absolute left-1/2 top-1/2 size-[3px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#171717]" />
+                </span>
+              ))}
+              <h1 className="type-display text-ink-hero">{title}</h1>
+            </div>
+          ) : (
+            <h1 className="type-display text-ink-hero mt-5">{title}</h1>
+          )}
           <p
-            className="type-lead mx-auto mt-6 max-w-[520px] text-balance"
-            style={{ letterSpacing: "-0.02em", fontWeight: 300 }}
+            className="type-lead mx-auto mt-6 text-balance"
+            style={{
+              letterSpacing: "-0.02em",
+              fontWeight: dekTone === "ink" ? 400 : 300,
+              maxWidth: dekWidth,
+              color: dekTone === "ink" ? "var(--color-ink)" : undefined,
+            }}
           >
             {dek}
           </p>
