@@ -147,6 +147,7 @@ const SHOTS: Shot[] = [
   { id: "fun-11", src: "/about/fun-11.webp", alt: "A stack of books seen spine-on", at: [849.39, 1971, 126.485, 126.485], note: "Words of Greatness" },
   { id: "fun-10", src: "/about/fun-10.webp", alt: "Four friends on a beach with the sea behind them", at: [333.65, 1995, 126.485, 126.485], objectPosition: "bottom", note: "beaches are so fun I almost jumped off this cliff" },
   { id: "fun-12", src: "/about/fun-12.webp", alt: "A group photo on a trip, everyone squinting into the sun", at: [521, 2094, 186.826, 126.485], note: "Country roads take me Oman." },
+  { id: "fun-13", src: "/about/fun-13.webp", alt: "Melvis and parents in a sunny selfie", at: [880, 1600, 126.485, 94.864], note: "The OGs" },
 ];
 
 /** The joins, as the source draws them: twelve straight 5px strokes, given here
@@ -167,6 +168,7 @@ const LINKS: [number, number, number, number][] = [
   [600.68, 2097, 669.885, 2015],
   [454.69, 1998.01, 496.95, 1983.18],
   [735.76, 1891.59, 788.24, 1846],
+  [771.485, 1626, 880, 1640],
 ];
 
 /** Which print a point belongs to, and where on it. Distance is measured to the

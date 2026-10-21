@@ -770,35 +770,25 @@ body {
   }
 }
 
-/* --- Letter-by-letter reveal (SIDE STREETS quotes) ----------------------------
-   Each glyph fades in while rising from ~0.5em below, swept left→right via a
-   per-letter animation-delay set inline. Words are inline-block (no mid-word
-   break); letters are inline-block so they rise independently. The reveal only
-   *arms* (hides letters) after JS mounts, so no-JS/SEO keep the plain text; it
-   plays once the quote scrolls into view (.is-shown). */
-.reveal-text .reveal-word {
-  display: inline-block;
-}
-.reveal-text.reveal-armed .reveal-word > span {
-  display: inline-block;
+/* --- Bounce-in reveal (SIDE STREETS quotes) ----------------------------------
+   The whole sentence rises ~10px and lands with a small overshoot. Arms (hides)
+   only after JS mounts, so no-JS/SEO keep the plain text; plays once the quote
+   scrolls into view (.is-shown). Delay is set inline. */
+.reveal-text.reveal-armed {
   opacity: 0;
-  transform: translateY(0.5em);
-  /* No will-change. It is a hint to give the element its own compositor layer,
-     and a sentence is hundreds of letters: the hint that helps one element
-     costs more than it saves multiplied by every glyph on the page. A 0.55s
-     opacity/transform pair needs no help. */
+  transform: translateY(10px) scale(0.98);
 }
-.reveal-text.reveal-armed.is-shown .reveal-word > span {
-  animation: reveal-letter 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+.reveal-text.reveal-armed.is-shown {
+  animation: reveal-bounce 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
 }
-@keyframes reveal-letter {
+@keyframes reveal-bounce {
   from {
     opacity: 0;
-    transform: translateY(0.5em);
+    transform: translateY(10px) scale(0.98);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: none;
   }
 }
 
@@ -808,7 +798,7 @@ body {
     opacity: 1;
     animation: none;
   }
-  .reveal-text.reveal-armed .reveal-word > span {
+  .reveal-text.reveal-armed {
     opacity: 1;
     transform: none;
     animation: none;
@@ -2325,7 +2315,8 @@ body {
 }
 /* Over a text field the native caret is doing the work; two cursors on one
    screen is one too many. */
-.site-cursor[data-mode="text"] {
+.site-cursor[data-mode="text"],
+.site-cursor[data-mode="none"] {
   display: none !important;
 }
 
@@ -4506,3 +4497,82 @@ body {
   to { transform: scaleX(1); }
 }
 
+
+/* ── About lab card ──────────────────────────────────────────────────────
+   The pixels eating the photo blink out and back, each on its own clock
+   (--dur, --delay set per pixel), so the eaten edge never sits still. Still
+   under reduced motion. (The thought stream is driven from BeachStage.) */
+.lab-pixel {
+  animation: lab-pixel var(--dur, 4s) steps(1, end) var(--delay, 0s) infinite;
+}
+@keyframes lab-pixel {
+  0%, 64% { opacity: 1; }
+  66%, 78% { opacity: 0; }
+  80%, 100% { opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .lab-pixel { animation: none; }
+}
+
+/* The card's arrival: it slides in from the right, tilted and faded, the way a
+   print is set down by hand, overshooting straight by a hair before it rests.
+   Most of the travel happens early and the landing is long and soft. The
+   shadow starts lifted and settles with it; the bar follows a beat later. */
+.lab-land {
+  --land-x: 32px;
+  transform-origin: 50% 85%;
+  animation: lab-land 1.3s 0.3s both;
+}
+@media (width >= 64rem) {
+  .lab-land { --land-x: 72px; }
+}
+@keyframes lab-land {
+  0% {
+    opacity: 0;
+    transform: translateX(var(--land-x)) rotate(5deg);
+    animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  35% { opacity: 1; }
+  82% {
+    transform: translateX(-1px) rotate(-0.5deg);
+    animation-timing-function: ease-in-out;
+  }
+  100% { opacity: 1; transform: none; }
+}
+.lab-land-shadow { animation: lab-land-shadow 1.3s 0.3s cubic-bezier(0.16, 1, 0.3, 1) both; }
+@keyframes lab-land-shadow {
+  from { box-shadow: 0 28px 48px rgba(0, 0, 0, 0.18); }
+}
+.lab-land-bar { animation: lab-land-bar 0.7s 1.15s cubic-bezier(0.16, 1, 0.3, 1) both; }
+@keyframes lab-land-bar {
+  from { opacity: 0; transform: translateX(14px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .lab-land, .lab-land-shadow, .lab-land-bar { animation: none; }
+}
+
+/* The network under the about card: lines draw, then the stops pop. */
+.lab-net-line {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: lab-net-line 0.7s var(--at, 0s) cubic-bezier(0.45, 0, 0.55, 1) forwards;
+}
+@keyframes lab-net-line {
+  to { stroke-dashoffset: 0; }
+}
+.lab-net-stop {
+  transform-box: view-box;
+  animation: lab-net-stop 0.45s var(--at, 0s) cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+@keyframes lab-net-stop {
+  from { opacity: 0; transform: scale(0.2); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .lab-net-line { stroke-dashoffset: 0; animation: none; }
+  .lab-net-stop { animation: none; }
+}
+
+/* The dot on the about card's hover cue, blinking like a recording light. */
+.lab-hint-blink { animation: lab-hint-blink 1.2s steps(1, end) infinite; }
+@keyframes lab-hint-blink { 50% { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .lab-hint-blink { animation: none; } }

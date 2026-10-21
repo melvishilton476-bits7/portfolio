@@ -1,4 +1,4 @@
-import AboutIntro from "./AboutIntro";
+import AboutIntro from "./lab/AboutIntroLab";
 import Journey from "./Journey";
 import FunGrid from "./FunGrid";
 

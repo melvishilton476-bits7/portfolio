@@ -80,47 +80,6 @@ function FloatAsterisk({
 
 const PROJECTS: Project[] = [
   {
-    title: "TITAN - REBRAND",
-    meta: "SOLO,2025",
-    color: "#171717",
-    quote:
-      "A conceptual rebrand of Titan, India’s iconic eyewear brand, reimagined for the athletic market.",
-    tags: ["Branding", "UI/UX"],
-    href: "/work/titan-rebrand",
-    // The case study's own opener: hero-bg cropped to 16:9 with the lockup
-    // composited at the artboard fraction, so the card shows exactly what the
-    // project opens with rather than a second, different picture.
-    thumb: "/case/titan/thumb.webp",
-    // The ticket's letterbox strip is a far tighter band than the card, and at
-    // centre it cut the bull in half. 35% lifts the window onto the mark and
-    // the ember lens; the card, whose art is nearly its own shape, barely
-    // moves.
-    thumbPosition: "center 35%",
-    thumbAlt:
-      "A figure in goggles catching an ember reflection, the TITAN lockup across it.",
-  },
-  {
-    // "NAGARHOLE - WAYFINDING" wrapped to two lines in the 172px the ticket
-    // body leaves for a title, which pushed the whole card out of step with
-    // Titan's. Measured against the real font: this holds one line, the
-    // hyphenated form does not.
-    title: "NAGARHOLE SIGNS",
-    meta: "SOLO,2026",
-    color: "#171717",
-    quote:
-      "A signage system built to disappear into Nagarhole National Park — except where disappearing would be dangerous.",
-    tags: ["Signage", "Systems"],
-    href: "/work/nagarhole-wayfinding",
-    thumb: "/case/nagarhole/hero-leopard.webp",
-    // Portrait art in a landscape slot. The hero's own 33% centres the
-    // wordmark, which on the ticket's narrow band left no room for anything
-    // else — the strip read as type on grass. 43% drops below the lettering
-    // onto the leopard at the waterline, and the card keeps both.
-    thumbPosition: "center 43%",
-    thumbAlt:
-      "A black leopard at the waterline, with the Nagarhole wordmark.",
-  },
-  {
     title: "ZENXO - BUILDER",
     meta: "TEAM,2026",
     color: "#171717",
@@ -140,6 +99,39 @@ const PROJECTS: Project[] = [
     thumbPosition: "center 38%",
     thumbAlt:
       "Two traders at a monitor showing the Zenxo results page.",
+  },
+  {
+    title: "DRAW THE LINE",
+    meta: "TEAM,2025",
+    color: "#171717",
+    quote:
+      "Students could already name bullying. The two days were built around feeling how much it hurts, and having a response ready.",
+    tags: ["Workshop", "Experience"],
+    href: "/work/draw-the-line",
+    // The case study's own opener, corridor and lockup composited.
+    thumb: "/case/draw-the-line/card.webp",
+    thumbAlt:
+      "Students walking down a school corridor, under the Draw the Line logo.",
+  },
+  {
+    title: "TITAN - REBRAND",
+    meta: "SOLO,2025",
+    color: "#171717",
+    quote:
+      "A conceptual rebrand of Titan, India’s iconic eyewear brand, reimagined for the athletic market.",
+    tags: ["Branding", "UI/UX"],
+    href: "/work/titan-rebrand",
+    // The case study's own opener: hero-bg cropped to 16:9 with the lockup
+    // composited at the artboard fraction, so the card shows exactly what the
+    // project opens with rather than a second, different picture.
+    thumb: "/case/titan/thumb.webp",
+    // The ticket's letterbox strip is a far tighter band than the card, and at
+    // centre it cut the bull in half. 35% lifts the window onto the mark and
+    // the ember lens; the card, whose art is nearly its own shape, barely
+    // moves.
+    thumbPosition: "center 35%",
+    thumbAlt:
+      "A figure in goggles catching an ember reflection, the TITAN lockup across it.",
   },
 ];
 
@@ -506,7 +498,7 @@ export default function Work() {
       // — once for the static small-screen layout, once for the pinned carousel
       // — so pointing at a heading id would mean a duplicate id in the document.
       aria-label="Sights to See"
-      className="relative z-10 rounded-t-slab bg-background py-24 shadow-[0_-22px_55px_-14px_rgba(0,0,0,0.28)] sm:py-32"
+      className="relative z-10 rounded-t-slab bg-background py-24 shadow-[0_-18px_60px_-20px_rgba(0,0,0,0.10),0_-2px_10px_-6px_rgba(0,0,0,0.05)] sm:py-32"
     >
       <SlideHands />
       <div className={`page-container ${reduce ? "" : "lg:hidden"}`}>

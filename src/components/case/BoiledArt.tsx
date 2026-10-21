@@ -44,6 +44,7 @@ export function BoilDefs({
   id,
   count,
   scale = 2.4,
+  frequency = 0.018,
   ink,
 }: {
   id: string;
@@ -59,6 +60,10 @@ export function BoilDefs({
   /** How far the line is pushed, in px. Scale it with the art: 2.4 reads as a
    *  hand-drawn wobble at 200px tall and as a smudge at 60. */
   scale?: number;
+  /** The noise's grain. The default bends a line in long, slow curves; raise
+   *  it (0.06 and up) for a fine, fast tremor along the stroke instead, the
+   *  kind a ruled line gets rather than a drawn figure. */
+  frequency?: number;
 }) {
   return (
     <svg aria-hidden width="0" height="0" className="absolute">
@@ -67,7 +72,7 @@ export function BoilDefs({
           <filter key={i} id={`boil-${id}-${i}`}>
             <feTurbulence
               type="fractalNoise"
-              baseFrequency="0.018"
+              baseFrequency={frequency}
               numOctaves="2"
               result="noise"
               seed={i * 7 + 1}

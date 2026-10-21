@@ -35,7 +35,7 @@ const PURPLE = "#8581ff";
  * three below would have turned the second showcase into a louder copy of the
  * first rather than more work.
  */
-type SideProject = {
+export type SideProject = {
   title: string;
   /** One line saying what the thing IS — the medium first ("a zine", "chocolate
    *  packaging", "a brand film"), then who it was for and what it argues. Not a
@@ -118,11 +118,12 @@ const PROJECTS: SideProject[] = [
  *  archive, and a hand-listed pairing silently drops any project added past
  *  the last line of it. An odd count leaves the final row half full, which the
  *  Row renderer handles. */
-const ROWS: SideProject[][] = PROJECTS.reduce<SideProject[][]>((rows, p, i) => {
-  if (i % 2 === 0) rows.push([p]);
-  else rows[rows.length - 1].push(p);
-  return rows;
-}, []);
+const pairUp = (projects: SideProject[]) =>
+  projects.reduce<SideProject[][]>((rows, p, i) => {
+    if (i % 2 === 0) rows.push([p]);
+    else rows[rows.length - 1].push(p);
+    return rows;
+  }, []);
 
 /** Crop-mark + nested-dot corners at the four corners of a *card-width* title
  *  frame — the brackets sit on the project image's left/right edges (the frame
@@ -243,7 +244,7 @@ function CardHead({ p }: { p: SideProject }) {
  *  soon as a sliver is in view (6% up from the bottom edge) lets it finish
  *  while the reader's eye is still arriving at it. The blurb observes its own
  *  paragraph inside the same band, so it takes the same line — otherwise its
- *  stricter default would type it in even later than the rules around it. */
+ *  stricter default would bring it in even later than the rules around it. */
 const BAND_TRIGGER = { threshold: 0.1, rootMargin: "0px 0px -6% 0px" } as const;
 
 /** Card footer — the blurb and the dark "View Project" bar with its dotted
@@ -251,7 +252,7 @@ const BAND_TRIGGER = { threshold: 0.1, rootMargin: "0px 0px -6% 0px" } as const;
 function CardFoot({ p }: { p: SideProject }) {
   return (
     <div className="flex flex-col">
-      {/* Blurb reveals letter-by-letter once the band rules have drawn. The
+      {/* Blurb bounces in as the band rules start drawing. The
           flex wrapper keeps the vertical centring within the fixed 60px band;
           RevealText renders a normal text-centred <p> so words wrap cleanly. */}
       <div className="flex h-[60px] items-center justify-center px-6">
@@ -346,11 +347,26 @@ function Row({ pair }: { pair: SideProject[] }) {
   );
 }
 
-export default function SideStreets() {
+/** The section shell, shared with the case studies' "Next Stops": the same
+ *  header, clusters and two-up rows, under whatever title it is given. */
+export function StreetSection({
+  id,
+  title,
+  lead,
+  tail,
+  projects,
+}: {
+  id: string;
+  title: string;
+  /** The subtitle's two halves: a muted word, then the darker rest. */
+  lead: string;
+  tail: string;
+  projects: SideProject[];
+}) {
   return (
     <section
-      id="side-streets"
-      aria-label="Side Streets"
+      id={id}
+      aria-label={title}
       className="relative overflow-x-clip bg-background py-24 sm:py-32"
     >
       {/* Section-opening full-bleed dashed rule. */}
@@ -374,16 +390,16 @@ export default function SideStreets() {
                 mark: the right mark's own offset is trimmed to match (46→23)
                 so it lands back at its original spot once the text's shift
                 grows this box by the same 23px. */}
-            <h2 className="type-heading text-ink-alt lg:ml-[23px]">SIDE STREETS</h2>
+            <h2 className="type-heading text-ink-alt lg:ml-[23px]">{title}</h2>
             <p className="type-caption mt-3 leading-none lg:ml-[23px]" style={{ fontSize: "0.9375rem" }}>
-              <span className="text-ink-muted">Keep</span>{" "}
-              <span className="text-ink-alt">wandering.</span>
+              <span className="text-ink-muted">{lead}</span>{" "}
+              <span className="text-ink-alt">{tail}</span>
             </p>
           </div>
         </header>
 
         <div className="flex flex-col gap-16 sm:gap-24 lg:gap-0">
-          {ROWS.map((pair, i) => (
+          {pairUp(projects).map((pair, i) => (
             <div key={i} className={i > 0 ? "lg:mt-24" : ""}>
               <Row pair={pair} />
             </div>
@@ -392,4 +408,8 @@ export default function SideStreets() {
       </div>
     </section>
   );
+}
+
+export default function SideStreets() {
+  return <StreetSection id="side-streets" title="SIDE STREETS" lead="Keep" tail="wandering." projects={PROJECTS} />;
 }

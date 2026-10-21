@@ -392,7 +392,7 @@ export default function ZenxoCaseStudy() {
                 }}
               />
             </div>
-            <Body justify={false} className="order-3 lg:order-2 lg:mt-3">
+            <Body className="order-3 lg:order-2 lg:mt-3">
               A canvas could show what a form never could, and keeping the form beside it is why
               traders actually learned to read it.
             </Body>
@@ -600,7 +600,7 @@ export default function ZenxoCaseStudy() {
               <h2 className="type-subheading text-ink-alt mt-10 max-w-[560px] text-balance" style={HEAD}>
                 Results need to guide what your next step is, so we built the page as a path.
               </h2>
-              <Body justify={false} className="mt-8 max-w-[440px] lg:mt-auto">
+              <Body className="mt-8 max-w-[440px] lg:mt-auto">
                 The results page had 21 panels at the same weight. Net profit sat in a tile the
                 same size as the worst losing streak. But a trader opens a backtest to answer one
                 question: should I run this?
@@ -679,7 +679,7 @@ export default function ZenxoCaseStudy() {
               The dashboard card had the same problem, just smaller
             </h2>
             </div>
-            <Body justify={false} className="max-w-[370px] lg:ml-auto lg:mt-16 lg:text-right">
+            <Body className="max-w-[370px] lg:ml-auto lg:mt-16">
               Everything sat at one weight. The redesign trades density for rank: the verdict
               leads, the curve shows the shape, the legs become a table.
             </Body>
@@ -745,7 +745,7 @@ export default function ZenxoCaseStudy() {
               <h2 className="type-subheading text-ink-alt mt-10 max-w-[440px]" style={HEAD}>
                 Confusing states were driven towards clarity with motion
               </h2>
-              <Body justify={false} className="mt-6 max-w-[440px]">
+              <Body className="mt-6 max-w-[440px]">
                 One accent colour, rationed. Orange only ever means &ldquo;act here&rdquo; or
                 &ldquo;you are here,&rdquo; so you can read a screen without reading a word of it.
               </Body>
@@ -764,7 +764,7 @@ export default function ZenxoCaseStudy() {
                 ],
               ].map(([lead, rest]) => (
                 <li key={lead} className="flex gap-2">
-                  <Body justify={false}>
+                  <Body>
                     &ndash;&nbsp;<span className="font-medium">{lead}</span> {rest}
                   </Body>
                 </li>

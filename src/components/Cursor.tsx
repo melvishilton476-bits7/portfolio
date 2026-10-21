@@ -118,6 +118,12 @@ export default function Cursor() {
       /* The Playground arena. A whole region rather than one element, so the
          mallet stays in hand between moles instead of flickering back to a dot
          every time the pointer crosses the gap between two of them. */
+      /* A region that draws its own pointer (the About lens): no dot at all,
+         and the native cursor is already hidden site-wide. */
+      if (t.closest("[data-cursor-none]")) {
+        dot.dataset.mode = "none";
+        return;
+      }
       if (t.closest("[data-cursor-mallet]")) {
         dot.dataset.mode = "mallet";
         return;

@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
+import NextStops from "@/components/NextStops";
 import { CASE_STUDIES, CASE_STUDY_SLUGS } from "@/case-studies/registry";
 
 /**
@@ -47,6 +48,9 @@ export default async function CaseStudyPage({
       <Nav />
       <main className="flex-1 overflow-x-clip">
         <Component />
+        {/* Two more projects before the way back, so finishing one study
+            leads into the next rather than straight out to the footer. */}
+        <NextStops current={slug} />
         {/* Back to the work section on the home page — the case study is a
             detour off "Sights to See", so it returns there rather than to the
             top of the site. */}
