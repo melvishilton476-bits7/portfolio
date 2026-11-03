@@ -28,10 +28,21 @@ const inter = Inter({
   display: "swap",
 });
 
+const description =
+  "I help build and simplify systems that put people first and work brilliantly. Portfolio of Melvis Hilton.";
+
 export const metadata: Metadata = {
-  title: "Melvis Hilton — Designer who can Engineer",
-  description:
-    "I help build systems that help people and function with absolute brilliance. Portfolio of Melvis Hilton.",
+  metadataBase: new URL("https://melvishilton.com"),
+  title: "Melvis Hilton — Designer who can Simplify",
+  description,
+  alternates: { canonical: "./" },
+  openGraph: {
+    title: "Melvis Hilton — Designer who can Simplify",
+    description,
+    url: "./",
+    siteName: "Melvis Hilton",
+    type: "website",
+  },
 };
 
 export default function RootLayout({

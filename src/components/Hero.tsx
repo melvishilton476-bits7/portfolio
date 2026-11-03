@@ -62,7 +62,7 @@ export default function Hero() {
               heading wins over name-from-content outright. */}
           <h1
             className="type-display text-ink-hero text-balance"
-            aria-label="A DESIGNER who can ENGINEER"
+            aria-label="A DESIGNER who can SIMPLIFY"
           >
             <span className="font-light" style={{ fontWeight: 300 }}>
               A
@@ -86,8 +86,9 @@ export default function Hero() {
           className="type-lead mt-6 max-w-[494px] text-balance"
           style={{ letterSpacing: "-0.02em", fontWeight: 300 }}
         >
-          I help with building systems that help people and function with
-          absolute brilliance.
+          I help build and simplify systems that
+          <br />
+          put people first and work brilliantly.
         </p>
 
         {/* Stack row — icons/circles unchanged; the "My Stack" label is

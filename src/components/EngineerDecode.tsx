@@ -30,7 +30,7 @@ import { useEffect, useState } from "react";
  * Owns the box + leader markup (moved out of Hero.tsx) so it can gate their
  * entrance on the lock completing.
  */
-const WORD = "ENGINEER";
+const WORD = "SIMPLIFY";
 
 /**
  * Fixed, width-capped glyph pool. Every glyph here measures ≤29.2px at the
