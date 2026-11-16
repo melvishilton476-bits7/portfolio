@@ -3,6 +3,7 @@ import DashRule from "@/components/DashRule";
 import HatchCell from "@/components/HatchCell";
 import { POSTS } from "./posts";
 import { COL_START } from "./grid";
+import { external } from "./external";
 
 const BUTTON = "#454343";
 
@@ -24,7 +25,12 @@ function Plate({ label, href }: { label: string; href?: string }) {
   const cls =
     "type-caption flex h-[45px] items-center justify-center font-medium text-white";
   return href ? (
-    <Link href={href} className={`${cls} transition-opacity hover:opacity-85`} style={{ backgroundColor: BUTTON }}>
+    <Link
+      href={href}
+      {...external(href)}
+      className={`${cls} transition-opacity hover:opacity-85`}
+      style={{ backgroundColor: BUTTON }}
+    >
       {label}
     </Link>
   ) : (
@@ -69,7 +75,7 @@ export default function ReadBand() {
 
         {POSTS.map((post, i) => (
           <div key={post.id} className={COL_START.cols[i]}>
-            <Plate label="Read this" />
+            <Plate label="Read this" href={post.href} />
           </div>
         ))}
 

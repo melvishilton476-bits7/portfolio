@@ -57,7 +57,7 @@ export default function BlogsPage() {
             <div className={`${COL_START.grid} gap-y-14 lg:gap-y-0`}>
               {POSTS.map((post, i) => (
                 <div key={post.id} className={COL_START.cols[i]}>
-                  <BlogCard post={post} beat={i} />
+                  <BlogCard post={post} href={post.href} beat={i} />
                 </div>
               ))}
             </div>

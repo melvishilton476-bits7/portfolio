@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import type { Post, Spine } from "./posts";
+import { external } from "./external";
 
 /* Card body and the three spine palettes, straight off the design. The spine is
    a different instrument on every card — a gradient column, a dial, a stack of
@@ -154,6 +155,7 @@ export default function BlogCard({
         {href ? (
           <Link
             href={href}
+            {...external(href)}
             className="blog-card relative block aspect-[230.209/296.519] transition-transform duration-300 ease-out hover:-translate-y-1"
             style={{ backgroundColor: CARD }}
           >

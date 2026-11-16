@@ -19,6 +19,9 @@ export type Post = {
   /** Alt text: what the picture actually shows, not the title again. */
   image: { src: string; alt: string; position?: string };
   spine: Spine;
+  /** Where the article lives. Absent until it is published; see the note
+   *  above on what an entry without one renders as. */
+  href?: string;
 };
 
 export const POSTS: Post[] = [
@@ -42,6 +45,7 @@ export const POSTS: Post[] = [
       position: "center top",
     },
     spine: "amber",
+    href: "https://medium.com/@melvishilton476/beauty-is-the-beast-6b4bd1034e1e",
   },
   {
     id: "design-school-creativity",
