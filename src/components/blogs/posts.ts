@@ -28,12 +28,13 @@ export const POSTS: Post[] = [
   {
     id: "ai-engineering-design",
     kicker: "Tech | Product Design",
-    title: "How Does AI Affect Engineering And Design",
+    title: "What Iterating In Code Changed For Me",
     image: {
       src: "/blog/ai-engineering-design.webp",
       alt: "An illustration of a man raising a finger with an idea, a lightbulb between him and a robot",
     },
     spine: "blue",
+    href: "https://medium.com/@melvishilton476/what-iterating-in-code-changed-for-me-f05c72082424",
   },
   {
     id: "creatives-athlete-mindset",
