@@ -53,7 +53,9 @@ const GLASS: React.CSSProperties = {
   WebkitBackdropFilter: "blur(22px)",
 };
 
-const RIM = "0 0 0 6px rgba(255,255,255,0.45), 0 18px 40px -18px rgba(23,23,23,0.25)";
+const TEXT_LIFT = "0 1px 2px rgba(23,23,23,0.22), 0 2px 14px rgba(23,23,23,0.18)";
+
+const RIM ="0 0 0 6px rgba(255,255,255,0.45), 0 18px 40px -18px rgba(23,23,23,0.25)";
 
 const STRIP = 120;
 const GAP = 8;
@@ -236,8 +238,12 @@ export default function ZenxoFeatures({
                 style={GLASS}
               />
 
+              {/* White on the pale blue and orange grounds washes out, so the
+                  text carries a soft, low shadow: enough to lift it off a
+                  bright patch, not enough to read as an outline. */}
               <span
                 className={`relative block px-4 pb-6 pt-6 lg:absolute lg:inset-x-6 lg:bottom-6 lg:p-0 text-white`}
+                style={{ textShadow: TEXT_LIFT }}
               >
                 <span className="type-caption block tabular-nums opacity-70">0{i + 1}</span>
                 <span className="mt-1.5 block text-[1.125rem] font-medium lg:truncate leading-[1.3] tracking-[-0.02em]">

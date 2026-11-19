@@ -107,12 +107,15 @@ export default function ScenarioCycle({ side }: { side: "scene" | "response" }) 
 
   return (
     <div className="absolute inset-0 overflow-hidden">
+      {/* Served as-is, not through the image optimizer. Both rooms are already
+          small WebPs (75–83KB), so resizing saved little, and a cold optimizer
+          request once failed on the live site and left both panes grey. */}
       <Image
         src={plate.src}
         alt=""
         aria-hidden
         fill
-        sizes="(max-width: 980px) 100vw, 480px"
+        unoptimized
         className="object-cover grayscale"
       />
       {/* Not a blur — a corner falloff, so the card has somewhere to sit

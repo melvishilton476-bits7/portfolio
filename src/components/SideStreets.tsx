@@ -214,7 +214,18 @@ function CardHead({ p }: { p: SideProject }) {
           padding is equal on all four sides here, where the featured card
           leaves its foot deep to carry the quote: this card's blurb lives
           below the frame, so a deep foot would just look like a mistake. */}
-      <div className="bg-ink p-[clamp(10px,1.6vw,18px)]">
+      {/* The still is a way in too, not just the bar below it: a reader
+          reaches for the picture first. Kept out of the tab order and the
+          accessibility tree, where "View Project" is already the one control,
+          so a keyboard or screen-reader user meets each project once. */}
+      <a
+        href={p.href}
+        {...(p.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+        tabIndex={-1}
+        aria-hidden
+        data-cursor="View project"
+        className="block bg-ink p-[clamp(10px,1.6vw,18px)]"
+      >
         {p.thumb ? (
           // Fixed 388:216 box with the art cropped to fill it, so all four read
           // at one size whatever shape their source asset is — the same rule the
@@ -232,7 +243,7 @@ function CardHead({ p }: { p: SideProject }) {
         ) : (
           <Placeholder label={p.title} ratio={388 / 216} variant="dark" className="border-0" />
         )}
-      </div>
+      </a>
     </div>
   );
 }

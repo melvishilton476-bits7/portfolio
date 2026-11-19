@@ -72,8 +72,15 @@ export default function Ticket({
             far wider than any source asset, so the art is cropped to a band
             rather than letterboxed with bars. */}
         {thumb ? (
-          <div
-            className="relative mt-3 mb-4 w-full overflow-hidden"
+          // A way in as well as the stub below, for the reader who clicks the
+          // picture. Out of the tab order and the accessibility tree: the stub
+          // stays the one named control, so nobody meets the link twice.
+          <a
+            href={href}
+            tabIndex={-1}
+            aria-hidden
+            data-cursor="View case study"
+            className="relative mt-3 mb-4 block w-full overflow-hidden"
             style={{ aspectRatio: "232 / 34" }}
           >
             <Image
@@ -84,7 +91,7 @@ export default function Ticket({
               className="object-cover"
               style={{ objectPosition: thumbPosition }}
             />
-          </div>
+          </a>
         ) : (
           <Placeholder
             label={title}
