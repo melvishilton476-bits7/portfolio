@@ -2,9 +2,8 @@
  * The three articles, and the little instrument that stands beside each one.
  *
  * Data rather than markup because the page draws the same unit three times and
- * the only things that change are these six fields. `href` is deliberately
- * empty: the articles live somewhere else and the links have not been supplied
- * yet. Everything downstream branches on it — an entry with a href becomes a
+ * the only things that change are these six fields. `href` points at
+ * the article on Medium. Everything downstream branches on it — an entry with a href becomes a
  * real <Link>, an entry without stays inert — so filling one in here is the
  * whole job of wiring a post up later, with nothing to change in a component.
  */
@@ -51,11 +50,12 @@ export const POSTS: Post[] = [
   {
     id: "design-school-creativity",
     kicker: "Design | Creativity",
-    title: "What Design School Taught Me About Creativity",
+    title: "Maximalism Is Cheap Now, So Let’s Have Fun",
     image: {
       src: "/blog/design-school-creativity.webp",
       alt: "Someone seated on a stool holding a sign reading THINK BIGGER over their face",
     },
     spine: "red",
+    href: "https://medium.com/@melvishilton476/maximalism-is-cheap-now-so-lets-have-fun-c0f17f071028",
   },
 ];
