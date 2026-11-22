@@ -1,0 +1,125 @@
+{
+  "view": "first-signal",
+  "screen": "first-signal",
+  "figma": "https://www.figma.com/design/hyVQWglxzjfX2Ua3pBkOcG?node-id=1933-8121",
+  "units": "CSS px in a 390 x 845 viewport; all PNGs are @2x",
+  "viewport": {
+    "w": 390,
+    "h": 845,
+    "statusBar": 50,
+    "background": "#fcf9f2"
+  },
+  "layers": {
+    "content": {
+      "src": "screens/first-signal/content.png",
+      "scrolls": true,
+      "height": 1380,
+      "mapping": "viewportY = contentY - scrollY + 50"
+    },
+    "topBar": {
+      "src": "screens/first-signal/top-bar.png",
+      "visible": true,
+      "pinned": "top",
+      "y": 50
+    },
+    "navbar": {
+      "src": "screens/first-signal/navbar.png",
+      "pinned": "bottom",
+      "x": 0,
+      "y": 760,
+      "backdrop": "frosted: backdrop-filter blur(18px) with a ~60% warm-white tint behind the navbar (the PNG is semi-transparent)"
+    }
+  },
+  "statusBarBlur": null,
+  "restScrollY": 0,
+  "statusTime": "7:42",
+  "loop": true,
+  "duration": 8.8,
+  "steps": [
+    {
+      "t": 0,
+      "type": "hold",
+      "scrollY": 0,
+      "note": "resting frame; callouts visible"
+    },
+    {
+      "t": 0.8,
+      "type": "tap",
+      "x": 195,
+      "y": 274,
+      "label": "record button"
+    },
+    {
+      "t": 2.9,
+      "type": "tap",
+      "x": 195,
+      "y": 274,
+      "label": "record button (stop)"
+    },
+    {
+      "t": 3.3,
+      "type": "scroll",
+      "from": 0,
+      "to": 440,
+      "dur": 1.2,
+      "ease": "easeInOutCubic"
+    },
+    {
+      "t": 4.8,
+      "type": "tap",
+      "x": 194,
+      "y": 643,
+      "label": "Urgent chip"
+    },
+    {
+      "t": 5.4,
+      "type": "tap",
+      "x": 195,
+      "y": 725,
+      "label": "Authorize & Submit"
+    },
+    {
+      "t": 6.9,
+      "type": "scroll",
+      "from": 440,
+      "to": 0,
+      "dur": 1.2,
+      "ease": "easeInOutCubic"
+    }
+  ],
+  "recording": {
+    "note": "waveform + mic pulse while recording; both ride on the content and fade in/out over 0.2s",
+    "start": 0.95,
+    "end": 2.85,
+    "fade": 0.2,
+    "bars": {
+      "count": 25,
+      "barW": 3,
+      "gap": 3,
+      "radius": 1.5,
+      "minH": 3,
+      "maxH": 14,
+      "color": "#E6A028",
+      "x": 120,
+      "rowW": 150,
+      "contentY": 286,
+      "speedMin": 5,
+      "speedMax": 9
+    },
+    "pulse": {
+      "x": 195,
+      "contentY": 224,
+      "r0": 46,
+      "r1": 62,
+      "period": 0.9,
+      "opacity": 0.28,
+      "color": "#E6A028"
+    }
+  },
+  "tap": {
+    "style": "soft ring: ink #2C2C2C, 12px radius at 22% opacity growing to 34px and fading out over 0.5s; inner fill 10%. 'press' = hold the ring for that many seconds before releasing"
+  },
+  "annotations": [],
+  "annotationsNote": "No callouts on this phone.",
+  "staticFallback": "If not animating, render the resting frame (scrollY = restScrollY) with the callouts."
+}

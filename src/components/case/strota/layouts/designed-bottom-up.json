@@ -1,0 +1,136 @@
+{
+ "figmaNode": "154:2127",
+ "figma": "https://www.figma.com/design/9jLWq4FeUqK9eEJkWpHI8g?node-id=154-2127",
+ "size": [
+  1100,
+  64
+ ],
+ "units": "CSS px, relative to the row's top-left",
+ "items": [
+  {
+   "k": "text",
+   "t": "Junior reporter",
+   "box": [
+    43,
+    9.5,
+    103,
+    21
+   ],
+   "size": 14
+  },
+  {
+   "k": "text",
+   "t": "DESIGNED 1ST",
+   "box": [
+    0,
+    50,
+    81,
+    14
+   ],
+   "size": 12
+  },
+  {
+   "k": "text",
+   "t": "Senior reporter",
+   "box": [
+    293,
+    9.5,
+    103,
+    21
+   ],
+   "size": 14
+  },
+  {
+   "k": "text",
+   "t": "DESIGNED 2ND",
+   "box": [
+    250,
+    50,
+    85,
+    14
+   ],
+   "size": 12
+  },
+  {
+   "k": "text",
+   "t": "Bureau Chief",
+   "box": [
+    551,
+    9.5,
+    87,
+    21
+   ],
+   "size": 14
+  },
+  {
+   "k": "text",
+   "t": "DESIGNED 3RD",
+   "box": [
+    500,
+    50,
+    85,
+    14
+   ],
+   "size": 12
+  },
+  {
+   "k": "text",
+   "t": "Everything the desk sees starts with something a reporter puts in, so we designed from the reporter up.",
+   "box": [
+    770,
+    4,
+    330,
+    63
+   ],
+   "size": 14
+  },
+  {
+   "k": "line",
+   "box": [
+    194,
+    20,
+    52,
+    0
+   ],
+   "path": "M 0 0 L 52 0"
+  },
+  {
+   "k": "node",
+   "c": [
+    194,
+    20
+   ]
+  },
+  {
+   "k": "node",
+   "c": [
+    246,
+    20
+   ]
+  },
+  {
+   "k": "line",
+   "box": [
+    444,
+    20,
+    52,
+    0
+   ],
+   "path": "M 0 0 L 52 0"
+  },
+  {
+   "k": "node",
+   "c": [
+    444,
+    20
+   ]
+  },
+  {
+   "k": "node",
+   "c": [
+    496,
+    20
+   ]
+  }
+ ]
+}

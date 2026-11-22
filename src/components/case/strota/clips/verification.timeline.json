@@ -1,0 +1,78 @@
+{
+  "view": "verification",
+  "screen": "verification",
+  "figma": "https://www.figma.com/design/hyVQWglxzjfX2Ua3pBkOcG?node-id=2184-2081",
+  "units": "CSS px in a 390 x 845 viewport; all PNGs are @2x",
+  "viewport": {
+    "w": 390,
+    "h": 845,
+    "statusBar": 50,
+    "background": "#fcf9f2"
+  },
+  "layers": {
+    "content": {
+      "src": "screens/verification/content.png",
+      "scrolls": true,
+      "height": 1824,
+      "mapping": "viewportY = contentY - scrollY + 50"
+    },
+    "topBar": {
+      "src": "screens/verification/top-bar.png",
+      "visible": false,
+      "pinned": "top",
+      "y": 50
+    },
+    "navbar": {
+      "src": "screens/verification/navbar.png",
+      "pinned": "bottom",
+      "x": 0,
+      "y": 760,
+      "backdrop": "frosted: backdrop-filter blur(18px) with a ~60% warm-white tint behind the navbar (the PNG is semi-transparent)"
+    },
+    "queryBar": {
+      "src": "screens/verification/query-bar.png",
+      "pinned": "bottom",
+      "note": "floating 'Query the field intel' bar; its 358 x 136 box sits at x 16, y 625 (image has ~9.5px shadow padding each side)"
+    }
+  },
+  "statusBarBlur": {
+    "y": 0,
+    "h": 92,
+    "fill": "white 15%",
+    "blur": "progressive background blur, strongest at top, fading to 0 at the bottom"
+  },
+  "restScrollY": 150,
+  "statusTime": "9:30",
+  "loop": true,
+  "duration": 7.2,
+  "steps": [
+    {
+      "t": 0,
+      "type": "hold",
+      "scrollY": 150,
+      "note": "resting frame; callouts visible"
+    },
+    {
+      "t": 1.0,
+      "type": "scroll",
+      "from": 150,
+      "to": 1100,
+      "dur": 2.0,
+      "ease": "easeInOutCubic"
+    },
+    {
+      "t": 5.2,
+      "type": "scroll",
+      "from": 1100,
+      "to": 150,
+      "dur": 1.6,
+      "ease": "easeInOutCubic"
+    }
+  ],
+  "tap": {
+    "style": "soft ring: ink #2C2C2C, 12px radius at 22% opacity growing to 34px and fading out over 0.5s; inner fill 10%. 'press' = hold the ring for that many seconds before releasing"
+  },
+  "annotations": [],
+  "annotationsNote": "No callouts on this phone.",
+  "staticFallback": "If not animating, render the resting frame (scrollY = restScrollY) with the callouts."
+}

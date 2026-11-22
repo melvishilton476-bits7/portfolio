@@ -1,0 +1,234 @@
+{
+  "figmaNode": "154:2205",
+  "figma": "https://www.figma.com/design/9jLWq4FeUqK9eEJkWpHI8g?node-id=154-2205",
+  "size": [
+    1100,
+    488
+  ],
+  "units": "CSS px, relative to the row's top-left",
+  "items": [
+    {
+      "k": "tag",
+      "t": "8:10 PM · THE STORY GROWS",
+      "box": [
+        800,
+        0,
+        216,
+        42
+      ]
+    },
+    {
+      "k": "text",
+      "t": "Every update lands in the story, not in a chat.",
+      "box": [
+        800,
+        56,
+        300,
+        54
+      ],
+      "size": 20
+    },
+    {
+      "k": "text",
+      "t": "Once sent, a signal becomes a story. Updates, photos, audio and a senior reporter’s notes collect in its Field Log.",
+      "box": [
+        800,
+        124,
+        300,
+        63
+      ],
+      "size": 14
+    },
+    {
+      "k": "text",
+      "t": "THE CALL",
+      "box": [
+        800,
+        218,
+        55,
+        14
+      ],
+      "size": 12
+    },
+    {
+      "k": "text",
+      "t": "Chats are organised by people, so one story gets split across every conversation. So the story, not the conversation, is the container.",
+      "box": [
+        800,
+        238,
+        305,
+        63
+      ],
+      "size": 14
+    },
+    {
+      "k": "phone",
+      "name": "Phone · Stories",
+      "time": "8:09",
+      "box": [
+        0,
+        0,
+        180,
+        380.8
+      ],
+      "view": "stories"
+    },
+    {
+      "k": "phone",
+      "name": "Phone · Field Log",
+      "time": "8:10",
+      "box": [
+        200,
+        0,
+        180,
+        380.8
+      ],
+      "view": "field-log"
+    },
+    {
+      "k": "note",
+      "n": "01",
+      "title": "Voice notes, transcribed",
+      "desc": "Audio sits in the story, not in a chat.",
+      "box": [
+        450,
+        46.3,
+        240,
+        42
+      ]
+    },
+    {
+      "k": "note",
+      "box": [
+        450,
+        294.3,
+        240,
+        42
+      ],
+      "note": "Note 02 here is built from the loose 02 / title / line texts that follow"
+    },
+    {
+      "k": "text",
+      "t": "Seniors guide juniors in the same log.",
+      "box": [
+        450,
+        176.2,
+        240,
+        20
+      ],
+      "size": 13
+    },
+    {
+      "k": "text",
+      "t": "02",
+      "box": [
+        450,
+        149.2,
+        15,
+        15
+      ],
+      "size": 12
+    },
+    {
+      "k": "text",
+      "t": "Mentoring, inside the story",
+      "box": [
+        475,
+        149.2,
+        197,
+        19
+      ],
+      "size": 15
+    },
+    {
+      "k": "card",
+      "asset": "fl_query",
+      "box": [
+        457,
+        254.2,
+        222,
+        85
+      ],
+      "imgRadius": 12,
+      "shadow": true,
+      "src": "cards/fl_query.png"
+    },
+    {
+      "k": "note",
+      "n": "03",
+      "title": "Ask the story",
+      "desc": "Query the field intel while tagging mentors.",
+      "box": [
+        450,
+        359.2,
+        240,
+        62
+      ]
+    },
+    {
+      "k": "line",
+      "box": [
+        371.6,
+        57.3,
+        68.4,
+        0
+      ],
+      "path": "M 0 0 L 68.37 0"
+    },
+    {
+      "k": "node",
+      "c": [
+        371.6,
+        57.3
+      ]
+    },
+    {
+      "k": "node",
+      "c": [
+        440,
+        57.3
+      ]
+    },
+    {
+      "k": "line",
+      "box": [
+        372,
+        159.2,
+        70,
+        47
+      ],
+      "path": "M 0 47 L 39.66 47 C 48.70 47 52.75 42.5 52.75 26.5 C 52.75 7.5 56.00 0 63.29 0 L 70 0"
+    },
+    {
+      "k": "node",
+      "c": [
+        371.6,
+        206
+      ]
+    },
+    {
+      "k": "node",
+      "c": [
+        440,
+        159.2
+      ]
+    },
+    {
+      "k": "line",
+      "box": [
+        371,
+        309.2,
+        86,
+        0.1
+      ],
+      "path": "M 0 0.03 L 60.46 0.03 C 60.46 0.07 70.00 0.03 74.73 0.03 L 80.36 0.00 L 86 0"
+    },
+    {
+      "k": "node",
+      "c": [
+        370.7,
+        309.7
+      ]
+    }
+  ]
+}

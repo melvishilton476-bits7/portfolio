@@ -1,0 +1,149 @@
+{
+ "figmaNode": "154:2372",
+ "figma": "https://www.figma.com/design/9jLWq4FeUqK9eEJkWpHI8g?node-id=154-2372",
+ "size": [
+  1100,
+  505
+ ],
+ "units": "CSS px, relative to the row's top-left",
+ "items": [
+  {
+   "k": "tag",
+   "t": "THROUGHOUT · SAFETY",
+   "box": [
+    0,
+    0,
+    185,
+    42
+   ]
+  },
+  {
+   "k": "text",
+   "t": "Safety stays in the reporter’s hands.",
+   "box": [
+    0,
+    56,
+    300,
+    54
+   ],
+   "size": 20
+  },
+  {
+   "k": "text",
+   "t": "The emergency signal, live location and check-ins sit one screen from the work, and the reporter controls what the bureau sees.",
+   "box": [
+    0,
+    124,
+    300,
+    63
+   ],
+   "size": 14
+  },
+  {
+   "k": "text",
+   "t": "THE CALL",
+   "box": [
+    0,
+    218,
+    55,
+    14
+   ],
+   "size": 12
+  },
+  {
+   "k": "text",
+   "t": "Bureau Chiefs need to know reporters are safe. Reporters don’t want to feel watched. So every tracking setting belongs to the reporter.",
+   "box": [
+    0,
+    238,
+    300,
+    84
+   ],
+   "size": 14
+  },
+  {
+   "k": "phone",
+   "name": "Phone · Safety",
+   "time": "11:20",
+   "box": [
+    345,
+    0,
+    180,
+    380.8
+   ],
+   "view": "safety"
+  },
+  {
+   "k": "phone",
+   "name": "Phone · Profile",
+   "time": "11:21",
+   "box": [
+    566,
+    92.8,
+    180,
+    380.8
+   ],
+   "view": "profile"
+  },
+  {
+   "k": "card",
+   "asset": "p_visibility",
+   "box": [
+    566,
+    0.8,
+    211.9,
+    71
+   ],
+   "wrap": {
+    "fill": false,
+    "shadow": false,
+    "radius": 0
+   },
+   "imgRadius": 9.083155632019043,
+   "shadow": true,
+   "src": "cards/p_visibility.png"
+  },
+  {
+   "k": "note",
+   "n": "01",
+   "title": "Who sees my location",
+   "desc": "Hidden, team only or public. The reporter chooses.",
+   "box": [
+    823,
+    9.8,
+    280,
+    62
+   ]
+  },
+  {
+   "k": "note",
+   "n": "02",
+   "title": "Safety on their terms",
+   "desc": "Emergency contact, check-in interval and SOS method, all set by the reporter.",
+   "box": [
+    800,
+    376.8,
+    280,
+    62
+   ]
+  },
+  {
+   "k": "card",
+   "asset": "p_protocol",
+   "box": [
+    793,
+    158.8,
+    225.9,
+    188
+   ],
+   "wrap": {
+    "fill": true,
+    "shadow": true,
+    "radius": 15.711650848388672
+   },
+   "imgRadius": 7.855825424194336,
+   "shadow": false,
+   "src": "cards/p_protocol.png"
+  }
+ ]
+}

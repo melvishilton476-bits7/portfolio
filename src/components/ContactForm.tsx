@@ -8,16 +8,22 @@ import { useState } from "react";
  * itself can stay a server component: only the fields and the two actions need
  * to run in the browser, not the campfire and the chair beside them.
  *
- * There is no backend here. Submitting opens the visitor's own mail client
- * with the message already composed, which is honest about what happens next —
- * they press send, from their own address, and the reply goes back to them.
- * The alternative (a form service) needs an account and a key, and this page
- * has neither.
+ * Submitting posts the message straight to the inbox through FormSubmit
+ * (formsubmit.co), so the visitor never leaves the page and no mail app opens.
+ * It needs no account or key: the first message to an address sends that
+ * inbox a one-time "Activate form" link, and every message after it arrives
+ * as an email whose reply-to is the visitor's own address.
+ *
+ * If the service can't be reached, the form says so and offers the address
+ * to write to directly; what the visitor typed stays in the fields.
  */
 
 const PURPLE = "#8581ff";
-const TO = "hiltonmelvis@gmail.com";
+const TO = "melvishilton476@gmail.com";
 const LINKEDIN = "https://www.linkedin.com/in/melvis-hilton-1b2982291";
+const ENDPOINT = `https://formsubmit.co/ajax/${TO}`;
+
+type Status = "idle" | "sending" | "sent" | "error";
 
 /** Shared by both actions so they are one object wearing two labels. The
  *  height is FIXED rather than padding-derived: the arrow glyph's line box is
@@ -30,25 +36,43 @@ export default function ContactForm() {
   const fieldWell =
     "w-full bg-btn-dark px-4 text-white placeholder:text-white/40 outline-none ring-1 ring-white/10 focus:ring-accent";
 
-  // Held in React rather than read off the DOM at submit time, because the
-  // mailto is assembled from all four at once and a controlled field is the
-  // shorter way to say that.
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [about, setAbout] = useState("");
   const [message, setMessage] = useState("");
+  const [status, setStatus] = useState<Status>("idle");
+  const [note, setNote] = useState("");
 
-  const send = () => {
-    const subject = about.trim() || "Hello from your site";
-    // The sender's own address goes in the body too: they may send from a
-    // different account than the one they typed, and the reply should go where
-    // they asked for it.
-    const body = [message.trim(), "", "—", name.trim(), email.trim()]
-      .join("\n")
-      .trim();
-    window.location.href = `mailto:${TO}?subject=${encodeURIComponent(
-      subject,
-    )}&body=${encodeURIComponent(body)}`;
+  const send = async () => {
+    if (status === "sending") return;
+    setStatus("sending");
+    setNote("");
+    try {
+      const res = await fetch(ENDPOINT, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify({
+          name: name.trim(),
+          email: email.trim(),
+          about: about.trim(),
+          message: message.trim(),
+          _subject: `Portfolio: ${about.trim() || "Hello from your site"}`,
+          _replyto: email.trim(),
+          _template: "table",
+          _captcha: "false",
+        }),
+      });
+      const data = (await res.json().catch(() => ({}))) as { success?: string | boolean; message?: string };
+      if (!res.ok || String(data.success) !== "true") throw new Error(data.message || `HTTP ${res.status}`);
+      setStatus("sent");
+      setName("");
+      setEmail("");
+      setAbout("");
+      setMessage("");
+    } catch (err) {
+      setStatus("error");
+      setNote(err instanceof Error ? err.message : "");
+    }
   };
 
   return (
@@ -56,7 +80,7 @@ export default function ContactForm() {
       className="relative bg-btn-dark/95 p-6"
       onSubmit={(e) => {
         e.preventDefault();
-        send();
+        void send();
       }}
     >
       {/* Periwinkle registration square-pairs (outline + filled, meeting
@@ -141,10 +165,11 @@ export default function ContactForm() {
             It sat on the left pointing back at the form before. */}
         <button
           type="submit"
-          className={`${actionBtn} text-white hover:brightness-110`}
+          disabled={status === "sending"}
+          className={`${actionBtn} text-white hover:brightness-110 disabled:cursor-wait disabled:opacity-70`}
           style={{ background: PURPLE }}
         >
-          <span className="type-caption font-medium">Send</span>
+          <span className="type-caption font-medium">{status === "sending" ? "Sending…" : "Send"}</span>
           <span aria-hidden className="leading-none">
             &rarr;
           </span>
@@ -161,8 +186,20 @@ export default function ContactForm() {
           </span>
         </a>
       </div>
-      <p className="type-caption mt-3 text-white/40">
-        Opens your mail app with the message ready to send.
+      <p className="type-caption mt-3 text-white/40" role="status" aria-live="polite">
+        {status === "sent" ? (
+          <span className="text-white/80">Sent. Thanks, I&rsquo;ll get back to you soon.</span>
+        ) : status === "error" ? (
+          <span className="text-white/80">
+            That didn&rsquo;t go through{note ? ` (${note})` : ""}. You can email me at{" "}
+            <a href={`mailto:${TO}`} className="underline underline-offset-2">
+              {TO}
+            </a>
+            .
+          </span>
+        ) : (
+          "Goes straight to my inbox."
+        )}
       </p>
     </form>
   );

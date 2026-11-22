@@ -1,0 +1,219 @@
+{
+ "figmaNode": "154:2144",
+ "figma": "https://www.figma.com/design/9jLWq4FeUqK9eEJkWpHI8g?node-id=154-2144",
+ "size": [
+  1100,
+  408.8
+ ],
+ "units": "CSS px, relative to the row's top-left",
+ "items": [
+  {
+   "k": "tag",
+   "t": "7:42 PM · IN THE FIELD",
+   "box": [
+    0,
+    0,
+    180,
+    42
+   ]
+  },
+  {
+   "k": "text",
+   "t": "The first update takes one screen, not four apps.",
+   "box": [
+    0,
+    56,
+    300,
+    54
+   ],
+   "size": 20
+  },
+  {
+   "k": "text",
+   "t": "Voice first, media one tap below, beat and urgency as taps. The goal: urgent news to the desk in under ten seconds, without a form.",
+   "box": [
+    0,
+    124,
+    300,
+    84
+   ],
+   "size": 14
+  },
+  {
+   "k": "text",
+   "t": "THE CALL",
+   "box": [
+    0,
+    239,
+    55,
+    14
+   ],
+   "size": 12
+  },
+  {
+   "k": "text",
+   "t": "A form gives the desk clean data and loses the reporter. So voice comes first, and structure is added by tapping.",
+   "box": [
+    0,
+    259,
+    300,
+    63
+   ],
+   "size": 14
+  },
+  {
+   "k": "phone",
+   "name": "Phone · Home dashboard",
+   "time": "7:41",
+   "box": [
+    360,
+    0,
+    180,
+    380.8
+   ],
+   "view": "home"
+  },
+  {
+   "k": "text",
+   "t": "HOME",
+   "box": [
+    360,
+    394.8,
+    180,
+    14
+   ],
+   "size": 12
+  },
+  {
+   "k": "phone",
+   "name": "Phone · First Signal",
+   "time": "7:42",
+   "box": [
+    568,
+    0,
+    180,
+    380.8
+   ],
+   "view": "first-signal"
+  },
+  {
+   "k": "text",
+   "t": "FIRST SIGNAL",
+   "box": [
+    568,
+    394.8,
+    180,
+    14
+   ],
+   "size": 12
+  },
+  {
+   "k": "note",
+   "n": "01",
+   "title": "Record first",
+   "desc": "Speaking beats typing at a scene. Capture is encrypted and the transcript writes itself.",
+   "box": [
+    818,
+    114,
+    282,
+    62
+   ]
+  },
+  {
+   "k": "note",
+   "n": "02",
+   "title": "Attach in the same update",
+   "desc": "Camera, gallery and files, one tap below.",
+   "box": [
+    818,
+    221,
+    282,
+    42
+   ]
+  },
+  {
+   "k": "note",
+   "n": "03",
+   "title": "Tap, don’t type",
+   "desc": "Beat and urgency are chips, so the desk can triage straight away.",
+   "box": [
+    818,
+    286,
+    282,
+    62
+   ]
+  },
+  {
+   "k": "line",
+   "box": [
+    735.2,
+    124.9,
+    72.8,
+    0
+   ],
+   "path": "M 0 0 L 72.77 0"
+  },
+  {
+   "k": "node",
+   "c": [
+    735.2,
+    124.9
+   ]
+  },
+  {
+   "k": "node",
+   "c": [
+    808,
+    124.9
+   ]
+  },
+  {
+   "k": "line",
+   "box": [
+    735.2,
+    208.3,
+    72.8,
+    23.8
+   ],
+   "path": "M 0 0 L 36.77 0 C 43.44 0 46.77 3.33 46.77 10 L 46.77 13.75 C 46.77 20.41 50.11 23.75 56.77 23.75 L 72.77 23.75"
+  },
+  {
+   "k": "node",
+   "c": [
+    735.2,
+    208.3
+   ]
+  },
+  {
+   "k": "node",
+   "c": [
+    808,
+    232
+   ]
+  },
+  {
+   "k": "line",
+   "box": [
+    735.2,
+    266.5,
+    72.8,
+    30.5
+   ],
+   "path": "M 0 0 L 36.77 0 C 43.44 0 46.77 3.33 46.77 10 L 46.77 20.51 C 46.77 27.17 50.11 30.51 56.77 30.51 L 72.77 30.51"
+  },
+  {
+   "k": "node",
+   "c": [
+    735.2,
+    266.5
+   ]
+  },
+  {
+   "k": "node",
+   "c": [
+    808,
+    297
+   ]
+  }
+ ]
+}

@@ -1,0 +1,68 @@
+{
+  "view": "stories",
+  "screen": "stories",
+  "figma": "https://www.figma.com/design/hyVQWglxzjfX2Ua3pBkOcG?node-id=1933-8660",
+  "units": "CSS px in a 390 x 845 viewport; all PNGs are @2x",
+  "viewport": {
+    "w": 390,
+    "h": 845,
+    "statusBar": 50,
+    "background": "#f8f7f2"
+  },
+  "layers": {
+    "content": {
+      "src": "screens/stories/content.png",
+      "scrolls": true,
+      "height": 884,
+      "mapping": "viewportY = contentY - scrollY + 50"
+    },
+    "topBar": {
+      "src": "screens/stories/top-bar.png",
+      "visible": true,
+      "pinned": "top",
+      "y": 50
+    },
+    "navbar": {
+      "src": "screens/stories/navbar.png",
+      "pinned": "bottom",
+      "x": 0,
+      "y": 760,
+      "backdrop": "frosted: backdrop-filter blur(18px) with a ~60% warm-white tint behind the navbar (the PNG is semi-transparent)"
+    }
+  },
+  "statusBarBlur": null,
+  "restScrollY": 0,
+  "statusTime": "8:09",
+  "loop": true,
+  "duration": 6.0,
+  "steps": [
+    {
+      "t": 0,
+      "type": "hold",
+      "scrollY": 0,
+      "note": "resting frame; callouts visible"
+    },
+    {
+      "t": 1.2,
+      "type": "scroll",
+      "from": 0,
+      "to": 170,
+      "dur": 1.0,
+      "ease": "easeInOutCubic"
+    },
+    {
+      "t": 3.8,
+      "type": "scroll",
+      "from": 170,
+      "to": 0,
+      "dur": 1.0,
+      "ease": "easeInOutCubic"
+    }
+  ],
+  "tap": {
+    "style": "soft ring: ink #2C2C2C, 12px radius at 22% opacity growing to 34px and fading out over 0.5s; inner fill 10%. 'press' = hold the ring for that many seconds before releasing"
+  },
+  "annotations": [],
+  "annotationsNote": "No callouts on this phone.",
+  "staticFallback": "If not animating, render the resting frame (scrollY = restScrollY) with the callouts."
+}

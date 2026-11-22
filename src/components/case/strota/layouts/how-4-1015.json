@@ -1,0 +1,188 @@
+{
+ "figmaNode": "154:2316",
+ "figma": "https://www.figma.com/design/9jLWq4FeUqK9eEJkWpHI8g?node-id=154-2316",
+ "size": [
+  1100,
+  404.7
+ ],
+ "units": "CSS px, relative to the row's top-left",
+ "items": [
+  {
+   "k": "tag",
+   "t": "10:15 PM · FILING",
+   "box": [
+    800,
+    0,
+    148,
+    42
+   ]
+  },
+  {
+   "k": "text",
+   "t": "The draft builds itself from the log.",
+   "box": [
+    800,
+    56,
+    300,
+    54
+   ],
+   "size": 20
+  },
+  {
+   "k": "text",
+   "t": "A completeness check reads the same log, so it names exactly what’s missing before the draft goes to the CMS. Nothing gets typed twice.",
+   "box": [
+    800,
+    124,
+    300,
+    84
+   ],
+   "size": 14
+  },
+  {
+   "k": "text",
+   "t": "THE CALL",
+   "box": [
+    800,
+    239,
+    55,
+    14
+   ],
+   "size": 12
+  },
+  {
+   "k": "text",
+   "t": "Every fact was already captured once, in the field. So the draft is written from the log, and the check names exactly what’s missing.",
+   "box": [
+    800,
+    259,
+    300,
+    84
+   ],
+   "size": 14
+  },
+  {
+   "k": "phone",
+   "name": "Phone · Drafts · filing",
+   "time": "10:16",
+   "box": [
+    0,
+    0,
+    180,
+    380.8
+   ],
+   "view": "drafts-submit"
+  },
+  {
+   "k": "card",
+   "asset": "d_complete",
+   "box": [
+    240,
+    0,
+    240,
+    82.8
+   ],
+   "imgRadius": 12,
+   "shadow": true,
+   "src": "cards/d_complete.png"
+  },
+  {
+   "k": "card",
+   "asset": "d_auto",
+   "box": [
+    240,
+    98.8,
+    240,
+    47.9
+   ],
+   "imgRadius": 12,
+   "shadow": true,
+   "src": "cards/d_auto.png"
+  },
+  {
+   "k": "phone",
+   "name": "Phone · Drafts & Filing (cropped)",
+   "time": "10:15",
+   "box": [
+    230,
+    174.7,
+    260,
+    230
+   ],
+   "view": "drafts-filing",
+   "note": "Phone (200 x 423) shown inside a 260 x 230 window, top part only, fading into the page at the bottom edge"
+  },
+  {
+   "k": "note",
+   "n": "01",
+   "title": "Completeness check",
+   "desc": "85% done, with the gap named: impacted population.",
+   "box": [
+    520,
+    30.4,
+    220,
+    62
+   ]
+  },
+  {
+   "k": "line",
+   "box": [
+    486,
+    41.4,
+    24,
+    0
+   ],
+   "path": "M 0 0 L 24 0"
+  },
+  {
+   "k": "node",
+   "c": [
+    486,
+    41.4
+   ]
+  },
+  {
+   "k": "node",
+   "c": [
+    510,
+    41.4
+   ]
+  },
+  {
+   "k": "note",
+   "n": "02",
+   "title": "Draft from the field log",
+   "desc": "Written from what the story already holds, then filed to the CMS.",
+   "box": [
+    520,
+    113.2,
+    220,
+    82
+   ]
+  },
+  {
+   "k": "line",
+   "box": [
+    486,
+    122.7,
+    24,
+    0
+   ],
+   "path": "M 0 0 L 24 0"
+  },
+  {
+   "k": "node",
+   "c": [
+    486,
+    122.7
+   ]
+  },
+  {
+   "k": "node",
+   "c": [
+    510,
+    122.7
+   ]
+  }
+ ]
+}

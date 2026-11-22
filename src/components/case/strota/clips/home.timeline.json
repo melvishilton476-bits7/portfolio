@@ -1,0 +1,99 @@
+{
+  "view": "home",
+  "screen": "home",
+  "figma": "https://www.figma.com/design/hyVQWglxzjfX2Ua3pBkOcG?node-id=1728-3443",
+  "units": "CSS px in a 390 x 845 viewport; all PNGs are @2x",
+  "viewport": {
+    "w": 390,
+    "h": 845,
+    "statusBar": 50,
+    "background": "#fcfaf2"
+  },
+  "layers": {
+    "content": {
+      "src": "screens/home/content.png",
+      "scrolls": true,
+      "height": 2666,
+      "mapping": "viewportY = contentY - scrollY + 50"
+    },
+    "topBar": {
+      "src": "screens/home/top-bar.png",
+      "visible": true,
+      "pinned": "top",
+      "y": 50
+    },
+    "navbar": {
+      "src": "screens/home/navbar.png",
+      "pinned": "bottom",
+      "x": 5,
+      "y": 760,
+      "backdrop": "frosted: backdrop-filter blur(18px) with a ~60% warm-white tint behind the navbar (the PNG is semi-transparent)"
+    },
+    "openTasksCarousel": {
+      "src": "screens/home/open-tasks-carousel.png",
+      "contentY": 1162,
+      "x": 0,
+      "w": 480,
+      "h": 265,
+      "scrollsWithContent": true,
+      "clipTo": "viewport (0-390)",
+      "transform": "translateX(-swipeX)",
+      "note": "Open Tasks row is a horizontal scroll in the Triveni prototype (overflow HORIZONTAL, extent 43px). Lay this strip over the same row in content.png and slide it; at swipeX 0 it matches content.png exactly."
+    }
+  },
+  "statusBarBlur": null,
+  "restScrollY": 0,
+  "statusTime": "7:41",
+  "loop": true,
+  "duration": 8.2,
+  "steps": [
+    {
+      "t": 0,
+      "type": "hold",
+      "scrollY": 0,
+      "note": "resting frame; callouts visible"
+    },
+    {
+      "t": 1.0,
+      "type": "scroll",
+      "from": 0,
+      "to": 1000,
+      "dur": 1.8,
+      "ease": "easeInOutCubic"
+    },
+    {
+      "t": 3.2,
+      "type": "swipe",
+      "layer": "openTasksCarousel",
+      "from": 0,
+      "to": 43,
+      "dur": 0.9,
+      "ease": "easeInOutCubic",
+      "gesture": "drag ring at y of the cards moving left by the same distance"
+    },
+    {
+      "t": 5.0,
+      "type": "swipe",
+      "layer": "openTasksCarousel",
+      "from": 43,
+      "to": 0,
+      "dur": 0.7,
+      "ease": "easeInOutCubic",
+      "gesture": "drag ring at y of the cards moving left by the same distance"
+    },
+    {
+      "t": 6.2,
+      "type": "scroll",
+      "from": 1000,
+      "to": 0,
+      "dur": 1.6,
+      "ease": "easeInOutCubic"
+    }
+  ],
+  "tap": {
+    "style": "soft ring: ink #2C2C2C, 12px radius at 22% opacity growing to 34px and fading out over 0.5s; inner fill 10%. 'press' = hold the ring for that many seconds before releasing"
+  },
+  "annotations": [],
+  "annotationsNote": "No callouts on this phone.",
+  "staticFallback": "If not animating, render the resting frame (scrollY = restScrollY) with the callouts."
+}

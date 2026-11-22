@@ -1,0 +1,246 @@
+{
+  "name": "ui-film",
+  "plays": "once, when the section scrolls into view; then the four phone loops start",
+  "stage": {
+    "w": 1100,
+    "h": 620,
+    "background": "section's existing background"
+  },
+  "layout": {
+    "phone": {
+      "w": 200,
+      "h": 423,
+      "y": 8
+    },
+    "columns": [
+      0,
+      287,
+      574,
+      861
+    ],
+    "textTop": 461
+  },
+  "camera": {
+    "note": "transform the whole stage: translate so (cx,cy) sits at the stage centre, then scale s. Interpolate x/y with easeInOutCubic and s in log space.",
+    "keyframes": [
+      {
+        "t": 0,
+        "cx": 100.0,
+        "cy": 219.5,
+        "s": 1.35
+      },
+      {
+        "t": 0.6,
+        "cx": 100.0,
+        "cy": 219.5,
+        "s": 1.35
+      },
+      {
+        "t": 1.6,
+        "cx": 100.0,
+        "cy": 145.7,
+        "s": 2.6
+      },
+      {
+        "t": 2.9,
+        "cx": 100.0,
+        "cy": 145.7,
+        "s": 2.6
+      },
+      {
+        "t": 4.0,
+        "cx": 387.5,
+        "cy": 159.4,
+        "s": 2.6
+      },
+      {
+        "t": 5.8,
+        "cx": 387.5,
+        "cy": 159.4,
+        "s": 2.6
+      },
+      {
+        "t": 6.9,
+        "cx": 674.0,
+        "cy": 296.6,
+        "s": 2.6
+      },
+      {
+        "t": 9.4,
+        "cx": 674.0,
+        "cy": 296.6,
+        "s": 2.6
+      },
+      {
+        "t": 10.5,
+        "cx": 961.0,
+        "cy": 116.3,
+        "s": 2.6
+      },
+      {
+        "t": 12.6,
+        "cx": 961.0,
+        "cy": 116.3,
+        "s": 2.6
+      },
+      {
+        "t": 14.2,
+        "cx": 550.0,
+        "cy": 309.5,
+        "s": 0.92
+      }
+    ]
+  },
+  "taps": [
+    {
+      "t": 1.7,
+      "phone": 1,
+      "x": 195,
+      "y": 272,
+      "press": 0,
+      "label": "record button"
+    },
+    {
+      "t": 2.8,
+      "phone": 1,
+      "x": 195,
+      "y": 272,
+      "press": 0,
+      "label": "record button (stop)"
+    },
+    {
+      "t": 7.5,
+      "phone": 3,
+      "x": 195,
+      "y": 489,
+      "press": 0,
+      "label": "Auto-Generate Draft from Field Log"
+    },
+    {
+      "t": 10.7,
+      "phone": 4,
+      "x": 195,
+      "y": 212,
+      "press": 1.0,
+      "label": "Emergency Signal (hold)"
+    }
+  ],
+  "text": {
+    "start": 14.0,
+    "stagger": 0.12,
+    "each": {
+      "from": {
+        "opacity": 0,
+        "y": 8
+      },
+      "to": {
+        "opacity": 1,
+        "y": 0
+      },
+      "dur": 0.5,
+      "ease": "easeOutCubic"
+    }
+  },
+  "phones": [
+    {
+      "n": 1,
+      "view": "first-signal",
+      "restScrollY": 0,
+      "topBar": true,
+      "statusTime": "7:42",
+      "tapTarget": {
+        "x": 195,
+        "y": 272
+      }
+    },
+    {
+      "n": 2,
+      "view": "verification",
+      "restScrollY": 0,
+      "topBar": true,
+      "statusTime": "9:30",
+      "tapTarget": {
+        "x": 196,
+        "y": 229
+      }
+    },
+    {
+      "n": 3,
+      "view": "drafts-filing",
+      "restScrollY": 0,
+      "topBar": true,
+      "statusTime": "10:15",
+      "tapTarget": {
+        "x": 195,
+        "y": 489
+      }
+    },
+    {
+      "n": 4,
+      "view": "safety",
+      "restScrollY": 0,
+      "topBar": true,
+      "statusTime": "11:20",
+      "tapTarget": {
+        "x": 195,
+        "y": 212
+      }
+    }
+  ],
+  "duration": 16.8,
+  "fadeIn": 0.5,
+  "moments": {
+    "note": "film-only UI animations drawn over each phone at each zoom-in; the loops after the film don't repeat them. Viewport px, views at scrollY 0.",
+    "recording": {
+      "phone": 1,
+      "from": 1.75,
+      "to": 2.8
+    },
+    "verification": {
+      "phone": 2,
+      "checks": {
+        "t": 4.1,
+        "each": 0.4,
+        "dots": [
+          30,
+          113,
+          196
+        ],
+        "y": 229,
+        "from": 1,
+        "to": 3
+      },
+      "credibility": {
+        "t": 4.3,
+        "dur": 0.8,
+        "x0": 48,
+        "x1": 290.5,
+        "y": 441,
+        "value": 82
+      }
+    },
+    "drafts": {
+      "phone": 3,
+      "completeness": {
+        "t": 6.9,
+        "dur": 0.5,
+        "x0": 45,
+        "x1": 300,
+        "y": 383,
+        "value": 85
+      },
+      "body": {
+        "t": 7.7,
+        "x0": 57,
+        "x1": 333,
+        "y": 680,
+        "lineH": 18,
+        "lines": 6,
+        "each": 0.35,
+        "stagger": 0.12,
+        "blur": 6,
+        "words": 1240
+      }
+    }
+  }
+}

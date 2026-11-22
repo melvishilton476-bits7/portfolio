@@ -149,27 +149,18 @@ export default function AboutIntro() {
             </p>
 
             <div className="type-note text-ink-alt leading-relaxed">
-              <p>Outside of design and research, I like :</p>
-              <ul className="mt-2 space-y-2 pl-5">
-                {[
-                  "Reading up on random biology",
-                  "Dribbling past 3 people on the football pitch, on average",
-                  "Performing gluttony at obscure restaurants",
-                  "Watching 1 movie a week and calling myself a Cinephile",
-                ].map((item) => (
-                  <li key={item} className="list-disc marker:text-ink-muted">
-                    {item}
-                  </li>
-                ))}
-              </ul>
+              <p>
+                Outside of design and research, I like reading up on random biology, dribbling
+                past three people on the football pitch (on average), performing gluttony at
+                obscure restaurants, and watching one movie a week and calling myself a
+                cinephile.
+              </p>
             </div>
 
             {/* Last in the column rather than centred under the whole row: it
                 is the end of what the page is saying, and it belongs to the
                 voice saying it. */}
-            {/* TODO: X still awaits a real URL, so it stays a <span> rather
-                than a link pointing nowhere. LinkedIn and email are live.
-                External links carry rel="noreferrer" — target="_blank" hands
+            {/* External links carry rel="noreferrer" — target="_blank" hands
                 the new tab a window.opener back to this page without it. */}
             {/* Same type-note as the two blocks above it. It was a caption —
                 a smaller token — which read as a footnote to the column rather
@@ -185,9 +176,17 @@ export default function AboutIntro() {
                 LinkedIn
               </a>
               ,{" "}
-              <span className="font-medium underline decoration-from-font underline-offset-2">X</span>, or by{" "}
               <a
-                href="mailto:hiltonmelvis@gmail.com"
+                href="https://www.instagram.com/melvis_18_08_/"
+                target="_blank"
+                rel="noreferrer"
+                className="hover:text-ink font-medium underline decoration-from-font underline-offset-2 transition-colors"
+              >
+                Instagram
+              </a>
+              , or by{" "}
+              <a
+                href="mailto:melvishilton476@gmail.com"
                 className="hover:text-ink font-medium underline decoration-from-font underline-offset-2 transition-colors"
               >
                 email

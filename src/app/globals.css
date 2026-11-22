@@ -975,7 +975,9 @@ body {
   /* The logo directions boil through CSS `filter` rather than an SVG
      attribute, so `none` here is overriding an inline style — same result,
      but it needs the specificity note. */
-  .direction-boil {
+  .direction-boil,
+  /* Strota's insight drawings, which also boil through an inline style. */
+  .strota-boil {
     filter: none !important;
   }
 }
@@ -4576,3 +4578,11 @@ body {
 .lab-hint-blink { animation: lab-hint-blink 1.2s steps(1, end) infinite; }
 @keyframes lab-hint-blink { 50% { opacity: 0; } }
 @media (prefers-reduced-motion: reduce) { .lab-hint-blink { animation: none; } }
+
+/* Strota's diagram connectors draw in on view; under reduced motion they
+   appear whole instead (Connectors.tsx). */
+@media (prefers-reduced-motion: reduce) {
+  .strota-draw * {
+    transition: none !important;
+  }
+}

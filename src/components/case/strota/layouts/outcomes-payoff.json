@@ -1,0 +1,81 @@
+{
+ "figmaNode": "154:2431",
+ "figma": "https://www.figma.com/design/9jLWq4FeUqK9eEJkWpHI8g?node-id=154-2431",
+ "size": [
+  496,
+  410.8
+ ],
+ "units": "CSS px, relative to the row's top-left",
+ "items": [
+  {
+   "k": "phone",
+   "name": "Phone · First Signal",
+   "time": "7:42",
+   "box": [
+    0,
+    0,
+    180,
+    380.8
+   ],
+   "view": "first-signal"
+  },
+  {
+   "k": "text",
+   "t": "7:42 PM · RECORDED",
+   "box": [
+    0,
+    396.8,
+    180,
+    14
+   ],
+   "size": 12
+  },
+  {
+   "k": "line",
+   "box": [
+    215,
+    190.4,
+    66,
+    0
+   ],
+   "path": "M 0 0 L 66 0"
+  },
+  {
+   "k": "node",
+   "c": [
+    215,
+    190.4
+   ]
+  },
+  {
+   "k": "node",
+   "c": [
+    281,
+    190.4
+   ]
+  },
+  {
+   "k": "phone",
+   "name": "Phone · Field Log",
+   "time": "8:10",
+   "box": [
+    316,
+    0,
+    180,
+    380.8
+   ],
+   "view": "field-log"
+  },
+  {
+   "k": "text",
+   "t": "8:10 PM · INSIDE ITS STORY",
+   "box": [
+    316,
+    396.8,
+    180,
+    14
+   ],
+   "size": 12
+  }
+ ]
+}

@@ -4,6 +4,7 @@ import NagarholeCaseStudy from "./nagarhole";
 import ZenxoCaseStudy from "./zenxo";
 import EbbCaseStudy from "./ebb";
 import DrawTheLineCaseStudy from "./draw-the-line";
+import StrotaCaseStudy from "./strota";
 
 /**
  * Slug → case study. The dynamic route reads this for both its static params
@@ -55,6 +56,13 @@ export const CASE_STUDIES: Record<string, CaseStudy> = {
     description:
       "A two-day anti-bullying workshop with Going to School. These students already recognised bullying; what they lacked was a way to respond, so we designed for response, not awareness.",
     Component: DrawTheLineCaseStudy,
+  },
+  strota: {
+    name: "Strota",
+    title: "STROTA — One home for a breaking story, from the field to the draft",
+    description:
+      "News doesn’t break in a CMS. It breaks in the field. Strota gives a story one home before it gets there.",
+    Component: StrotaCaseStudy,
   },
 };
 

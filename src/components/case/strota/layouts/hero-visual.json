@@ -1,0 +1,95 @@
+{
+ "figmaNode": "154:1880",
+ "figma": "https://www.figma.com/design/9jLWq4FeUqK9eEJkWpHI8g?node-id=154-1880",
+ "size": [
+  1100,
+  620
+ ],
+ "units": "CSS px, relative to the row's top-left",
+ "items": [
+  {
+   "k": "phone",
+   "name": "Phone · Home dashboard",
+   "time": "7:41",
+   "box": [
+    300,
+    70,
+    250,
+    528.8
+   ],
+   "view": "home"
+  },
+  {
+   "k": "phone",
+   "name": "Phone · First Signal",
+   "time": "7:42",
+   "box": [
+    480,
+    24,
+    270,
+    571.1
+   ],
+   "view": "first-signal"
+  },
+  {
+   "k": "card",
+   "asset": "fs_urgency",
+   "box": [
+    40,
+    380,
+    342,
+    158
+   ],
+   "imgRadius": 14,
+   "shadow": true,
+   "src": "cards/fs_urgency.png"
+  },
+  {
+   "k": "card",
+   "asset": "d_complete",
+   "box": [
+    770,
+    150,
+    324.9,
+    112.1
+   ],
+   "imgRadius": 13.300000190734863,
+   "shadow": true,
+   "src": "cards/d_complete.png"
+  },
+  {
+   "k": "text",
+   "t": "IMAGE",
+   "box": [
+    531.5,
+    283.5,
+    37,
+    14
+   ],
+   "size": 12
+  },
+  {
+   "k": "text",
+   "t": "Hero: the reporter Home dashboard on a phone, in a real field setting",
+   "box": [
+    150,
+    305.5,
+    800,
+    22
+   ],
+   "size": 18
+  },
+  {
+   "k": "text",
+   "t": "Same treatment as the Zenxo hero photo. Your screen, in someone’s hand or on a desk.",
+   "box": [
+    200,
+    335.5,
+    700,
+    21
+   ],
+   "size": 14
+  }
+ ],
+ "openItem": "The centre text items are a placeholder for a hero photo (not supplied yet). Build the phones + cards; leave a clearly marked slot for the photo or omit the placeholder text."
+}

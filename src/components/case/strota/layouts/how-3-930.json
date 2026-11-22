@@ -1,0 +1,229 @@
+{
+ "figmaNode": "154:2266",
+ "figma": "https://www.figma.com/design/9jLWq4FeUqK9eEJkWpHI8g?node-id=154-2266",
+ "size": [
+  1100,
+  380.8
+ ],
+ "units": "CSS px, relative to the row's top-left",
+ "items": [
+  {
+   "k": "tag",
+   "t": "9:30 PM · BEFORE THE DRAFT",
+   "box": [
+    0,
+    0,
+    220,
+    42
+   ]
+  },
+  {
+   "k": "text",
+   "t": "Checks happen in the field, while gaps can still be filled.",
+   "box": [
+    0,
+    56,
+    300,
+    54
+   ],
+   "size": 20
+  },
+  {
+   "k": "text",
+   "t": "Verification is the Field Log’s third tab, not a step after the draft. A missing number doesn’t mean another call once the reporter has left",
+   "box": [
+    0,
+    124,
+    300,
+    84
+   ],
+   "size": 14
+  },
+  {
+   "k": "text",
+   "t": "THE CALL",
+   "box": [
+    0,
+    239,
+    55,
+    14
+   ],
+   "size": 12
+  },
+  {
+   "k": "text",
+   "t": "At the desk, a missing number means another call to a reporter who has already left. So verification happens in the field, inside the log.",
+   "box": [
+    0,
+    259,
+    300,
+    84
+   ],
+   "size": 14
+  },
+  {
+   "k": "phone",
+   "name": "Phone · Verification",
+   "time": "9:30",
+   "box": [
+    360,
+    0,
+    180,
+    380.8
+   ],
+   "view": "verification"
+  },
+  {
+   "k": "card",
+   "asset": "v_progress",
+   "box": [
+    580,
+    23,
+    240,
+    59.3
+   ],
+   "wrap": {
+    "fill": false,
+    "shadow": false,
+    "radius": 11.6448335647583
+   },
+   "imgRadius": 0,
+   "shadow": false,
+   "src": "cards/v_progress.png"
+  },
+  {
+   "k": "card",
+   "asset": "v_critical",
+   "box": [
+    580,
+    113,
+    240,
+    128.5
+   ],
+   "imgRadius": 9.290323257446289,
+   "shadow": true,
+   "src": "cards/v_critical.png"
+  },
+  {
+   "k": "card",
+   "asset": "v_save",
+   "box": [
+    580,
+    259.5,
+    240,
+    39.1
+   ],
+   "imgRadius": 9.767441749572754,
+   "shadow": true,
+   "src": "cards/v_save.png"
+  },
+  {
+   "k": "note",
+   "n": "01",
+   "title": "Progress you can see",
+   "desc": "3 of 5 checks done, so the reporter knows what’s left.",
+   "box": [
+    860,
+    41.5,
+    240,
+    62
+   ]
+  },
+  {
+   "k": "line",
+   "box": [
+    826,
+    52.5,
+    24,
+    0
+   ],
+   "path": "M 0 0 L 24 0"
+  },
+  {
+   "k": "node",
+   "c": [
+    826,
+    52.5
+   ]
+  },
+  {
+   "k": "node",
+   "c": [
+    850,
+    52.5
+   ]
+  },
+  {
+   "k": "note",
+   "n": "02",
+   "title": "Key numbers confirmed once",
+   "desc": "Critical figures are entered here and carried into the draft.",
+   "box": [
+    860,
+    166.3,
+    240,
+    62
+   ]
+  },
+  {
+   "k": "line",
+   "box": [
+    826,
+    177.3,
+    24,
+    0
+   ],
+   "path": "M 0 0 L 24 0"
+  },
+  {
+   "k": "node",
+   "c": [
+    826,
+    177.3
+   ]
+  },
+  {
+   "k": "node",
+   "c": [
+    850,
+    177.3
+   ]
+  },
+  {
+   "k": "note",
+   "n": "03",
+   "title": "Straight on to the draft",
+   "desc": "Save the checks and continue.",
+   "box": [
+    860,
+    268.1,
+    240,
+    42
+   ]
+  },
+  {
+   "k": "line",
+   "box": [
+    826,
+    279.1,
+    24,
+    0
+   ],
+   "path": "M 0 0 L 24 0"
+  },
+  {
+   "k": "node",
+   "c": [
+    826,
+    279.1
+   ]
+  },
+  {
+   "k": "node",
+   "c": [
+    850,
+    279.1
+   ]
+  }
+ ]
+}
