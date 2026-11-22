@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useSyncExternalStore } from "react";
 import { motion } from "framer-motion";
 import FeaturedProject from "./FeaturedProject";
 import Ticket from "./Ticket";
@@ -39,6 +39,21 @@ const SLIDE_W = 470;
 const GAP = 260;
 const SLOT = SLIDE_W + GAP;
 
+/** On a wide screen a fixed slot would leave the neighbours floating inside
+ *  the frame. The slot grows to half the viewport, so a neighbour's centre
+ *  always lands on the screen edge and it runs off the side, as on a laptop. */
+function subscribeWidth(cb: () => void) {
+  window.addEventListener("resize", cb);
+  return () => window.removeEventListener("resize", cb);
+}
+function useSlot() {
+  return useSyncExternalStore(
+    subscribeWidth,
+    () => Math.max(SLOT, Math.round(window.innerWidth / 2)),
+    () => SLOT,
+  );
+}
+
 /**
  * One project as a slide in the horizontal filmstrip: its featured card
  * stacked directly over its ticket, the pair moving together as a unit.
@@ -73,6 +88,7 @@ export default function ProjectPanel({
   onSelect?: (index: number) => void;
 }) {
   const current = index === step;
+  const slot = useSlot();
 
   // The step this slide last rendered at, so we know which way the strip is
   // travelling and can wind back the *opposite* way before the sweep. Updated
@@ -85,8 +101,8 @@ export default function ProjectPanel({
   }, [step]);
   const prevStep = prevStepRef.current;
 
-  const target = (index - step) * SLOT;
-  const prevX = (index - prevStep) * SLOT;
+  const target = (index - step) * slot;
+  const prevX = (index - prevStep) * slot;
   const travelSign = Math.sign(target - prevX); // -1 left, +1 right, 0 still
   const moving = travelSign !== 0;
 

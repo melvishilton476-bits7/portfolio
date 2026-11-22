@@ -101,6 +101,18 @@ const PROJECTS: Project[] = [
       "Two traders at a monitor showing the Zenxo results page.",
   },
   {
+    title: "STROTA - FIELD NEWS",
+    meta: "TEAM,2025",
+    color: "#171717",
+    quote:
+      "News doesn’t break in a CMS. It breaks in the field. Strota gives a story one home before it gets there.",
+    tags: ["Product", "Mobile UI"],
+    href: "/work/strota",
+    // The case study's own opener, the hero photo cropped to the card's 16:9.
+    thumb: "/case/strota/thumb.webp",
+    thumbAlt: "A phone on a sunlit desk showing Strota's Stories screen.",
+  },
+  {
     title: "DRAW THE LINE",
     meta: "TEAM,2025",
     color: "#171717",

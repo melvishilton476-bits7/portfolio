@@ -4,13 +4,8 @@ import { ArrowRight } from "lucide-react";
 import type { Post, Spine } from "./posts";
 import { external } from "./external";
 
-/* Card body and the three spine palettes, straight off the design. The spine is
-   a different instrument on every card — a gradient column, a dial, a stack of
-   bars — which is the only thing distinguishing one unit from the next besides
-   the picture, so the colours are named here rather than hidden in a class. */
+/* Card body colour, straight off the design. */
 const CARD = "#2b2626";
-const AMBER = "#ffc51b";
-const BAR_BLUE = "#434cff";
 
 /* Every measurement below is a percentage of the CARD, never a pixel: the card
    carries a fixed aspect ratio, so a percentage box holds the design's exact
@@ -18,54 +13,40 @@ const BAR_BLUE = "#434cff";
    out as literal class strings because Tailwind reads source text — a class
    name assembled at runtime never reaches the stylesheet. */
 
-/** The column standing to the right of the card. All three are bottom-aligned
- *  with the card and differ only above the bar. */
-function SpineColumn({ spine }: { spine: Spine }) {
-  if (spine === "blue") {
-    // One unbroken column, taller than the other two and the only one that is
-    // just a gradient — the first card sets the plain case the others vary.
-    return (
-      <div
-        aria-hidden
-        className="h-[80.59%] w-full"
-        style={{ backgroundImage: `linear-gradient(to bottom, #c7c6ff, #3a44ff)` }}
-      />
-    );
-  }
+/** The site's orange (the case-study accent). Every tag is this one colour;
+ *  they differ only in height. */
+const TAG = "#e8792b";
 
-  if (spine === "amber") {
-    return (
-      <>
-        {/* Five blocks in a dice pattern, knocked out of the white above the
-            bar in the card's own body colour. Column widths 14 / 11 / 14 of
-            the 39px spine; three equal rows. */}
-        <div
-          aria-hidden
-          className="grid h-[11.13%] w-full grid-cols-[35.9%_28.2%_35.9%] grid-rows-3"
-        >
-          {[0, 1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
-            <span key={i} style={{ backgroundColor: i % 2 === 0 ? CARD : undefined }} />
-          ))}
-        </div>
-        <div aria-hidden className="h-[66.44%] w-full" style={{ backgroundColor: AMBER }} />
-      </>
-    );
-  }
-
+/**
+ * The tag standing to the right of the card: one plain orange column with a
+ * live boil on its three open edges.
+ *
+ * The boil (feTurbulence → feDisplacementMap, seed stepping ~7fps, as on the
+ * asterisks and hands) roughens every edge of whatever it filters, so the
+ * column reaches TUCK px left under the card: its left edge wobbles out of
+ * sight there and the side joined to the card stays straight. `beat` offsets
+ * the seed loop so the three tags do not boil in lockstep.
+ */
+const TUCK = 6;
+function SpineColumn({ spine, beat }: { spine: Spine; beat: number }) {
+  const id = `blog-tag-boil-${beat}`;
+  const seeds = [4, 9, 2, 7, 11, 1, 6, 12, 3, 8, 5, 10];
+  const offset = (beat * 4) % seeds.length;
+  const values = [...seeds.slice(offset), ...seeds.slice(0, offset)].join(";");
   return (
     <>
-      {/* Four bars over the red column, 4px on a 8px pitch. */}
-      <div aria-hidden className="flex h-[9.44%] w-full flex-col justify-between">
-        {[0, 1, 2, 3].map((i) => (
-          <span key={i} className="h-[14.29%] w-full" style={{ backgroundColor: BAR_BLUE }} />
-        ))}
-      </div>
-      {/* The gap the design leaves between the bars and the column. */}
-      <div aria-hidden className="h-[1.69%]" />
+      <svg aria-hidden width="0" height="0" className="absolute">
+        <filter id={id} x="-30%" y="-10%" width="160%" height="120%">
+          <feTurbulence type="fractalNoise" baseFrequency="0.06" numOctaves={2} seed={seeds[offset]} result="noise">
+            <animate attributeName="seed" dur="1.8s" calcMode="discrete" values={values} repeatCount="indefinite" />
+          </feTurbulence>
+          <feDisplacementMap in="SourceGraphic" in2="noise" scale={5} xChannelSelector="R" yChannelSelector="G" />
+        </filter>
+      </svg>
       <div
         aria-hidden
-        className="h-[66.44%] w-full"
-        style={{ backgroundImage: `linear-gradient(to bottom, #ffc0c0, #ff0c0c)` }}
+        className={`blog-tag-boil ${spine === "blue" ? "h-[80.59%]" : "h-[77.57%]"}`}
+        style={{ marginLeft: -TUCK, width: `calc(100% + ${TUCK}px)`, backgroundColor: TAG, filter: `url(#${id})` }}
       />
     </>
   );
@@ -151,19 +132,26 @@ export default function BlogCard({
 
   return (
     <article className="mx-auto w-full max-w-[320px] lg:mx-0 lg:max-w-none">
-      <div className="grid grid-cols-[85.51%_14.49%]">
+      {/* A very soft shadow under card and tag together, as if the book
+          rests on the page: drop-shadow follows their joint silhouette,
+          boiled edge included, where a box-shadow would draw two boxes. */}
+      {/* The lift on hover is on the whole book, so the tag rises with it. */}
+      <div
+        className={`grid grid-cols-[85.51%_14.49%] ${href ? "transition-transform duration-300 ease-out has-[a:hover]:-translate-y-1" : ""}`}
+        style={{ filter: "drop-shadow(0 2px 3px rgba(23,23,23,0.06)) drop-shadow(0 16px 22px rgba(23,23,23,0.13))" }}
+      >
         {href ? (
           <Link
             href={href}
             {...external(href)}
-            className="blog-card relative block aspect-[230.209/296.519] transition-transform duration-300 ease-out hover:-translate-y-1"
+            className="blog-card relative z-10 block aspect-[230.209/296.519]"
             style={{ backgroundColor: CARD }}
           >
             {body}
           </Link>
         ) : (
           <div
-            className="blog-card relative aspect-[230.209/296.519]"
+            className="blog-card relative z-10 aspect-[230.209/296.519]"
             style={{ backgroundColor: CARD }}
           >
             {body}
@@ -172,8 +160,8 @@ export default function BlogCard({
 
         {/* Bottom-aligned with the card, whatever the pieces above it add up
             to — the design hangs all three spines off the same baseline. */}
-        <div className="flex flex-col justify-end">
-          <SpineColumn spine={post.spine} />
+        <div className="relative flex flex-col justify-end">
+          <SpineColumn spine={post.spine} beat={beat} />
         </div>
       </div>
     </article>

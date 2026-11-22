@@ -977,7 +977,9 @@ body {
      but it needs the specificity note. */
   .direction-boil,
   /* Strota's insight drawings, which also boil through an inline style. */
-  .strota-boil {
+  .strota-boil,
+  /* The blog cards' orange tags. */
+  .blog-tag-boil {
     filter: none !important;
   }
 }
@@ -1485,13 +1487,15 @@ body {
     100% 100%,
     100% 100%,
     100% var(--dip-h),
-    100% calc(100% - var(--dip-h) * 2),
+    /* The body band overlaps each dip band by 1px: butted exactly, the two
+       met on a sub-pixel boundary and left a hairline seam across the card. */
+    100% calc(100% - var(--dip-h) * 2 + 2px),
     100% var(--dip-h);
   mask-position:
     0 0,
     0 0,
     top,
-    0 var(--dip-h),
+    0 calc(var(--dip-h) - 1px),
     bottom;
   mask-repeat: no-repeat;
   mask-composite: intersect, intersect, add, add, add;

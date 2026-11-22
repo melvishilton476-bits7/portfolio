@@ -24,6 +24,16 @@ const STOPS: { slug: string; project: SideProject }[] = [
     },
   },
   {
+    slug: "strota",
+    project: {
+      title: "STROTA | FIELD NEWS",
+      blurb: "A field-to-desk app for reporters: one home for a breaking story, from the first voice note to the draft.",
+      href: "/work/strota",
+      thumb: "/case/strota/thumb.webp",
+      thumbAlt: "A phone on a sunlit desk showing Strota's Stories screen.",
+    },
+  },
+  {
     slug: "draw-the-line",
     project: {
       title: "DRAW THE LINE | WORKSHOP",
