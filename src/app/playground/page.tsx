@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo";
 import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
 import TitleBand from "@/components/TitleBand";
@@ -27,11 +28,12 @@ const PEST = "#f00010";
  * heading, the instructions and the legend below are static HTML, so the
  * section is readable and complete before any script arrives.
  */
-export const metadata: Metadata = {
-  title: "Playground — Melvis Hilton",
+export const metadata: Metadata = pageMeta({
+  title: "Playground",
   description:
     "Pixel Pests & Pixel Pets: whack as many pixel pests as you can in sixty seconds, and spare the pets.",
-};
+  path: "/playground",
+});
 
 /** One half of the legend: the character, then what to do about it.
  *

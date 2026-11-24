@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo";
 import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
 import About from "@/components/about/About";
@@ -11,11 +12,12 @@ import About from "@/components/about/About";
  * (the title band's dashed rules run to both viewport edges and would
  * otherwise put a sliver of horizontal scroll on the page), then Footer.
  */
-export const metadata: Metadata = {
-  title: "About — Melvis Hilton",
+export const metadata: Metadata = pageMeta({
+  title: "About",
   description:
     "Melvis Hilton: a Mallu born and brought up in Mumbai who likes working with people, on products for people, and pushing the limits on how platforms and tech interact with them.",
-};
+  path: "/about",
+});
 
 export default function AboutPage() {
   return (

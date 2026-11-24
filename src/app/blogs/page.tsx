@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo";
 import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
 import TitleBand from "@/components/TitleBand";
@@ -19,11 +20,12 @@ import { COL_START } from "@/components/blogs/grid";
  * elsewhere; when their links arrive they go in components/blogs/posts.ts and
  * every card and plate on the page becomes a link on its own.
  */
-export const metadata: Metadata = {
-  title: "Blogs — Melvis Hilton",
+export const metadata: Metadata = pageMeta({
+  title: "Blogs",
   description:
-    "Writing on design, engineering and the mentality behind both — from what AI is doing to the two crafts to what design school actually taught me.",
-};
+    "Writing on design, engineering and the mentality behind both: iterating in code, creatives with an athlete’s mindset, and why maximalism is fun again.",
+  path: "/blogs",
+});
 
 export default function BlogsPage() {
   return (

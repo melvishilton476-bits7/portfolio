@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import Nav from "@/components/Nav";
@@ -29,7 +30,14 @@ export async function generateMetadata({
   const { slug } = await params;
   const study = CASE_STUDIES[slug];
   if (!study) return {};
-  return { title: study.title, description: study.description };
+  return pageMeta({
+    title: study.title,
+    description: study.description,
+    path: `/work/${slug}`,
+    image: `/og/${slug}.jpg`,
+    imageAlt: study.name,
+    absoluteTitle: true,
+  });
 }
 
 export default async function CaseStudyPage({
