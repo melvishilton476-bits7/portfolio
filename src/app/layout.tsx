@@ -57,6 +57,9 @@ export const metadata: Metadata = {
     title: "Melvis Hilton — Designer who can Simplify",
     description,
   },
+  // Google Search Console ownership check (public by design: it only proves
+  // the site is ours, it grants nothing).
+  verification: { google: "tSLFtqCry-N48dc0k-ZanwycTb_zYBUC0qC10_g80yI" },
   robots: { index: true, follow: true, googleBot: { index: true, follow: true, "max-image-preview": "large" } },
 };
 
